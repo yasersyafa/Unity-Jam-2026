@@ -15,6 +15,6 @@ MonoBehaviour:
   sprite: {fileID: -1994921223, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   damage: 10
   fireRate: 6
-  kick: {x: 8, y: 24}
+  upwardKick: 24
   maximumRecoil: 140
   recovery: 180

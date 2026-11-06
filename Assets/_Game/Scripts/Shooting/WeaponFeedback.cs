@@ -46,7 +46,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     {
         if (weapon.EnableRecoil)
         {
-            recoil = Vector2.ClampMagnitude(recoil + new Vector2(Random.Range(-weapon.Kick.x, weapon.Kick.x), weapon.Kick.y), weapon.MaximumRecoil);
+            recoil = Vector2.up * Mathf.Min(recoil.y + weapon.UpwardKick, weapon.MaximumRecoil);
             pulse = 1f;
         }
         crosshair.GetComponent<UnityEngine.UI.Image>().color = hit ? Color.red : Color.white;
