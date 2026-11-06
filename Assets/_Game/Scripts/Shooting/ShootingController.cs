@@ -43,7 +43,10 @@ public sealed class ShootingController : MonoBehaviour
         if (Time.timeScale <= 0f || !Application.isFocused || Mouse.current == null)
             return;
         Vector2 aim = feedback.UpdateAim(Mouse.current.position.ReadValue(), Time.deltaTime);
-        if (!fire.IsPressed() || Time.timeAsDouble < nextShot)
+        bool wantsToFire = weapon.FiringMode == WeaponData.FireMode.Automatic
+            ? fire.IsPressed()
+            : fire.WasPressedThisFrame();
+        if (!wantsToFire || Time.timeAsDouble < nextShot)
             return;
         nextShot = Time.timeAsDouble + weapon.ShotInterval;
         // Camera shake is removed before Update; hit selection precedes this shot's recoil.

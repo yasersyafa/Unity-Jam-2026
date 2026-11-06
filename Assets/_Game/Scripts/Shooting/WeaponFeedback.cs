@@ -31,7 +31,9 @@ public sealed class WeaponFeedback : MonoBehaviour
     public Vector2 UpdateAim(Vector2 pointer, float deltaTime)
     {
         RemoveShake();
-        recoil = Vector2.MoveTowards(recoil, Vector2.zero, weapon.Recovery * deltaTime);
+        recoil = weapon.EnableRecoil
+            ? Vector2.MoveTowards(recoil, Vector2.zero, weapon.Recovery * deltaTime)
+            : Vector2.zero;
         float scale = canvas.scaleFactor;
         Vector2 aim = pointer + recoil * scale;
         aim.x = Mathf.Clamp(aim.x, 0f, Screen.width);
@@ -42,13 +44,18 @@ public sealed class WeaponFeedback : MonoBehaviour
     }
     public void PlayShot(bool hit)
     {
-        recoil = Vector2.ClampMagnitude(recoil + new Vector2(Random.Range(-weapon.Kick.x, weapon.Kick.x), weapon.Kick.y), weapon.MaximumRecoil);
-        pulse = 1f;
+        if (weapon.EnableRecoil)
+        {
+            recoil = Vector2.ClampMagnitude(recoil + new Vector2(Random.Range(-weapon.Kick.x, weapon.Kick.x), weapon.Kick.y), weapon.MaximumRecoil);
+            pulse = 1f;
+        }
         crosshair.GetComponent<UnityEngine.UI.Image>().color = hit ? Color.red : Color.white;
     }
     private void LateUpdate()
     {
         RemoveShake();
+        if (weapon != null && !weapon.EnableRecoil)
+            pulse = 0f;
         pulse = Mathf.MoveTowards(pulse, 0f, Time.deltaTime * 8f);
         weaponImage.rectTransform.anchoredPosition = weaponOrigin + Vector2.down * (pulse * 25f);
         appliedShake = Vector3.up * (pulse * cameraKick);
