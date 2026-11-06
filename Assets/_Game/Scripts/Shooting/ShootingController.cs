@@ -40,9 +40,12 @@ public sealed class ShootingController : MonoBehaviour
     private void Update()
     {
         UpdateCursorVisibility();
-        if (Time.timeScale <= 0f || !Application.isFocused || Mouse.current == null)
-            return;
-        Vector2 aim = feedback.UpdateAim(Mouse.current.position.ReadValue(), Time.deltaTime);
+        if (Mouse.current == null) return;
+        bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        bool suspended = Time.timeScale <= 0f || !Application.isFocused || escapePressed;
+        if (suspended) feedback.ResetFeedback();
+        Vector2 aim = feedback.UpdateAim(Mouse.current.position.ReadValue(), suspended ? 0f : Time.deltaTime);
+        if (suspended) return;
         bool wantsToFire = weapon.FiringMode == WeaponData.FireMode.Automatic
             ? fire.IsPressed()
             : fire.WasPressedThisFrame();
