@@ -8,6 +8,7 @@ public sealed class SlotReelView : MonoBehaviour
     [SerializeField] private float edgeSoftness = 0.3f;
     private readonly TextMeshProUGUI[] digits = new TextMeshProUGUI[7];
     private readonly Material[] materials = new Material[7];
+    private int targetDigit;
     private float position;
     private float elapsed;
     private float duration;
@@ -37,9 +38,10 @@ public sealed class SlotReelView : MonoBehaviour
         Render();
     }
 
-    public void Spin(float seconds)
+    public void Spin(float seconds, int target)
     {
         if (IsSpinning) return;
+        targetDigit = target;
         duration = seconds;
         distance = Mathf.Round(speed * seconds * 0.6f);
         position = elapsed = 0;
@@ -62,7 +64,8 @@ public sealed class SlotReelView : MonoBehaviour
             for (int i = 6; i > 0; i--) { digits[i] = digits[i - 1]; materials[i] = materials[i - 1]; }
             digits[0] = last;
             materials[0] = material;
-            last.text = Random.Range(1, 10).ToString();
+            last.text = previousStep + 1 == (int)distance - 3
+                ? targetDigit.ToString() : Random.Range(1, 10).ToString();
             previousStep++;
         }
         if (elapsed >= duration) { position = distance; IsSpinning = false; }

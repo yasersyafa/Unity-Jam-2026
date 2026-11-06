@@ -8,6 +8,9 @@ public sealed class SlotMachineView : MonoBehaviour
     [SerializeField] private float firstStopDuration = 2f;
     [SerializeField] private float stopInterval = 0.4f;
     [SerializeField] private TMP_FontAsset font;
+    private readonly SlotOutcomeGenerator outcomes = new SlotOutcomeGenerator();
+    private SlotResult pendingResult;
+    private TextMeshProUGUI status;
     private SlotReelView[] reels;
     private UnityEngine.UI.Button spinButton;
 
@@ -38,6 +41,15 @@ public sealed class SlotMachineView : MonoBehaviour
                     Box("Shade", window, new Vector2(190, 9), new Vector2(0, side * (136 - band * 9)), new Color(0.03f, 0.04f, 0.08f, alpha));
             }
         }
+        status = new GameObject("Result", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
+        status.transform.SetParent(canvasObject.transform, false);
+        status.rectTransform.sizeDelta = new Vector2(900, 100);
+        status.rectTransform.anchoredPosition = new Vector2(0, -280);
+        status.font = font;
+        status.fontSize = 24;
+        status.alignment = TextAlignmentOptions.Center;
+        status.raycastTarget = false;
+        status.text = "Spin 0 | Rare 0/5 | Epic 0/15 | Jackpot 0/25";
         var button = Box("Spin", panel, new Vector2(240, 62), new Vector2(0, -155), new Color(0.95f, 0.65f, 0.18f));
         button.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
         spinButton = button.gameObject.AddComponent<UnityEngine.UI.Button>();
@@ -58,13 +70,18 @@ public sealed class SlotMachineView : MonoBehaviour
     {
         if (reels == null || !spinButton.interactable) return;
         spinButton.interactable = false;
-        for (int i = 0; i < reels.Length; i++) reels[i].Spin(firstStopDuration + i * stopInterval);
+        pendingResult = outcomes.Spin();
+        status.text = "Spinning...";
+        int[] targets = { pendingResult.Left, pendingResult.Middle, pendingResult.Right };
+        for (int i = 0; i < reels.Length; i++) reels[i].Spin(firstStopDuration + i * stopInterval, targets[i]);
     }
 
     private void Update()
     {
         if (reels == null || spinButton.interactable) return;
         foreach (var reel in reels) if (reel.IsSpinning) return;
+        status.text = $"Spin {pendingResult.SpinNumber}: {pendingResult.Left}{pendingResult.Middle}{pendingResult.Right} — {pendingResult.Tier}"
+            + $"\nRare {outcomes.RareCounter}/5 | Epic {outcomes.EpicCounter}/15 | Jackpot {outcomes.JackpotCounter}/25";
         spinButton.interactable = true;
     }
 
