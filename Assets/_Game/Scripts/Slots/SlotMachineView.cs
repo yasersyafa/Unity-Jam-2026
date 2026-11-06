@@ -8,6 +8,18 @@ public sealed class SlotMachineView : MonoBehaviour
     [SerializeField] private float firstStopDuration = 2f;
     [SerializeField] private float stopInterval = 0.4f;
     [SerializeField] private TMP_FontAsset font;
+    [Header("Snappy Stop")]
+    [SerializeField, Min(0.01f)] private float snapDuration = 0.22f;
+    [SerializeField, Range(0f, 0.4f)] private float snapOvershoot = 0.12f;
+    [Header("Reel Stop Feedback")]
+    [SerializeField] private Sprite bangSprite;
+    [Tooltip("Optional UI prefab with RectTransform. Overrides Bang Sprite.")]
+    [SerializeField] private RectTransform bangUiPrefab;
+    [SerializeField, Min(0.01f)] private float shakeDuration = 0.22f;
+    [SerializeField, Min(0f)] private float shakeStrength = 9f;
+    [SerializeField, Min(0.01f)] private float bangDuration = 0.55f;
+    [SerializeField] private Vector2 bangOffset = new Vector2(0, 110);
+    [SerializeField] private Vector2 bangSize = new Vector2(190, 100);
     private readonly SlotOutcomeGenerator outcomes = new SlotOutcomeGenerator();
     private SlotResult pendingResult;
     private TextMeshProUGUI status;
@@ -34,12 +46,23 @@ public sealed class SlotMachineView : MonoBehaviour
             window.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
             reels[i] = window.gameObject.AddComponent<SlotReelView>();
             reels[i].Initialize(font);
+            reels[i].ConfigureSnap(snapDuration, snapOvershoot);
             for (int band = 0; band < 12; band++)
             {
                 float alpha = 0.38f * Mathf.Pow(1 - band / 12f, 2);
                 foreach (int side in new[] { -1, 1 })
                     Box("Shade", window, new Vector2(190, 9), new Vector2(0, side * (136 - band * 9)), new Color(0.03f, 0.04f, 0.08f, alpha));
             }
+        }
+        var overlay = new GameObject("StopFeedback", typeof(RectTransform)).GetComponent<RectTransform>();
+        overlay.SetParent(panel, false);
+        overlay.sizeDelta = Vector2.zero;
+        foreach (var reel in reels)
+        {
+            var feedback = reel.gameObject.AddComponent<SlotStopFeedback>();
+            feedback.Initialize((RectTransform)reel.transform, overlay, font, bangSprite, bangUiPrefab,
+                shakeDuration, shakeStrength, bangDuration, bangOffset, bangSize);
+            reel.Stopped += feedback.Play;
         }
         status = new GameObject("Result", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
         status.transform.SetParent(canvasObject.transform, false);

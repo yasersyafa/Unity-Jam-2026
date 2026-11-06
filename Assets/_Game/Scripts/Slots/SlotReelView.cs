@@ -8,12 +8,16 @@ public sealed class SlotReelView : MonoBehaviour
     [SerializeField] private float edgeSoftness = 0.3f;
     private readonly TextMeshProUGUI[] digits = new TextMeshProUGUI[7];
     private readonly Material[] materials = new Material[7];
+    [SerializeField, Min(0.01f)] private float snapDuration = 0.22f;
+    [SerializeField, Range(0f, 0.4f)] private float snapOvershoot = 0.12f;
+    private float visualOvershoot;
     private int targetDigit;
     private float position;
     private float elapsed;
     private float duration;
     private float distance;
     private int previousStep;
+    public event System.Action<SlotReelView> Stopped;
     public bool IsSpinning { get; private set; }
 
     public void Initialize(TMP_FontAsset font)
@@ -38,12 +42,19 @@ public sealed class SlotReelView : MonoBehaviour
         Render();
     }
 
+    public void ConfigureSnap(float seconds, float overshoot)
+    {
+        snapDuration = Mathf.Max(0.01f, seconds);
+        snapOvershoot = Mathf.Clamp(overshoot, 0f, 0.4f);
+    }
+
     public void Spin(float seconds, int target)
     {
         if (IsSpinning) return;
         targetDigit = target;
-        duration = seconds;
-        distance = Mathf.Round(speed * seconds * 0.6f);
+        duration = Mathf.Max(0.02f, seconds);
+        visualOvershoot = 0f;
+        distance = Mathf.Max(4f, Mathf.Round(speed * duration * 0.6f));
         position = elapsed = 0;
         previousStep = 0;
         IsSpinning = true;
@@ -53,9 +64,22 @@ public sealed class SlotReelView : MonoBehaviour
     {
         if (!IsSpinning) return;
         elapsed = Mathf.Min(elapsed + Time.unscaledDeltaTime, duration);
-        float t = elapsed / duration;
+        float snapTime = Mathf.Min(snapDuration, duration * 0.3f);
+        float travelTime = duration - snapTime;
+        float t = Mathf.Clamp01(elapsed / travelTime);
         // Integral of a speed curve with smooth acceleration and deceleration.
-        position = distance * (t - Mathf.Sin(2 * Mathf.PI * t) / (2 * Mathf.PI));
+        position = (distance - 1f) * (t - Mathf.Sin(2 * Mathf.PI * t) / (2 * Mathf.PI));
+        visualOvershoot = 0f;
+        if (elapsed >= travelTime)
+        {
+            float snap = Mathf.Clamp01((elapsed - travelTime) / snapTime);
+            // Reach the final row quickly, overshoot, then lock without recycling backwards.
+            float progress = snap < 0.55f
+                ? Mathf.Lerp(0f, 1f + snapOvershoot, 1f - Mathf.Pow(1f - snap / 0.55f, 3f))
+                : Mathf.Lerp(1f + snapOvershoot, 1f, Mathf.SmoothStep(0f, 1f, (snap - 0.55f) / 0.45f));
+            position = distance - 1f + Mathf.Min(progress, 1f);
+            visualOvershoot = Mathf.Max(0f, progress - 1f);
+        }
         int step = Mathf.FloorToInt(position);
         while (previousStep < step)
         {
@@ -68,13 +92,14 @@ public sealed class SlotReelView : MonoBehaviour
                 ? targetDigit.ToString() : Random.Range(1, 10).ToString();
             previousStep++;
         }
-        if (elapsed >= duration) { position = distance; IsSpinning = false; }
+        if (elapsed >= duration) { position = distance; visualOvershoot = 0f; IsSpinning = false; }
         Render();
+        if (!IsSpinning) Stopped?.Invoke(this);
     }
 
     private void Render()
     {
-        float fraction = position - Mathf.Floor(position);
+        float fraction = position - Mathf.Floor(position) + visualOvershoot;
         for (int i = 0; i < digits.Length; i++)
         {
             float row = 3 - i - fraction;

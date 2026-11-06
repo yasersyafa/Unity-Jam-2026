@@ -47,3 +47,12 @@ MonoBehaviour:
   firstStopDuration: 2
   stopInterval: 0.4
   font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  snapDuration: 0.03
+  snapOvershoot: 0.03
+  bangSprite: {fileID: -7374239419574202304, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  bangUiPrefab: {fileID: 23266566625577695, guid: 43371720670d9459aa80a0a8413c8db8, type: 3}
+  shakeDuration: 0.22
+  shakeStrength: 9
+  bangDuration: 0.55
+  bangOffset: {x: 8, y: 96}
+  bangSize: {x: 190, y: 100}
