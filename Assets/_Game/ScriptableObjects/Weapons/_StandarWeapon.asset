@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4bb3b4a1a14dca88235cb123bacda8, type: 3}
+  m_Name: _StandarWeapon
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  sprite: {fileID: -1994921223, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  damage: 10
+  fireRate: 6
+  kick: {x: 8, y: 24}
+  maximumRecoil: 140
+  recovery: 180

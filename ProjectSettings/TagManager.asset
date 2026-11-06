@@ -44,6 +44,9 @@ TagManager:
   - name: Background
     uniqueID: 434554929
     locked: 0
+  - name: Enemy
+    uniqueID: 4206511175
+    locked: 0
   m_RenderingLayers:
   - Default
   - Light Layer 1
