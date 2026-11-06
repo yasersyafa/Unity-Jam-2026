@@ -1,0 +1,46 @@
+using System;
+using UnityEngine;
+
+[DisallowMultipleComponent]
+[RequireComponent(typeof(BoxCollider2D))]
+public sealed class Enemy : MonoBehaviour, IDamageable
+{
+    [SerializeField] private EnemyData data;
+    [SerializeField] private EnemyFeedback feedback;
+    public EnemyData Data => data;
+    public float CurrentHealth { get; private set; }
+    public bool IsDead { get; private set; }
+    public event Action Damaged;
+    public event Action Died;
+    private Collider2D hitbox;
+
+    private void Awake()
+    {
+        hitbox = GetComponent<Collider2D>();
+        if (data == null)
+        {
+            Debug.LogError("Enemy requires EnemyData.", this);
+            hitbox.enabled = false;
+            enabled = false;
+            return;
+        }
+        CurrentHealth = data.HealthPoint;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        if (!isActiveAndEnabled || IsDead || data == null || !(damage > 0f)) return;
+        CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);
+        if (CurrentHealth > 0f)
+        {
+            if (feedback != null) feedback.PlayHit();
+            Damaged?.Invoke();
+            return;
+        }
+        IsDead = true;
+        hitbox.enabled = false;
+        float delay = feedback != null ? feedback.PlayDeath() : 0f;
+        Destroy(gameObject, delay);
+        Died?.Invoke();
+    }
+}

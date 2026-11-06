@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: _StandarWeapon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   sprite: {fileID: -1994921223, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  firingMode: 0
   damage: 10
   fireRate: 6
-  upwardKick: 24
-  maximumRecoil: 140
+  enableRecoil: 1
+  upwardKick: 48
+  maximumRecoil: 180
   recovery: 180
