@@ -179,6 +179,13 @@ public static class SetupSlotDemoHUD
         durationTmp.color = Color.white;
         durationTmp.text = "Weapon: 8.0s / 8.0s";
 
+        // Save as Prefab
+        if (!AssetDatabase.IsValidFolder("Assets/_Game/Prefabs/UI"))
+        {
+            AssetDatabase.CreateFolder("Assets/_Game/Prefabs", "UI");
+        }
+        PrefabUtility.SaveAsPrefabAsset(hudGo, "Assets/_Game/Prefabs/UI/SlotDemoHUD.prefab");
+
         // 3. Connect to SlotGameplayFlow
         var flowSo = new SerializedObject(gameplayFlow);
         var sliderProp = flowSo.FindProperty("weaponDurationSlider");
@@ -191,6 +198,6 @@ public static class SetupSlotDemoHUD
         EditorUtility.SetDirty(healthUI);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("Slot Demo HUD setup completed successfully.");
+        Debug.Log("Slot Demo HUD setup and Prefab creation completed successfully.");
     }
 }
