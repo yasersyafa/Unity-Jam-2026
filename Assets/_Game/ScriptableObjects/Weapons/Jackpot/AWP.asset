@@ -16,9 +16,9 @@ MonoBehaviour:
   usageDuration: 8
   sprite: {fileID: 0}
   firingMode: 1
-  damage: 220
-  fireRate: 0.8
+  damage: 2500
+  fireRate: 0.5
   enableRecoil: 1
-  upwardKick: 65
-  maximumRecoil: 130
-  recovery: 180
+  upwardKick: 60
+  maximumRecoil: 200
+  recovery: 200
