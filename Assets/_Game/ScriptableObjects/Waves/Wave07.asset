@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07fcef2c98ab499b90c4c17767bffd81, type: 3}
+  m_Name: Wave07
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
+  formation: {fileID: 11400000, guid: f4ce934bd84b745ca9a3d0aff6f9662a, type: 2}
+  enemies:
+  - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+  - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+  - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+  spawnInterval: 0.1
+  delay: 1
+  approachDurationMultiplier: 1.0273
+  swayAmplitudeMultiplier: 1.0364
+  swayPeriodMultiplier: 1.0273

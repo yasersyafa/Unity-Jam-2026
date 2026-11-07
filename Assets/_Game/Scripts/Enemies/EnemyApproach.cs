@@ -11,7 +11,14 @@ public sealed class EnemyApproach : MonoBehaviour
     private Vector3 entryStart, destination, control, viewportRight, viewportUp;
     private float entryElapsed, phase;
     private bool entering;
-    public bool IsFinished => enemy == null || enemy.IsDead || !isActiveAndEnabled || (initialized && elapsed >= enemy.Data.ApproachDuration);
+    private float durationMultiplier = 1f, amplitudeMultiplier = 1f, periodMultiplier = 1f;
+    public void ConfigureDifficulty(float duration, float amplitude, float period)
+    {
+        durationMultiplier = Mathf.Max(0.1f, duration);
+        amplitudeMultiplier = Mathf.Max(0f, amplitude);
+        periodMultiplier = Mathf.Max(0.1f, period);
+    }
+    public bool IsFinished => enemy == null || enemy.IsDead || !isActiveAndEnabled || (initialized && elapsed >= (enemy.Data.ApproachDuration * durationMultiplier));
     public void Initialize(PlayerHealth player)
     {
         enemy = GetComponent<Enemy>();
@@ -52,11 +59,11 @@ public sealed class EnemyApproach : MonoBehaviour
         elapsed += Time.deltaTime;
         if (viewportRight != Vector3.zero)
         {
-            float angle = elapsed * Mathf.PI * 2f / enemy.Data.SwayPeriod + phase;
+            float angle = elapsed * Mathf.PI * 2f / (enemy.Data.SwayPeriod * periodMultiplier) + phase;
             float ramp = Mathf.Clamp01(elapsed / 0.2f);
-            transform.position = destination + ramp * (viewportRight * (Mathf.Sin(angle) * enemy.Data.SwayAmplitude.x) + viewportUp * (Mathf.Sin(angle * 1.3f) * enemy.Data.SwayAmplitude.y));
+            transform.position = destination + ramp * (viewportRight * (Mathf.Sin(angle) * enemy.Data.SwayAmplitude.x * amplitudeMultiplier) + viewportUp * (Mathf.Sin(angle * 1.3f) * enemy.Data.SwayAmplitude.y * amplitudeMultiplier));
         }
-        float t = Mathf.Clamp01(elapsed / enemy.Data.ApproachDuration);
+        float t = Mathf.Clamp01(elapsed / (enemy.Data.ApproachDuration * durationMultiplier));
         transform.localScale = originalScale * Mathf.Lerp(enemy.Data.InitialScale, enemy.Data.FinalScale, t * t);
         if (t < 1f) return;
         target.TakeDamage(enemy.Data.AttackPoint);
