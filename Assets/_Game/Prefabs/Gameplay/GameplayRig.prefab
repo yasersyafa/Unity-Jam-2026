@@ -3317,6 +3317,20 @@ MonoBehaviour:
   enemyPrefab: {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
   enemyParent: {fileID: 5436132836707015710}
   player: {fileID: 6581021842661484587}
+  bossConfig: {fileID: 11400000, guid: 107a9b0c47c34388abaf01816454f356, type: 2}
+  waves:
+  - {fileID: 11400000, guid: 71595d6a9e8a4ac184a8a69dd954779e, type: 2}
+  - {fileID: 11400000, guid: 8ab71a5c77aa469a9ec09bb84d5917d9, type: 2}
+  - {fileID: 11400000, guid: 08261c34fabf42f6bb897759dabc5d08, type: 2}
+  - {fileID: 11400000, guid: 3b0685c7c54f4df6bf51ac334dbc1773, type: 2}
+  - {fileID: 11400000, guid: 20db321ef6e54cdbb39101e5f5f6c97e, type: 2}
+  - {fileID: 11400000, guid: f19069eb029b4189a6ca190f50d44af3, type: 2}
+  - {fileID: 11400000, guid: ed67c7614fb2491aa95742d91e4f65c4, type: 2}
+  - {fileID: 11400000, guid: e6cc330f8b1b4ea4986939ff67a29f33, type: 2}
+  - {fileID: 11400000, guid: a86519bd917c4754905b4d6043fc87c4, type: 2}
+  - {fileID: 11400000, guid: 9396f3b16c5b4eb1b8f3e7ff977bc938, type: 2}
+  - {fileID: 11400000, guid: d4dff3cbf78f4b13a20a5fcf9d503879, type: 2}
+  - {fileID: 11400000, guid: 3f2f09735d5d4a81a71ff6efbff9b7d9, type: 2}
   formations:
   - {fileID: 11400000, guid: f4ce934bd84b745ca9a3d0aff6f9662a, type: 2}
   - {fileID: 11400000, guid: 208dddff609994e2591c7c7547a24d28, type: 2}

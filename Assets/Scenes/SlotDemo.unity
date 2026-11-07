@@ -813,6 +813,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 847541168}
+    - target: {fileID: 2068943486461674158, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+      propertyPath: onBossReady.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2068943486461674158, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+      propertyPath: onBossReady.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2666825304865575248, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
