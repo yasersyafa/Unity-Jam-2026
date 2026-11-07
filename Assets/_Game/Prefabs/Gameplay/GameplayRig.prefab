@@ -3317,6 +3317,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
   enemyParent: {fileID: 5436132836707015710}
   player: {fileID: 6581021842661484587}
+  bossConfig: {fileID: 11400000, guid: 107a9b0c47c34388abaf01816454f356, type: 2}
   waves:
   - {fileID: 11400000, guid: 71595d6a9e8a4ac184a8a69dd954779e, type: 2}
   - {fileID: 11400000, guid: 8ab71a5c77aa469a9ec09bb84d5917d9, type: 2}

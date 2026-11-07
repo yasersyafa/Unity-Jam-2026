@@ -15,6 +15,7 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField, Min(0f)] private float spawnInterval = 0.1f;
     [SerializeField] private EnemyWave[] waves;
     [SerializeField] private UnityEngine.Events.UnityEvent onBossReady;
+    [SerializeField] private BossConfig bossConfig;
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
     private void OnEnable() { StartCoroutine(Run()); }
     private IEnumerator Run()
@@ -76,7 +77,11 @@ public sealed class EnemySpawner : MonoBehaviour
             if (campaign && index == waves.Length - 1)
             {
                 yield return new WaitForSeconds(2f);
-                if (!player.IsDead) onBossReady?.Invoke();
+                if (!player.IsDead)
+                {
+                    onBossReady?.Invoke();
+                    SpawnBoss();
+                }
                 break;
             }
             yield return new WaitForSeconds(campaign ? wave.delay : waveDelay);
@@ -84,6 +89,37 @@ public sealed class EnemySpawner : MonoBehaviour
         }
         Cleanup();
     }
+    private BossEncounter activeBoss;
+
+    [ContextMenu("Test Boss Now (Play Mode)")]
+    private void TestBossNow()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Enter Play Mode before testing the boss.", this);
+            return;
+        }
+        if (bossConfig == null || gameplayCamera == null || enemyParent == null || player == null || player.IsDead)
+        {
+            Debug.LogWarning("Boss test requires config, camera, parent and a living player.", this);
+            return;
+        }
+        StopAllCoroutines();
+        Cleanup();
+        SpawnBoss();
+    }
+
+    private void SpawnBoss()
+    {
+        if (bossConfig == null || activeBoss != null) return;
+        var boss = new GameObject("Boss");
+        boss.transform.SetParent(transform, false);
+        activeBoss = boss.AddComponent<BossEncounter>();
+        activeBoss.BeginEncounter(bossConfig, gameplayCamera, enemyParent, player,
+            transform.root.GetComponentInChildren<ShootingController>(),
+            transform.root.GetComponentInChildren<SlotGameplayFlow>());
+    }
+
     private Vector3 PointOnPlane(Plane plane, Vector2 viewport)
     {
         Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(viewport.x, viewport.y, 0f));
