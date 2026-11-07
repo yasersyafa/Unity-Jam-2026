@@ -1,12 +1,11 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public sealed class SlotStopFeedback : MonoBehaviour
 {
     private RectTransform reel;
-    private RectTransform popup;
-    private CanvasGroup popupGroup;
+    [SerializeField] private RectTransform popup;
+    [SerializeField] private CanvasGroup popupGroup;
     private Vector2 restPosition;
     private Vector3 restScale;
     private Quaternion restRotation;
@@ -14,11 +13,12 @@ public sealed class SlotStopFeedback : MonoBehaviour
     private float strength;
     private float popupDuration;
     private Vector2 popupPosition;
+    private Vector3 popupScale;
+    private Quaternion popupRotation;
     private Coroutine animation;
     public bool IsPlaying => animation != null;
 
-    public void Initialize(RectTransform target, Transform overlay, TMP_FontAsset font, Sprite sprite,
-        RectTransform prefab, float shakeDuration, float shakeStrength, float bangDuration, Vector2 offset, Vector2 size)
+    public void Initialize(RectTransform target, float shakeDuration, float shakeStrength, float bangDuration)
     {
         reel = target;
         restPosition = reel.anchoredPosition;
@@ -27,39 +27,9 @@ public sealed class SlotStopFeedback : MonoBehaviour
         duration = Mathf.Max(0.01f, shakeDuration);
         strength = Mathf.Max(0f, shakeStrength);
         popupDuration = Mathf.Max(duration, bangDuration);
-        popupPosition = restPosition + offset;
-        if (prefab != null) popup = Instantiate(prefab, overlay, false);
-        else
-        {
-            popup = new GameObject("Bang", typeof(RectTransform)).GetComponent<RectTransform>();
-            popup.SetParent(overlay, false);
-            if (sprite != null)
-            {
-                var image = popup.gameObject.AddComponent<UnityEngine.UI.Image>();
-                image.sprite = sprite;
-                image.preserveAspect = true;
-            }
-            else
-            {
-                var text = popup.gameObject.AddComponent<TextMeshProUGUI>();
-                text.font = font;
-                text.text = "BANG!";
-                text.fontSize = 48;
-                text.fontStyle = FontStyles.Bold | FontStyles.Italic;
-                text.alignment = TextAlignmentOptions.Center;
-                text.color = new Color(1f, 0.78f, 0.12f);
-                var shadow = popup.gameObject.AddComponent<UnityEngine.UI.Shadow>();
-                shadow.effectColor = Color.black;
-                shadow.effectDistance = new Vector2(4, -4);
-            }
-        }
-        popup.anchorMin = popup.anchorMax = popup.pivot = new Vector2(0.5f, 0.5f);
-        popup.sizeDelta = size;
-        popupGroup = popup.GetComponent<CanvasGroup>();
-        if (popupGroup == null) popupGroup = popup.gameObject.AddComponent<CanvasGroup>();
-        popupGroup.interactable = false;
-        popupGroup.blocksRaycasts = false;
-        foreach (var graphic in popup.GetComponentsInChildren<UnityEngine.UI.Graphic>(true)) graphic.raycastTarget = false;
+        popupPosition = popup.anchoredPosition;
+        popupScale = popup.localScale;
+        popupRotation = popup.localRotation;
         popup.gameObject.SetActive(false);
     }
 
@@ -85,8 +55,8 @@ public sealed class SlotStopFeedback : MonoBehaviour
             float t = elapsed / popupDuration;
             float pop = Mathf.Clamp01(t / 0.22f);
             float overshoot = 1f + 2.70158f * Mathf.Pow(pop - 1f, 3) + 1.70158f * Mathf.Pow(pop - 1f, 2);
-            popup.localScale = Vector3.one * Mathf.LerpUnclamped(0.25f, 1f, overshoot);
-            popup.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(-18f, -8f, pop));
+            popup.localScale = popupScale * Mathf.LerpUnclamped(0.25f, 1f, overshoot);
+            popup.localRotation = popupRotation * Quaternion.Euler(0, 0, Mathf.Lerp(-18f, -8f, pop));
             popup.anchoredPosition = popupPosition + Vector2.up * (24f * t);
             popupGroup.alpha = 1f - Mathf.InverseLerp(0.65f, 1f, t);
             elapsed += Time.unscaledDeltaTime;
@@ -109,5 +79,4 @@ public sealed class SlotStopFeedback : MonoBehaviour
     }
 
     private void OnDisable() { ResetFeedback(); }
-    private void OnDestroy() { if (popup != null) Destroy(popup.gameObject); }
 }

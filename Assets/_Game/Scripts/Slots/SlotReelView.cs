@@ -6,7 +6,7 @@ public sealed class SlotReelView : MonoBehaviour
     [SerializeField] private float speed = 16f;
     [SerializeField] private float curvature = 0.45f;
     [SerializeField] private float edgeSoftness = 0.3f;
-    private readonly TextMeshProUGUI[] digits = new TextMeshProUGUI[7];
+    [SerializeField] private TextMeshProUGUI[] digits = new TextMeshProUGUI[7];
     private readonly Material[] materials = new Material[7];
     [SerializeField, Min(0.01f)] private float snapDuration = 0.22f;
     [SerializeField, Range(0f, 0.4f)] private float snapOvershoot = 0.12f;
@@ -20,24 +20,14 @@ public sealed class SlotReelView : MonoBehaviour
     public event System.Action<SlotReelView> Stopped;
     public bool IsSpinning { get; private set; }
 
-    public void Initialize(TMP_FontAsset font)
+    public void Initialize()
     {
         for (int i = 0; i < digits.Length; i++)
         {
-            var go = new GameObject("Digit", typeof(RectTransform));
-            go.transform.SetParent(transform, false);
-            var text = go.AddComponent<TextMeshProUGUI>();
-            text.font = font;
-            text.fontSize = 112;
-            text.fontStyle = FontStyles.Bold;
-            text.alignment = TextAlignmentOptions.Center;
-            text.color = new Color(0.09f, 0.12f, 0.18f);
-            text.raycastTarget = false;
-            text.rectTransform.sizeDelta = new Vector2(180, 140);
+            var text = digits[i];
             text.text = Random.Range(1, 10).ToString();
             materials[i] = new Material(text.fontSharedMaterial);
             text.fontSharedMaterial = materials[i];
-            digits[i] = text;
         }
         Render();
     }
