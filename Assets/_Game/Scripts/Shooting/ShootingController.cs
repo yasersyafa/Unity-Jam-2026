@@ -20,6 +20,9 @@ public sealed class ShootingController : MonoBehaviour
     private double nextShot;
     private bool previousCursorVisible;
     private bool ownsCursor;
+    private bool cursorMode;
+    private Vector2 lastAim;
+    private bool hasAim;
 
     private void OnEnable()
     {
@@ -34,18 +37,38 @@ public sealed class ShootingController : MonoBehaviour
         feedback.SetWeapon(weapon);
         previousCursorVisible = Cursor.visible;
         ownsCursor = true;
+        cursorMode = false;
+        hasAim = false;
         UpdateCursorVisibility();
     }
 
     private void Update()
     {
-        UpdateCursorVisibility();
         if (Mouse.current == null) return;
         bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
-        bool suspended = Time.timeScale <= 0f || !Application.isFocused || escapePressed;
-        if (suspended) feedback.ResetFeedback();
-        Vector2 aim = feedback.UpdateAim(Mouse.current.position.ReadValue(), suspended ? 0f : Time.deltaTime);
-        if (suspended) return;
+        bool suspended = Time.timeScale <= 0f || !Application.isFocused;
+        if (escapePressed || suspended)
+        {
+            if (!cursorMode && hasAim && Application.isFocused) Mouse.current.WarpCursorPosition(lastAim);
+            cursorMode = true;
+            feedback.ResetFeedback();
+            UpdateCursorVisibility();
+            return;
+        }
+        if (cursorMode)
+        {
+            lastAim = feedback.UpdateAim(Mouse.current.position.ReadValue(), 0f);
+            hasAim = true;
+            if (!fire.WasPressedThisFrame()) { UpdateCursorVisibility(); return; }
+            if (UnityEngine.EventSystems.EventSystem.current != null
+                && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+            cursorMode = false;
+            hasAim = false;
+        }
+        UpdateCursorVisibility();
+        Vector2 aim = feedback.UpdateAim(Mouse.current.position.ReadValue(), Time.deltaTime);
+        lastAim = aim;
+        hasAim = true;
         bool wantsToFire = weapon.FiringMode == WeaponData.FireMode.Automatic
             ? fire.IsPressed()
             : fire.WasPressedThisFrame();
@@ -73,13 +96,13 @@ public sealed class ShootingController : MonoBehaviour
     private void UpdateCursorVisibility()
     {
         if (ownsCursor)
-            Cursor.visible = !Application.isFocused || Time.timeScale <= 0f;
+            Cursor.visible = cursorMode || !Application.isFocused || Time.timeScale <= 0f;
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
         if (ownsCursor)
-            Cursor.visible = !hasFocus || Time.timeScale <= 0f;
+            Cursor.visible = cursorMode || !hasFocus || Time.timeScale <= 0f;
     }
 
     private void OnDisable()

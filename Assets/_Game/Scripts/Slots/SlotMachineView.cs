@@ -25,6 +25,7 @@ public sealed class SlotMachineView : MonoBehaviour
     private TextMeshProUGUI status;
     private SlotReelView[] reels;
     private UnityEngine.UI.Button spinButton;
+    private UnityEngine.UI.Button skipButton;
 
     private void Start()
     {
@@ -73,7 +74,7 @@ public sealed class SlotMachineView : MonoBehaviour
         status.alignment = TextAlignmentOptions.Center;
         status.raycastTarget = false;
         status.text = "Spin 0 | Rare 0/5 | Epic 0/15 | Jackpot 0/25";
-        var button = Box("Spin", panel, new Vector2(240, 62), new Vector2(0, -155), new Color(0.95f, 0.65f, 0.18f));
+        var button = Box("Spin", panel, new Vector2(240, 62), new Vector2(-135, -155), new Color(0.95f, 0.65f, 0.18f));
         button.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
         spinButton = button.gameObject.AddComponent<UnityEngine.UI.Button>();
         spinButton.onClick.AddListener(Spin);
@@ -87,22 +88,43 @@ public sealed class SlotMachineView : MonoBehaviour
         label.alignment = TextAlignmentOptions.Center;
         label.color = Color.black;
         label.raycastTarget = false;
+        var skip = Box("Skip", panel, new Vector2(220, 62), new Vector2(135, -155), new Color(0.55f, 0.65f, 0.8f));
+        skip.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
+        skipButton = skip.gameObject.AddComponent<UnityEngine.UI.Button>();
+        skipButton.onClick.AddListener(Skip);
+        skipButton.interactable = false;
+        var skipLabel = Instantiate(label, skip, false);
+        skipLabel.text = "SKIP";
     }
 
     public void Spin()
     {
         if (reels == null || !spinButton.interactable) return;
         spinButton.interactable = false;
+        skipButton.interactable = true;
         pendingResult = outcomes.Spin();
         status.text = "Spinning...";
         int[] targets = { pendingResult.Left, pendingResult.Middle, pendingResult.Right };
         for (int i = 0; i < reels.Length; i++) reels[i].Spin(firstStopDuration + i * stopInterval, targets[i]);
     }
 
+    public void Skip()
+    {
+        if (reels == null || !skipButton.interactable) return;
+        skipButton.interactable = false;
+        foreach (var reel in reels) reel.Skip();
+    }
+
     private void Update()
     {
         if (reels == null || spinButton.interactable) return;
         foreach (var reel in reels) if (reel.IsSpinning) return;
+        CompleteSpin();
+    }
+
+    private void CompleteSpin()
+    {
+        skipButton.interactable = false;
         status.text = $"Spin {pendingResult.SpinNumber}: {pendingResult.Left}{pendingResult.Middle}{pendingResult.Right} — {pendingResult.Tier}"
             + $"\nRare {outcomes.RareCounter}/5 | Epic {outcomes.EpicCounter}/15 | Jackpot {outcomes.JackpotCounter}/25";
         spinButton.interactable = true;

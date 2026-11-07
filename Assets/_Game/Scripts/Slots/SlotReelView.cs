@@ -60,6 +60,19 @@ public sealed class SlotReelView : MonoBehaviour
         IsSpinning = true;
     }
 
+    public void Skip()
+    {
+        if (!IsSpinning) return;
+        position = distance - 1f;
+        previousStep = (int)distance - 1;
+        elapsed = duration - Mathf.Min(snapDuration, duration * 0.3f);
+        visualOvershoot = 0f;
+        // The center row is index three; preserve the result already rolled by the machine.
+        // Place the target one row above center for the final snap into index three.
+        digits[2].text = targetDigit.ToString();
+        Render();
+    }
+
     private void Update()
     {
         if (!IsSpinning) return;
