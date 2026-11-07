@@ -26,10 +26,29 @@ public sealed class SlotMachineView : MonoBehaviour
     private SlotReelView[] reels;
     private UnityEngine.UI.Button spinButton;
     private UnityEngine.UI.Button skipButton;
+    private GameObject slotCanvas;
+    private bool spinAllowed = true;
+    private bool panelVisible = true;
+    public bool IsSpinning { get; private set; }
+    public event System.Action<SlotResult> SpinCompleted;
+
+    public void SetSpinAllowed(bool allowed)
+    {
+        spinAllowed = allowed;
+        if (spinButton != null) spinButton.interactable = allowed && !IsSpinning;
+    }
+
+    public void SetPanelVisible(bool visible)
+    {
+        panelVisible = visible;
+        if (slotCanvas != null) slotCanvas.SetActive(visible);
+    }
 
     private void Start()
     {
         var canvasObject = new GameObject("SlotCanvas", typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
+        slotCanvas = canvasObject;
+        canvasObject.GetComponent<Canvas>().sortingOrder = 10;
         canvasObject.transform.SetParent(transform, false);
         canvasObject.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
         var scaler = canvasObject.GetComponent<UnityEngine.UI.CanvasScaler>();
@@ -95,11 +114,14 @@ public sealed class SlotMachineView : MonoBehaviour
         skipButton.interactable = false;
         var skipLabel = Instantiate(label, skip, false);
         skipLabel.text = "SKIP";
+        SetSpinAllowed(spinAllowed);
+        SetPanelVisible(panelVisible);
     }
 
     public void Spin()
     {
-        if (reels == null || !spinButton.interactable) return;
+        if (reels == null || !spinAllowed || IsSpinning || !panelVisible) return;
+        IsSpinning = true;
         spinButton.interactable = false;
         skipButton.interactable = true;
         pendingResult = outcomes.Spin();
@@ -117,17 +139,20 @@ public sealed class SlotMachineView : MonoBehaviour
 
     private void Update()
     {
-        if (reels == null || spinButton.interactable) return;
+        if (reels == null || !IsSpinning) return;
         foreach (var reel in reels) if (reel.IsSpinning) return;
         CompleteSpin();
     }
 
     private void CompleteSpin()
     {
+        if (!IsSpinning) return;
+        IsSpinning = false;
         skipButton.interactable = false;
         status.text = $"Spin {pendingResult.SpinNumber}: {pendingResult.Left}{pendingResult.Middle}{pendingResult.Right} — {pendingResult.Tier}"
             + $"\nRare {outcomes.RareCounter}/5 | Epic {outcomes.EpicCounter}/15 | Jackpot {outcomes.JackpotCounter}/25";
-        spinButton.interactable = true;
+        spinButton.interactable = spinAllowed;
+        SpinCompleted?.Invoke(pendingResult);
     }
 
     private static RectTransform Box(string name, Transform parent, Vector2 size, Vector2 position, Color color)

@@ -23,6 +23,25 @@ public sealed class ShootingController : MonoBehaviour
     private bool cursorMode;
     private Vector2 lastAim;
     private bool hasAim;
+    private bool shootingAllowed = true;
+    private int resumeFrame;
+
+    public void Configure(Camera camera, WeaponData initialWeapon, WeaponFeedback presentation, InputActionReference action)
+    {
+        gameplayCamera = camera;
+        weapon = initialWeapon;
+        feedback = presentation;
+        attack = action;
+    }
+
+    public void SetShootingAllowed(bool allowed)
+    {
+        shootingAllowed = allowed;
+        cursorMode = true;
+        resumeFrame = Time.frameCount;
+        if (feedback != null) feedback.ResetFeedback();
+        UpdateCursorVisibility();
+    }
 
     private void OnEnable()
     {
@@ -44,6 +63,7 @@ public sealed class ShootingController : MonoBehaviour
 
     private void Update()
     {
+        if (!shootingAllowed || Time.frameCount == resumeFrame) { UpdateCursorVisibility(); return; }
         if (Mouse.current == null) return;
         bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
         bool suspended = Time.timeScale <= 0f || !Application.isFocused;
@@ -72,6 +92,8 @@ public sealed class ShootingController : MonoBehaviour
         bool wantsToFire = weapon.FiringMode == WeaponData.FireMode.Automatic
             ? fire.IsPressed()
             : fire.WasPressedThisFrame();
+        if (UnityEngine.EventSystems.EventSystem.current != null
+            && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (!wantsToFire || Time.timeAsDouble < nextShot)
             return;
         nextShot = Time.timeAsDouble + weapon.ShotInterval;
@@ -96,13 +118,13 @@ public sealed class ShootingController : MonoBehaviour
     private void UpdateCursorVisibility()
     {
         if (ownsCursor)
-            Cursor.visible = cursorMode || !Application.isFocused || Time.timeScale <= 0f;
+            Cursor.visible = !shootingAllowed || cursorMode || !Application.isFocused || Time.timeScale <= 0f;
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
         if (ownsCursor)
-            Cursor.visible = cursorMode || !hasFocus || Time.timeScale <= 0f;
+            Cursor.visible = !shootingAllowed || cursorMode || !hasFocus || Time.timeScale <= 0f;
     }
 
     private void OnDisable()

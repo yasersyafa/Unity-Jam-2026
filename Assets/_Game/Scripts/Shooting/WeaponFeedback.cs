@@ -21,6 +21,14 @@ public sealed class WeaponFeedback : MonoBehaviour
     private float pulse;
     private Vector2 weaponOrigin;
 
+    public void Configure(Canvas hud, RectTransform aim, UnityEngine.UI.Image image, Transform camera)
+    {
+        canvas = hud;
+        crosshair = aim;
+        weaponImage = image;
+        cameraTransform = camera;
+    }
+
     private void Awake() { weaponOrigin = weaponImage.rectTransform.anchoredPosition; }
     public void SetWeapon(WeaponData data)
     {

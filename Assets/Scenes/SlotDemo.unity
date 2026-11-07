@@ -494,6 +494,59 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b48efde054a3442aaf421bd4c511cf09, type: 3}
+--- !u!114 &900100 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 102, guid: b48efde054a3442aaf421bd4c511cf09, type: 3}
+  m_PrefabInstance: {fileID: 847541206}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a2072029e04e54890884646a9ee2b0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!1 &900101
+GameObject:
+  m_ObjectHideFlags: 0
+  m_Component:
+  - component: {fileID: 900102}
+  - component: {fileID: 900103}
+  - component: {fileID: 900104}
+  m_Layer: 0
+  m_Name: SlotWeaponDemo
+  m_TagString: Untagged
+  m_IsActive: 1
+--- !u!4 &900102
+Transform:
+  m_ObjectHideFlags: 0
+  m_GameObject: {fileID: 900101}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!114 &900103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_GameObject: {fileID: 900101}
+  m_Enabled: 1
+  m_Script: {fileID: 11500000, guid: b8e684ed88bc426ebff09c705987896f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  machine: {fileID: 900100}
+  weapons: []
+--- !u!114 &900104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_GameObject: {fileID: 900101}
+  m_Enabled: 1
+  m_Script: {fileID: 11500000, guid: f22b86eaaead4d128c1659c39f14f67a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  machine: {fileID: 900100}
+  gameplayCamera: {fileID: 170221689}
+  initialWeapon: {fileID: 11400000, guid: 87536abcbb3224c219c412c02c1bc94d, type: 2}
+  attack: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -502,3 +555,4 @@ SceneRoots:
   - {fileID: 170221690}
   - {fileID: 389753835}
   - {fileID: 448128106}
+  - {fileID: 900102}

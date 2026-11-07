@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public enum SlotTier { Common, Basic, Rare, Epic, Jackpot }
+public enum SlotTier { Common = 0, Uncommon = 1, Rare = 2, Epic = 3, Jackpot = 4 }
 
 public readonly struct SlotResult
 {
@@ -57,7 +57,7 @@ public sealed class SlotOutcomeGenerator
         if (a < 1 || a > 9 || b < 1 || b > 9 || c < 1 || c > 9)
             throw new ArgumentOutOfRangeException(nameof(a), "Slot digits must be 1–9.");
         if (a == b && b == c) return a == 7 ? SlotTier.Jackpot : SlotTier.Epic;
-        if (a == b || b == c || a == c) return SlotTier.Basic;
+        if (a == b || b == c || a == c) return SlotTier.Uncommon;
         if ((b - a == 1 && c - b == 1) || (b - a == -1 && c - b == -1)) return SlotTier.Rare;
         return SlotTier.Common;
     }
