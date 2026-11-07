@@ -5,6 +5,7 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
 {
     [SerializeField, Min(1f)] private float maximumHealth = 100f;
     public float CurrentHealth { get; private set; }
+    public float MaximumHealth => maximumHealth;
     public bool IsDead => CurrentHealth <= 0f;
     public event Action HealthChanged;
     public event Action Died;

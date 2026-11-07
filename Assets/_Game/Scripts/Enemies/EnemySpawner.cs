@@ -13,6 +13,9 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private Vector2 entryCenter = new Vector2(0.5f, 0.5f);
     [SerializeField] private Vector2 entryRandomOffset = new Vector2(0.08f, 0.05f);
     [SerializeField, Min(0f)] private float spawnInterval = 0.1f;
+    [SerializeField] private EnemyWave[] waves;
+    [SerializeField] private UnityEngine.Events.UnityEvent onBossReady;
+    [SerializeField] private BossConfig bossConfig;
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
     private void OnEnable() { StartCoroutine(Run()); }
     private IEnumerator Run()
@@ -23,6 +26,14 @@ public sealed class EnemySpawner : MonoBehaviour
             Debug.LogError("EnemySpawner requires camera, enemy prefab with data, parent, player and formations.", this);
             yield break;
         }
+        bool campaign = waves != null && waves.Length > 0;
+        if (campaign)
+            foreach (var wave in waves)
+                if (wave == null || wave.formation == null || wave.formation.Count == 0 || wave.enemies == null || wave.enemies.Length != wave.formation.Count || System.Array.Exists(wave.enemies, e => e == null || e.GetComponent<Enemy>() == null || e.GetComponent<Enemy>().Data == null))
+                {
+                    Debug.LogError("Invalid enemy wave configuration.", this);
+                    yield break;
+                }
         foreach (var formation in formations)
             if (formation == null || formation.Count == 0)
             {
@@ -34,7 +45,8 @@ public sealed class EnemySpawner : MonoBehaviour
         while (!player.IsDead)
         {
             spawned.RemoveAll(e => e == null);
-            var formation = formations[index];
+            var wave = campaign ? waves[index] : null;
+            var formation = campaign ? wave.formation : formations[index];
             var plane = new Plane(enemyParent.forward, enemyParent.position);
             Vector2 entry = entryCenter + new Vector2(Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)), Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y)));
             Vector3 origin = PointOnPlane(plane, Vector2.zero);
@@ -53,18 +65,59 @@ public sealed class EnemySpawner : MonoBehaviour
                     enabled = false;
                     yield break;
                 }
-                var enemy = Instantiate(enemyPrefab, start, enemyParent.rotation, enemyParent);
+                var enemy = Instantiate(campaign ? wave.enemies[i] : enemyPrefab, start, enemyParent.rotation, enemyParent);
+                if (campaign) enemy.ConfigureDifficulty(wave.approachDurationMultiplier, wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
                 enemy.Initialize(player, ray.GetPoint(distance), i % 2 == 0 ? 1f : -1f, i * 2.399963f, right, up);
                 spawned.Add(enemy);
-                if (i + 1 < formation.Count && spawnInterval > 0f) yield return new WaitForSeconds(spawnInterval);
+                float interval = campaign ? wave.spawnInterval : spawnInterval;
+                if (i + 1 < formation.Count && interval > 0f) yield return new WaitForSeconds(interval);
             }
             while (!player.IsDead && spawned.Exists(e => e != null && !e.IsFinished)) yield return null;
             if (player.IsDead) break;
-            yield return new WaitForSeconds(waveDelay);
-            index = (index + 1) % formations.Length;
+            if (campaign && index == waves.Length - 1)
+            {
+                yield return new WaitForSeconds(2f);
+                if (!player.IsDead)
+                {
+                    onBossReady?.Invoke();
+                    SpawnBoss();
+                }
+                break;
+            }
+            yield return new WaitForSeconds(campaign ? wave.delay : waveDelay);
+            index = (index + 1) % (campaign ? waves.Length : formations.Length);
         }
         Cleanup();
     }
+    private BossEncounter activeBoss;
+
+    [ContextMenu("Test Boss Now (Play Mode)")]
+    private void TestBossNow()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Enter Play Mode before testing the boss.", this);
+            return;
+        }
+        if (bossConfig == null || bossConfig.BossPrefab == null || gameplayCamera == null || enemyParent == null || player == null || player.IsDead)
+        {
+            Debug.LogWarning("Boss test requires config, camera, parent and a living player.", this);
+            return;
+        }
+        StopAllCoroutines();
+        Cleanup();
+        SpawnBoss();
+    }
+
+    private void SpawnBoss()
+    {
+        if (bossConfig == null || bossConfig.BossPrefab == null || activeBoss != null) return;
+        activeBoss = Instantiate(bossConfig.BossPrefab, transform);
+        activeBoss.BeginEncounter(bossConfig, gameplayCamera, enemyParent, player,
+            transform.root.GetComponentInChildren<ShootingController>(),
+            transform.root.GetComponentInChildren<SlotGameplayFlow>());
+    }
+
     private Vector3 PointOnPlane(Plane plane, Vector2 viewport)
     {
         Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(viewport.x, viewport.y, 0f));
