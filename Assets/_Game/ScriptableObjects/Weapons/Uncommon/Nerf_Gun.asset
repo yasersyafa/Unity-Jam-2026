@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4bb3b4a1a14dca88235cb123bacda8, type: 3}
+  m_Name: Nerf_Gun
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  tier: 1
+  usageDuration: 30
+  sprite: {fileID: 0}
+  firingMode: 1
+  damage: 12
+  fireRate: 4
+  enableRecoil: 1
+  upwardKick: 6
+  maximumRecoil: 30
+  recovery: 120

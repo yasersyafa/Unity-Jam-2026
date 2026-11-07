@@ -38,6 +38,7 @@ public sealed class EnemyApproach : MonoBehaviour
     }
     private void Update()
     {
+        if (Time.deltaTime <= 0f) return;
         if (!initialized || IsFinished || target == null || target.IsDead) return;
         if (entering)
         {

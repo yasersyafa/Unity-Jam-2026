@@ -29,6 +29,7 @@ public sealed class EnemySpawner : MonoBehaviour
                 Debug.LogError("EnemySpawner requires nonempty formations.", this);
                 yield break;
             }
+        while (Time.timeScale <= 0f) yield return null;
         int index = 0;
         while (!player.IsDead)
         {
@@ -42,6 +43,7 @@ public sealed class EnemySpawner : MonoBehaviour
             Vector3 start = PointOnPlane(plane, entry);
             for (int i = 0; i < formation.Count; i++)
             {
+                while (Time.timeScale <= 0f) yield return null;
                 if (player.IsDead) break;
                 Vector2 slot = formation.GetSlot(i);
                 Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(slot.x, slot.y, 0f));

@@ -29,6 +29,16 @@ public sealed class SlotMachineView : MonoBehaviour
     private GameObject slotCanvas;
     private bool spinAllowed = true;
     private bool panelVisible = true;
+    public bool IsPresenting
+    {
+        get
+        {
+            if (IsSpinning) return true;
+            if (reels != null) foreach (var reel in reels)
+                if (reel.GetComponent<SlotStopFeedback>().IsPlaying) return true;
+            return false;
+        }
+    }
     public bool IsSpinning { get; private set; }
     public event System.Action<SlotResult> SpinCompleted;
 

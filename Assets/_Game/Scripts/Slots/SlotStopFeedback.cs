@@ -15,6 +15,7 @@ public sealed class SlotStopFeedback : MonoBehaviour
     private float popupDuration;
     private Vector2 popupPosition;
     private Coroutine animation;
+    public bool IsPlaying => animation != null;
 
     public void Initialize(RectTransform target, Transform overlay, TMP_FontAsset font, Sprite sprite,
         RectTransform prefab, float shakeDuration, float shakeStrength, float bangDuration, Vector2 offset, Vector2 size)
