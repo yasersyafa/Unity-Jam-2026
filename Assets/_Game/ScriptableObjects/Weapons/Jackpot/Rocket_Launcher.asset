@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rocket_Launcher
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 4
-  usageDuration: 15
+  usageDuration: 8
   sprite: {fileID: 0}
   firingMode: 1
   damage: 260

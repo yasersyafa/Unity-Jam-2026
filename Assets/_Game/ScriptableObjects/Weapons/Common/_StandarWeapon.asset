@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c4bb3b4a1a14dca88235cb123bacda8, type: 3}
   m_Name: _StandarWeapon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  tier: 0
+  usageDuration: 30
   sprite: {fileID: -1994921223, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   firingMode: 0
   damage: 10
