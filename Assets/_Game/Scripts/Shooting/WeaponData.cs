@@ -9,6 +9,13 @@ public sealed class WeaponData : ScriptableObject
         SemiAutomatic = 1
     }
 
+    [Header("Slot Reward")]
+    [SerializeField] private SlotTier tier = SlotTier.Common;
+    [Tooltip("Usage duration in seconds. Stored for future expiration rules; no countdown is applied yet.")]
+    [SerializeField, Min(0f)] private float usageDuration = 30f;
+    public SlotTier Tier => tier;
+    public float UsageDuration => Mathf.Max(0f, usageDuration);
+
     [Header("Presentation")]
     [Tooltip("Sprite shown in the first-person weapon overlay.")]
     [SerializeField] private Sprite sprite;
