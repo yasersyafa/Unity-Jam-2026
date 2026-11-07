@@ -99,7 +99,7 @@ public sealed class EnemySpawner : MonoBehaviour
             Debug.LogWarning("Enter Play Mode before testing the boss.", this);
             return;
         }
-        if (bossConfig == null || gameplayCamera == null || enemyParent == null || player == null || player.IsDead)
+        if (bossConfig == null || bossConfig.BossPrefab == null || gameplayCamera == null || enemyParent == null || player == null || player.IsDead)
         {
             Debug.LogWarning("Boss test requires config, camera, parent and a living player.", this);
             return;
@@ -111,10 +111,8 @@ public sealed class EnemySpawner : MonoBehaviour
 
     private void SpawnBoss()
     {
-        if (bossConfig == null || activeBoss != null) return;
-        var boss = new GameObject("Boss");
-        boss.transform.SetParent(transform, false);
-        activeBoss = boss.AddComponent<BossEncounter>();
+        if (bossConfig == null || bossConfig.BossPrefab == null || activeBoss != null) return;
+        activeBoss = Instantiate(bossConfig.BossPrefab, transform);
         activeBoss.BeginEncounter(bossConfig, gameplayCamera, enemyParent, player,
             transform.root.GetComponentInChildren<ShootingController>(),
             transform.root.GetComponentInChildren<SlotGameplayFlow>());

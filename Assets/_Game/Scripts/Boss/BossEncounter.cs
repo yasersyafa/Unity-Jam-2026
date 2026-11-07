@@ -6,6 +6,12 @@ using UnityEngine.SceneManagement;
 
 public sealed class BossEncounter : MonoBehaviour, IDamageable
 {
+    [SerializeField] private SpriteRenderer visual;
+    [SerializeField] private BoxCollider2D hitbox;
+    [SerializeField] private BossAttackTarget attackPrefab;
+    [SerializeField] private Vector2 spawnViewport = new Vector2(0.5f, 0.78f);
+    [SerializeField] private float depthOffset = 0.5f;
+    [SerializeField] private Vector2 attackScaleMultipliers = new Vector2(0.4f, 1.2f);
     private BossConfig config;
     private Camera cameraReference;
     private Transform planeReference;
@@ -16,26 +22,21 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     private readonly List<Vector2> offsets = new List<Vector2>();
     private float health;
     private bool running;
-    private SpriteRenderer visual;
-    private BoxCollider2D hitbox;
     private GameObject hud;
     private UnityEngine.UI.Image fill;
-    private Sprite placeholder;
 
     public void BeginEncounter(BossConfig data, Camera camera, Transform plane, PlayerHealth target, ShootingController gun, SlotGameplayFlow slotFlow)
     {
         if (running || config != null || data == null || target.IsDead) return;
         config = data; cameraReference = camera; planeReference = plane; player = target;
         shooting = gun; slots = slotFlow; health = config.Health; running = true;
-        placeholder = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height), Vector2.one * 0.5f, Texture2D.whiteTexture.width);
-        visual = gameObject.AddComponent<SpriteRenderer>();
-        visual.sprite = config.Sprite != null ? config.Sprite : placeholder;
-        visual.color = new Color(0.7f, 0.2f, 0.5f);
-        transform.position = Point(new Vector2(0.5f, 0.78f)) + camera.transform.forward * 0.5f;
-        transform.rotation = plane.rotation;
-        transform.localScale = Vector3.one * 2f;
-        hitbox = gameObject.AddComponent<BoxCollider2D>();
-        hitbox.size = visual.sprite.bounds.size;
+        if (visual == null || hitbox == null || attackPrefab == null)
+        {
+            Debug.LogError("Boss prefab requires visual, hitbox and attack prefab references.", this);
+            running = false;
+            return;
+        }
+        transform.position = Point(spawnViewport) + camera.transform.forward * depthOffset;
         CreateHud();
         player.Died += PlayerDied;
         StartCoroutine(AttackLoop());
@@ -69,12 +70,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     if (pattern == 2) offset /= Mathf.Abs(Mathf.Cos(angle)) + Mathf.Abs(Mathf.Sin(angle));
                 }
                 offsets.Add(offset);
-                var obj = new GameObject("Boss Attack");
-                obj.transform.rotation = planeReference.rotation;
-                var renderer = obj.AddComponent<SpriteRenderer>();
-                renderer.sprite = placeholder; renderer.color = new Color(1f, 0.55f, 0.1f); renderer.sortingOrder = 10;
-                obj.AddComponent<BoxCollider2D>();
-                targets.Add(obj.AddComponent<BossAttackTarget>());
+                var attack = Instantiate(attackPrefab, planeReference);
+                targets.Add(attack);
             }
             float elapsed = 0f;
             while (running && elapsed < config.Duration(second) && targets.Exists(t => t != null && t.isActiveAndEnabled))
@@ -84,7 +81,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     if (targets[i] != null && targets[i].isActiveAndEnabled)
                     {
                         targets[i].transform.position = Point(new Vector2(0.5f, 0.55f) + offsets[i] * Mathf.Lerp(0.3f, 1f, progress)) - cameraReference.transform.forward * 0.1f;
-                        targets[i].transform.localScale = Vector3.one * Mathf.Lerp(0.16f, 0.48f, progress);
+                        targets[i].transform.localScale = Vector3.Scale(attackPrefab.transform.localScale, Vector3.one * Mathf.Lerp(attackScaleMultipliers.x, attackScaleMultipliers.y, progress));
                     }
                 yield return null;
                 elapsed += Time.deltaTime;
@@ -135,5 +132,4 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     private void CleanupTargets() { foreach (var target in targets) if (target != null) { target.gameObject.SetActive(false); Destroy(target.gameObject); } targets.Clear(); offsets.Clear(); }
     private void PlayerDied() { running = false; StopAllCoroutines(); CleanupTargets(); if (hitbox != null) hitbox.enabled = false; }
     private void OnDisable() { PlayerDied(); if (player != null) player.Died -= PlayerDied; if (hud != null) Destroy(hud); }
-    private void OnDestroy() { if (placeholder != null) Destroy(placeholder); }
 }

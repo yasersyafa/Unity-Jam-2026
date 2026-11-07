@@ -3,10 +3,18 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 744bffcd6828425e8cf2d11c4c13d678, type: 3}
   m_Name: BossConfig
+  m_EditorClassIdentifier:
+  bossPrefab: {fileID: 1004, guid: 8ae9adc5f1eb4f03a1c4304bb69d0ad9, type: 3}
   health: 1500
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 79c1b54bbf1dc475e8c2a19c48ce0f4b, type: 3}
   initialDelay: 2
   durations: {x: 4, y: 3}
   delays: {x: 2, y: 1.5}
