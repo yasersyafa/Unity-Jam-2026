@@ -5,14 +5,10 @@ using UnityEngine;
 public sealed class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private Camera gameplayCamera;
-    [SerializeField] private EnemyApproach enemyPrefab;
     [SerializeField] private Transform enemyParent;
     [SerializeField] private PlayerHealth player;
-    [SerializeField] private EnemyFormation[] formations;
-    [SerializeField, Min(0f)] private float waveDelay = 1f;
     [SerializeField] private Vector2 entryCenter = new Vector2(0.5f, 0.5f);
     [SerializeField] private Vector2 entryRandomOffset = new Vector2(0.08f, 0.05f);
-    [SerializeField, Min(0f)] private float spawnInterval = 0.1f;
     [SerializeField] private EnemyWave[] waves;
     [SerializeField] private UnityEngine.Events.UnityEvent onBossReady;
     [SerializeField] private BossConfig bossConfig;
@@ -21,23 +17,15 @@ public sealed class EnemySpawner : MonoBehaviour
     private IEnumerator Run()
     {
         yield return null;
-        if (gameplayCamera == null || enemyPrefab == null || enemyPrefab.GetComponent<Enemy>().Data == null || enemyParent == null || player == null || formations == null || formations.Length == 0)
+        if (gameplayCamera == null || enemyParent == null || player == null || waves == null || waves.Length == 0)
         {
-            Debug.LogError("EnemySpawner requires camera, enemy prefab with data, parent, player and formations.", this);
+            Debug.LogError("EnemySpawner requires camera, parent, player and nonempty waves.", this);
             yield break;
         }
-        bool campaign = waves != null && waves.Length > 0;
-        if (campaign)
-            foreach (var wave in waves)
-                if (wave == null || wave.formation == null || wave.formation.Count == 0 || wave.enemies == null || wave.enemies.Length != wave.formation.Count || System.Array.Exists(wave.enemies, e => e == null || e.GetComponent<Enemy>() == null || e.GetComponent<Enemy>().Data == null))
-                {
-                    Debug.LogError("Invalid enemy wave configuration.", this);
-                    yield break;
-                }
-        foreach (var formation in formations)
-            if (formation == null || formation.Count == 0)
+        foreach (var wave in waves)
+            if (wave == null || wave.formation == null || wave.formation.Count == 0 || wave.enemies == null || wave.enemies.Length != wave.formation.Count || System.Array.Exists(wave.enemies, e => e == null || e.GetComponent<Enemy>() == null || e.GetComponent<Enemy>().Data == null))
             {
-                Debug.LogError("EnemySpawner requires nonempty formations.", this);
+                Debug.LogError("Invalid enemy wave configuration.", this);
                 yield break;
             }
         while (Time.timeScale <= 0f) yield return null;
@@ -45,8 +33,8 @@ public sealed class EnemySpawner : MonoBehaviour
         while (!player.IsDead)
         {
             spawned.RemoveAll(e => e == null);
-            var wave = campaign ? waves[index] : null;
-            var formation = campaign ? wave.formation : formations[index];
+            var wave = waves[index];
+            var formation = wave.formation;
             var plane = new Plane(enemyParent.forward, enemyParent.position);
             Vector2 entry = entryCenter + new Vector2(Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)), Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y)));
             Vector3 origin = PointOnPlane(plane, Vector2.zero);
@@ -65,16 +53,16 @@ public sealed class EnemySpawner : MonoBehaviour
                     enabled = false;
                     yield break;
                 }
-                var enemy = Instantiate(campaign ? wave.enemies[i] : enemyPrefab, start, enemyParent.rotation, enemyParent);
-                if (campaign) enemy.ConfigureDifficulty(wave.approachDurationMultiplier, wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
+                var enemy = Instantiate(wave.enemies[i], start, enemyParent.rotation, enemyParent);
+                enemy.ConfigureDifficulty(wave.approachDurationMultiplier, wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
                 enemy.Initialize(player, ray.GetPoint(distance), i % 2 == 0 ? 1f : -1f, i * 2.399963f, right, up);
                 spawned.Add(enemy);
-                float interval = campaign ? wave.spawnInterval : spawnInterval;
+                float interval = wave.spawnInterval;
                 if (i + 1 < formation.Count && interval > 0f) yield return new WaitForSeconds(interval);
             }
             while (!player.IsDead && spawned.Exists(e => e != null && !e.IsFinished)) yield return null;
             if (player.IsDead) break;
-            if (campaign && index == waves.Length - 1)
+            if (index == waves.Length - 1)
             {
                 yield return new WaitForSeconds(2f);
                 if (!player.IsDead)
@@ -84,8 +72,8 @@ public sealed class EnemySpawner : MonoBehaviour
                 }
                 break;
             }
-            yield return new WaitForSeconds(campaign ? wave.delay : waveDelay);
-            index = (index + 1) % (campaign ? waves.Length : formations.Length);
+            yield return new WaitForSeconds(wave.delay);
+            index++;
         }
         Cleanup();
     }
