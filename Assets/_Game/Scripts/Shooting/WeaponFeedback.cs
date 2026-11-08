@@ -23,6 +23,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     private Tween equipTween;
     private Vector2 equipPosition;
     private Vector3 equipScale;
+    private WeaponVisual visualInstance;
     private WeaponData weapon;
     private Vector2 recoil;
     private Vector3 appliedShake;
@@ -50,8 +51,24 @@ public sealed class WeaponFeedback : MonoBehaviour
     public void SetWeapon(WeaponData data)
     {
         ResetFeedback();
+        if (visualInstance != null)
+        {
+            visualInstance.gameObject.SetActive(false);
+            Destroy(visualInstance.gameObject);
+            visualInstance = null;
+        }
         weapon = data;
         weaponImage.sprite = data.Sprite;
+        weaponImage.enabled = data.VisualPrefab == null;
+        if (data.VisualPrefab != null)
+        {
+            visualInstance = Instantiate(data.VisualPrefab, weaponImage.transform, false);
+            var visualRect = (RectTransform)visualInstance.transform;
+            visualRect.anchorMin = Vector2.zero;
+            visualRect.anchorMax = Vector2.one;
+            visualRect.offsetMin = visualRect.offsetMax = Vector2.zero;
+            visualInstance.Initialize(data.Sprite);
+        }
         PlayEquip();
     }
     public void PlayEquip()
@@ -81,8 +98,13 @@ public sealed class WeaponFeedback : MonoBehaviour
         crosshair.anchoredPosition = local;
         return aim;
     }
+    public void SetContinuousFire(bool value)
+    {
+        if (visualInstance != null) visualInstance.SetContinuousFire(value);
+    }
     public void PlayShot(bool hit)
     {
+        if (visualInstance != null) visualInstance.PlayShot();
         if (weapon.EnableRecoil && combatCamera != null) combatCamera.Play(cameraKick, 0.08f);
         if (weapon.EnableRecoil)
         {
@@ -109,6 +131,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     public void ResetFeedback()
     {
         InitializeFeedback();
+        if (visualInstance != null) visualInstance.ResetEffects();
         equipTween.Stop();
         if (equipRoot != null) { equipRoot.anchoredPosition = equipPosition; equipRoot.localScale = equipScale; }
         if (weaponImage != null) weaponImage.rectTransform.anchoredPosition = weaponOrigin;

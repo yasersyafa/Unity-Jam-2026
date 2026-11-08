@@ -87,6 +87,13 @@ public sealed class ShootingController : MonoBehaviour
 
     private void Update()
     {
+        bool overUI = UnityEngine.EventSystems.EventSystem.current != null
+            && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+        bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        if (feedback != null) feedback.SetContinuousFire(shootingAllowed && !cursorMode
+            && Mouse.current != null && Application.isFocused && Time.timeScale > 0f
+            && !escape && !overUI && fire != null && weapon != null
+            && weapon.FiringMode == WeaponData.FireMode.Automatic && fire.IsPressed());
         if (!shootingAllowed || Time.frameCount == resumeFrame) { UpdateCursorVisibility(); return; }
         if (Mouse.current == null) return;
         bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
