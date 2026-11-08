@@ -1,0 +1,3 @@
+Font source: https://raw.githubusercontent.com/google/fonts/main/ofl/comicneue/ComicNeue-Regular.ttf
+License source: https://raw.githubusercontent.com/google/fonts/main/ofl/comicneue/OFL.txt
+Retrieved: 2026-11-08

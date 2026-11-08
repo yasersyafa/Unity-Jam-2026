@@ -21,13 +21,19 @@ public sealed class SlotMachineView : MonoBehaviour
     [SerializeField] private UnityEngine.UI.Button skipButton;
     [SerializeField] private GameObject slotCanvas;
     [SerializeField] private SlotStopFeedback[] stopFeedback;
+    [Header("Comic Presentation")]
+    [SerializeField] private SlotPanelPresentation panelPresentation;
+    [SerializeField] private SlotRewardPresentation rewardPresentation;
+    public bool IsTransitioning => panelPresentation != null && panelPresentation.IsPlaying;
+    private bool initialized;
+    private bool visibilityRequested;
     private bool spinAllowed = true;
     private bool panelVisible = true;
     public bool IsPresenting
     {
         get
         {
-            if (IsSpinning) return true;
+            if (IsSpinning || (rewardPresentation != null && rewardPresentation.IsPlaying)) return true;
             if (stopFeedback != null) foreach (var feedback in stopFeedback)
                 if (feedback != null && feedback.IsPlaying) return true;
             return false;
@@ -44,18 +50,45 @@ public sealed class SlotMachineView : MonoBehaviour
 
     public void SetPanelVisible(bool visible)
     {
+        if (visibilityRequested && panelVisible == visible) return;
+        visibilityRequested = true;
         panelVisible = visible;
-        if (slotCanvas != null) slotCanvas.SetActive(visible);
+        if (visible && rewardPresentation != null) rewardPresentation.Cancel();
+        if (visible && status != null) status.enabled = true;
+        if (panelPresentation != null) panelPresentation.Show(visible);
+        else if (slotCanvas != null) slotCanvas.SetActive(visible);
     }
 
-    private void Start()
+    public void HidePanelImmediate()
     {
+        IsSpinning = false;
+        if (initialized) foreach (var reel in reels) if (reel != null) reel.CancelSpin();
+        panelVisible = false;
+        visibilityRequested = true;
+        if (rewardPresentation != null) rewardPresentation.Cancel();
+        if (panelPresentation != null) panelPresentation.HideImmediate();
+        else if (slotCanvas != null) slotCanvas.SetActive(false);
+    }
+
+    public void PresentReward(WeaponData weapon)
+    {
+        if (rewardPresentation != null)
+        {
+            if (status != null) status.enabled = false;
+            rewardPresentation.Present(weapon);
+        }
+    }
+
+    private bool Initialize()
+    {
+        if (initialized) return true;
         if (slotCanvas == null || status == null || spinButton == null || skipButton == null
-            || reels == null || reels.Length != 3 || stopFeedback == null || stopFeedback.Length != 3)
+            || reels == null || reels.Length != 3 || stopFeedback == null || stopFeedback.Length != 3
+            || System.Array.Exists(reels, reel => reel == null) || System.Array.Exists(stopFeedback, feedback => feedback == null))
         {
             Debug.LogError("SlotMachineView requires its authored slot UI references.", this);
             enabled = false;
-            return;
+            return false;
         }
         for (int i = 0; i < reels.Length; i++)
         {
@@ -66,12 +99,15 @@ public sealed class SlotMachineView : MonoBehaviour
         }
         skipButton.interactable = false;
         SetSpinAllowed(spinAllowed);
-        SetPanelVisible(panelVisible);
+        initialized = true;
+        return true;
     }
+
+    private void Start() { Initialize(); }
 
     public void Spin()
     {
-        if (reels == null || !spinAllowed || IsSpinning || !panelVisible) return;
+        if (!Initialize() || IsTransitioning || !spinAllowed || IsPresenting || !panelVisible) return;
         IsSpinning = true;
         spinButton.interactable = false;
         skipButton.interactable = true;
@@ -83,7 +119,7 @@ public sealed class SlotMachineView : MonoBehaviour
 
     public void Skip()
     {
-        if (reels == null || !skipButton.interactable) return;
+        if (IsTransitioning || reels == null || !skipButton.interactable) return;
         skipButton.interactable = false;
         foreach (var reel in reels) reel.Skip();
     }
@@ -106,9 +142,11 @@ public sealed class SlotMachineView : MonoBehaviour
         SpinCompleted?.Invoke(pendingResult);
     }
 
+    private void OnDisable() { HidePanelImmediate(); }
+
     private void OnDestroy()
     {
-        if (reels == null || stopFeedback == null) return;
+        if (!initialized || reels == null || stopFeedback == null) return;
         for (int i = 0; i < Mathf.Min(reels.Length, stopFeedback.Length); i++)
             if (reels[i] != null && stopFeedback[i] != null) reels[i].Stopped -= stopFeedback[i].Play;
     }

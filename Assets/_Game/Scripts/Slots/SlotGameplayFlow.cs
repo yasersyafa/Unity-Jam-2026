@@ -22,6 +22,9 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     private float previousTimeScale;
     private bool open;
     private bool awarded;
+    private bool closing;
+    private bool queuedSpin;
+    private bool started;
     private float currentWeaponDuration;
     private float weaponRemainingDuration;
     private bool weaponActive;
@@ -51,12 +54,20 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         input.Enable();
         rewards.SetShootingController(shooting);
         rewards.WeaponAwarded += Awarded;
+        if (started) Open();
+    }
+
+    private void Start()
+    {
+        // Health initializes in Awake; this flow runs before other components in OnEnable.
+        started = true;
         Open();
     }
 
     private void Awarded(WeaponData weapon)
     {
         awarded = true;
+        machine.PresentReward(weapon);
         machine.SetSpinAllowed(false);
         currentWeaponDuration = GetEffectiveWeaponDuration(weapon);
         weaponRemainingDuration = currentWeaponDuration;
@@ -66,9 +77,12 @@ public sealed class SlotGameplayFlow : MonoBehaviour
 
     public void Open()
     {
+        if (open || (player != null && player.IsDead)) return;
         previousTimeScale = Time.timeScale;
         open = true;
         awarded = false;
+        closing = false;
+        queuedSpin = false;
         Time.timeScale = 0f;
         shooting.SetShootingAllowed(false);
         machine.SetPanelVisible(true);
@@ -81,7 +95,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         Open();
         if (machine != null)
         {
-            machine.Spin();
+            queuedSpin = true;
         }
     }
 
@@ -89,9 +103,26 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     {
         if (open)
         {
-            if (awarded && !machine.IsPresenting)
+            if (machine == null || !machine.isActiveAndEnabled || (player != null && player.IsDead))
             {
+                Time.timeScale = previousTimeScale;
+                open = queuedSpin = closing = false;
+                if (machine != null) machine.HidePanelImmediate();
+                if (shooting != null) shooting.SetShootingAllowed(player != null && !player.IsDead);
+                return;
+            }
+            if (queuedSpin && !machine.IsTransitioning)
+            {
+                queuedSpin = false;
+                machine.Spin();
+            }
+            if (awarded && !machine.IsPresenting && !closing)
+            {
+                closing = true;
                 machine.SetPanelVisible(false);
+            }
+            if (closing && !machine.IsTransitioning)
+            {
                 Time.timeScale = previousTimeScale;
                 open = false;
                 remaining = slotCooldown;
@@ -154,8 +185,9 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         {
             Time.timeScale = previousTimeScale;
             if (shooting != null) shooting.SetShootingAllowed(true);
-            if (machine != null) machine.SetPanelVisible(false);
+            if (machine != null) machine.HidePanelImmediate();
         }
         open = false;
+        queuedSpin = closing = false;
     }
 }

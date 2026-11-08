@@ -12,6 +12,8 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private EnemyWave[] waves;
     [SerializeField] private UnityEngine.Events.UnityEvent onBossReady;
     [SerializeField] private BossConfig bossConfig;
+    public event System.Action<int> WaveStarted;
+    public event System.Action BossReady;
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
     private void OnEnable() { StartCoroutine(Run()); }
     private IEnumerator Run()
@@ -35,6 +37,7 @@ public sealed class EnemySpawner : MonoBehaviour
         {
             spawned.RemoveAll(e => e == null);
             var wave = waves[index];
+            WaveStarted?.Invoke(index + 1);
             foreach (var group in wave.groups)
             {
                 var formation = group.formation;
@@ -77,6 +80,7 @@ public sealed class EnemySpawner : MonoBehaviour
                 if (!player.IsDead)
                 {
                     onBossReady?.Invoke();
+                    BossReady?.Invoke();
                     SpawnBoss();
                 }
                 break;

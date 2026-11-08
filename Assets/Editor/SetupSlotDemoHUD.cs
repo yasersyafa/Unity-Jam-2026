@@ -12,14 +12,14 @@ public static class SetupSlotDemoHUD
         string scenePath = "Assets/Scenes/SlotDemo.unity";
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
 
-        var playerHealth = Object.FindFirstObjectByType<PlayerHealth>();
+        var playerHealth = Object.FindAnyObjectByType<PlayerHealth>();
         if (playerHealth == null)
         {
             Debug.LogError("PlayerHealth not found in SlotDemo!");
             return;
         }
 
-        var gameplayFlow = Object.FindFirstObjectByType<SlotGameplayFlow>();
+        var gameplayFlow = Object.FindAnyObjectByType<SlotGameplayFlow>();
         if (gameplayFlow == null)
         {
             Debug.LogError("SlotGameplayFlow not found in SlotDemo!");
