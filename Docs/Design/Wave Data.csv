@@ -1,0 +1,13 @@
+Wave,Tema / Deskripsi,Normal,Ranged,Tank,Charged,Boss
+Wave 1,Pengenalan Basic,6,0,0,0,0
+Wave 2,Pengenalan Ranged,8,3,0,0,0
+Wave 3,Pemanasan,10,5,0,0,0
+Wave 4,Dinding Daging (Intro Tank),6,3,2,0,0
+Wave 5,Ujian Armor,8,4,4,0,0
+Wave 6,Jumpscare (Intro Charged),5,2,2,3,0
+Wave 7,Refleks Cepat,0,4,3,5,0
+Wave 8,Kombinasi Penuh,8,4,3,4,0
+Wave 9,Kepadatan Ekstrem,10,5,4,5,0
+Wave 10,Absurd Chaos,12,6,5,6,0
+Wave 11 (Boss),The Lucky Boss,0,0,0,0,1
+Total,-,73,36,23,23,1

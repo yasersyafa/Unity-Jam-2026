@@ -3575,8 +3575,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e6cc330f8b1b4ea4986939ff67a29f33, type: 2}
   - {fileID: 11400000, guid: a86519bd917c4754905b4d6043fc87c4, type: 2}
   - {fileID: 11400000, guid: 9396f3b16c5b4eb1b8f3e7ff977bc938, type: 2}
-  - {fileID: 11400000, guid: d4dff3cbf78f4b13a20a5fcf9d503879, type: 2}
-  - {fileID: 11400000, guid: 3f2f09735d5d4a81a71ff6efbff9b7d9, type: 2}
   onBossReady:
     m_PersistentCalls:
       m_Calls: []

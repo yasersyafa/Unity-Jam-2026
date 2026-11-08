@@ -23,44 +23,53 @@ public sealed class EnemySpawner : MonoBehaviour
             yield break;
         }
         foreach (var wave in waves)
-            if (wave == null || wave.formation == null || wave.formation.Count == 0 || wave.enemies == null || wave.enemies.Length != wave.formation.Count || System.Array.Exists(wave.enemies, e => e == null || e.GetComponent<Enemy>() == null || e.GetComponent<Enemy>().Data == null))
-            {
-                Debug.LogError("Invalid enemy wave configuration.", this);
-                yield break;
-            }
+        {
+            if (wave == null || wave.groups == null || wave.groups.Length == 0) { Debug.LogError("Wave requires groups.", this); yield break; }
+            foreach (var group in wave.groups)
+                if (group == null || group.formation == null || group.enemies == null || group.formation.Count == 0 || group.enemies.Length != group.formation.Count || System.Array.Exists(group.enemies, e => e == null || e.GetComponent<Enemy>() == null || e.GetComponent<Enemy>().Data == null || (e.GetComponent<Enemy>().Data.Movement == EnemyData.Behavior.Ranged && e.GetComponent<Enemy>().Data.ProjectilePrefab == null)))
+                { Debug.LogError("Invalid wave group.", this); yield break; }
+        }
         while (Time.timeScale <= 0f) yield return null;
         int index = 0;
         while (!player.IsDead)
         {
             spawned.RemoveAll(e => e == null);
             var wave = waves[index];
-            var formation = wave.formation;
-            var plane = new Plane(enemyParent.forward, enemyParent.position);
-            Vector2 entry = entryCenter + new Vector2(Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)), Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y)));
-            Vector3 origin = PointOnPlane(plane, Vector2.zero);
-            Vector3 right = PointOnPlane(plane, Vector2.right) - origin;
-            Vector3 up = PointOnPlane(plane, Vector2.up) - origin;
-            Vector3 start = PointOnPlane(plane, entry);
-            for (int i = 0; i < formation.Count; i++)
+            foreach (var group in wave.groups)
             {
-                while (Time.timeScale <= 0f) yield return null;
-                if (player.IsDead) break;
-                Vector2 slot = formation.GetSlot(i);
-                Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(slot.x, slot.y, 0f));
-                if (!plane.Raycast(ray, out float distance))
+                var formation = group.formation;
+                var plane = new Plane(enemyParent.forward, enemyParent.position);
+                Vector2 entry = entryCenter + new Vector2(Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)), Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y)));
+                Vector3 origin = PointOnPlane(plane, Vector2.zero);
+                Vector3 right = PointOnPlane(plane, Vector2.right) - origin;
+                Vector3 up = PointOnPlane(plane, Vector2.up) - origin;
+                Vector3 start = PointOnPlane(plane, entry);
+                for (int i = 0; i < formation.Count; i++)
                 {
-                    Debug.LogError("Enemy spawn plane must face the camera.", this);
-                    enabled = false;
-                    yield break;
+                    while (Time.timeScale <= 0f) yield return null;
+                    if (player.IsDead) break;
+                    Vector2 slot = formation.GetSlot(i);
+                    Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(slot.x, slot.y, 0f));
+                    if (!plane.Raycast(ray, out float distance))
+                    {
+                        Debug.LogError("Enemy spawn plane must face the camera.", this);
+                        enabled = false;
+                        yield break;
+                    }
+                    var enemy = Instantiate(group.enemies[i], start, enemyParent.rotation, enemyParent);
+                    enemy.SetProjectileParent(transform);
+                    enemy.ConfigureDifficulty( wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
+                    enemy.Initialize(player, ray.GetPoint(distance), i % 2 == 0 ? 1f : -1f, i * 2.399963f, right, up);
+                    spawned.Add(enemy);
+                    float interval = wave.spawnInterval;
+                    if (i + 1 < formation.Count && interval > 0f) yield return new WaitForSeconds(interval);
                 }
-                var enemy = Instantiate(wave.enemies[i], start, enemyParent.rotation, enemyParent);
-                enemy.ConfigureDifficulty(wave.approachDurationMultiplier, wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
-                enemy.Initialize(player, ray.GetPoint(distance), i % 2 == 0 ? 1f : -1f, i * 2.399963f, right, up);
-                spawned.Add(enemy);
-                float interval = wave.spawnInterval;
-                if (i + 1 < formation.Count && interval > 0f) yield return new WaitForSeconds(interval);
+                while (!player.IsDead && spawned.Exists(e => e != null && !e.IsFinished)) yield return null;
+                var projectiles = GetComponentsInChildren<EnemyProjectile>();
+                while (!player.IsDead && System.Array.Exists(projectiles, p => p != null && p.isActiveAndEnabled)) yield return null;
+                if (player.IsDead) break;
+                if (group != wave.groups[wave.groups.Length - 1]) yield return new WaitForSeconds(wave.groupDelay);
             }
-            while (!player.IsDead && spawned.Exists(e => e != null && !e.IsFinished)) yield return null;
             if (player.IsDead) break;
             if (index == waves.Length - 1)
             {
@@ -117,6 +126,8 @@ public sealed class EnemySpawner : MonoBehaviour
         foreach (var enemy in spawned)
             if (enemy != null) { enemy.gameObject.SetActive(false); Destroy(enemy.gameObject); }
         spawned.Clear();
+        foreach (var projectile in GetComponentsInChildren<EnemyProjectile>())
+        { projectile.gameObject.SetActive(false); Destroy(projectile.gameObject); }
     }
     private void OnDisable() { StopAllCoroutines(); Cleanup(); }
 }

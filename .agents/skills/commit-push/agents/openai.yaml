@@ -1,0 +1,6 @@
+interface:
+  display_name: "Commit and Push"
+  short_description: "Commit in caveman style and push without co-author"
+  default_prompt: "Use $commit-push to commit and push the current task changes without co-author attribution."
+policy:
+  allow_implicit_invocation: false
