@@ -35,8 +35,33 @@ public static class ApplyNewGameBalance
         ApplyEnemy("Assets/_Game/ScriptableObjects/Enemies/TankEnemyData.asset", 200f, 15f, 9.0f);
         ApplyEnemy("Assets/_Game/ScriptableObjects/Enemies/ChargedEnemyData.asset", 75f, 10f, 3.5f);
 
+        // === 3. WAVES PACING ===
+        ApplyWavesPacing();
+
         AssetDatabase.SaveAssets();
-        Debug.Log("Successfully applied all new Weapon and Enemy balance attributes!");
+        Debug.Log("Successfully applied all new Weapon, Enemy, and Wave pacing attributes!");
+    }
+
+    [MenuItem("Tools/Apply Wave Spawn Pacing")]
+    public static void ApplyWavesPacing()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:EnemyWave", new[] { "Assets/_Game/ScriptableObjects/Waves" });
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var wave = AssetDatabase.LoadAssetAtPath<EnemyWave>(path);
+            if (wave != null)
+            {
+                var so = new SerializedObject(wave);
+                so.FindProperty("minSpawnDelay").floatValue = 0.5f;
+                so.FindProperty("maxSpawnDelay").floatValue = 1.5f;
+                so.FindProperty("pairedSpawnChance").floatValue = 0.3f;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(wave);
+                Debug.Log($"Configured wave pacing for: {wave.name}");
+            }
+        }
+        AssetDatabase.SaveAssets();
     }
 
     private static void ApplyWeapon(string path, float damage, float fireRate, bool recoil, float kick, float maxRecoil, float recovery)
@@ -57,7 +82,6 @@ public static class ApplyNewGameBalance
         so.FindProperty("recovery").floatValue = recovery;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(weapon);
-        Debug.Log($"Updated Weapon: {weapon.name} -> Dmg: {damage}, FR: {fireRate}, Recoil: {recoil}");
     }
 
     private static void ApplyEnemy(string path, float hp, float attack, float duration)
@@ -75,6 +99,5 @@ public static class ApplyNewGameBalance
         so.FindProperty("approachDuration").floatValue = duration;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(enemy);
-        Debug.Log($"Updated Enemy: {enemy.name} -> HP: {hp}, Atk: {attack}, TTI: {duration}s");
     }
 }
