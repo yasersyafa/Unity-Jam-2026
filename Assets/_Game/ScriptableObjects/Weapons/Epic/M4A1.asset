@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c4bb3b4a1a14dca88235cb123bacda8, type: 3}
-  m_Name: "M4A1"
+  m_Name: M4A1
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 3
   usageDuration: 20
   sprite: {fileID: 0}
   firingMode: 0
-  damage: 23
-  fireRate: 8
+  damage: 35
+  fireRate: 10
   enableRecoil: 1
-  upwardKick: 16
-  maximumRecoil: 110
-  recovery: 90
+  upwardKick: 18
+  maximumRecoil: 90
+  recovery: 150

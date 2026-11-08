@@ -15,10 +15,10 @@ MonoBehaviour:
   tier: 0
   usageDuration: 30
   sprite: {fileID: 0}
-  firingMode: 1
-  damage: 10
-  fireRate: 2
-  enableRecoil: 0
-  upwardKick: 0
-  maximumRecoil: 0
-  recovery: 0
+  firingMode: 0
+  damage: 20
+  fireRate: 3.5
+  enableRecoil: 1
+  upwardKick: 6
+  maximumRecoil: 30
+  recovery: 120
