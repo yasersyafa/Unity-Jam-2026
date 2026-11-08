@@ -18,6 +18,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     private WeaponData weapon;
     private Vector2 recoil;
     private Vector3 appliedShake;
+    private CombatCameraFeedback combatCamera;
     private float pulse;
     private Vector2 weaponOrigin;
 
@@ -29,7 +30,7 @@ public sealed class WeaponFeedback : MonoBehaviour
         cameraTransform = camera;
     }
 
-    private void Awake() { weaponOrigin = weaponImage.rectTransform.anchoredPosition; }
+    private void Awake() { combatCamera = cameraTransform.GetComponent<CombatCameraFeedback>() ?? cameraTransform.gameObject.AddComponent<CombatCameraFeedback>(); weaponOrigin = weaponImage.rectTransform.anchoredPosition; }
     public void SetWeapon(WeaponData data)
     {
         ResetFeedback();
@@ -52,6 +53,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     }
     public void PlayShot(bool hit)
     {
+        if (weapon.EnableRecoil && combatCamera != null) combatCamera.Play(cameraKick, 0.08f);
         if (weapon.EnableRecoil)
         {
             recoil = Vector2.up * Mathf.Min(recoil.y + weapon.UpwardKick, weapon.MaximumRecoil);
@@ -66,7 +68,7 @@ public sealed class WeaponFeedback : MonoBehaviour
             pulse = 0f;
         pulse = Mathf.MoveTowards(pulse, 0f, Time.deltaTime * 8f);
         weaponImage.rectTransform.anchoredPosition = weaponOrigin + Vector2.down * (pulse * 25f);
-        appliedShake = Vector3.up * (pulse * cameraKick);
+        appliedShake = Vector3.zero;
         cameraTransform.localPosition += appliedShake;
     }
     private void RemoveShake()
