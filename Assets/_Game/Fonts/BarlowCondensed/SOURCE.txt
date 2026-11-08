@@ -1,0 +1,3 @@
+Font source: https://raw.githubusercontent.com/google/fonts/main/ofl/barlowcondensed/BarlowCondensed-SemiBold.ttf
+License source: https://raw.githubusercontent.com/google/fonts/main/ofl/barlowcondensed/OFL.txt
+Retrieved: 2026-11-08
