@@ -39,7 +39,11 @@ public sealed class ShootingController : MonoBehaviour
         shootingAllowed = allowed;
         cursorMode = true;
         resumeFrame = Time.frameCount;
-        if (feedback != null) feedback.ResetFeedback();
+        if (feedback != null)
+        {
+            feedback.ResetFeedback();
+            if (allowed) feedback.PlayEquip();
+        }
         UpdateCursorVisibility();
     }
 

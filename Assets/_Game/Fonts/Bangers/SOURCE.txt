@@ -1,0 +1,3 @@
+Font source: https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/Bangers-Regular.ttf
+License source: https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/OFL.txt
+Retrieved: 2026-11-08

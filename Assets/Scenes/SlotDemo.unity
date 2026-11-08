@@ -172,6 +172,8 @@ MonoBehaviour:
   - {fileID: 5879466522827563547}
   - {fileID: 57022022102445296}
   - {fileID: 6092883591577791242}
+  panelPresentation: {fileID: 8283960897767492509}
+  rewardPresentation: {fileID: 1926686918}
 --- !u!1 &847541170
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +214,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1366600870156285590, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+      propertyPath: flow
+      value: 
+      objectReference: {fileID: 1955763645}
     - target: {fileID: 1892430282711190380, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -268,6 +274,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5808032805719628913, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+      propertyPath: flow
+      value: 
+      objectReference: {fileID: 1955763645}
     - target: {fileID: 5811043126129195767, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: m_Name
       value: GameplayRig
@@ -336,6 +346,17 @@ Transform:
   - {fileID: 1955763644}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1926686918 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5686102765434449285, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 1273862078}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24d7b80dd98448a6804478d0f12b32d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotRewardPresentation
 --- !u!114 &1940555092 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7139875837723802605, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
@@ -535,6 +556,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8980685921151321523, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
   m_PrefabInstance: {fileID: 1273862078}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8283960897767492509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 1273862078}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8283960897767492507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070c5031f31c434eb547dc4707be4bd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotPanelPresentation
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

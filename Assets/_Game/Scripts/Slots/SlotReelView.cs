@@ -50,6 +50,8 @@ public sealed class SlotReelView : MonoBehaviour
         IsSpinning = true;
     }
 
+    public void CancelSpin() { IsSpinning = false; }
+
     public void Skip()
     {
         if (!IsSpinning) return;

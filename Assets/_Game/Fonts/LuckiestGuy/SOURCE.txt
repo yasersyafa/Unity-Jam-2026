@@ -1,0 +1,3 @@
+Font source: https://raw.githubusercontent.com/google/fonts/main/apache/luckiestguy/LuckiestGuy-Regular.ttf
+License source: https://raw.githubusercontent.com/google/fonts/main/apache/luckiestguy/LICENSE.txt
+Retrieved: 2026-11-08

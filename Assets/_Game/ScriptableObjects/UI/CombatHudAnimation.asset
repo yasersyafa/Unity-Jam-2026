@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28d82fd3bd9348dea5167057ffcd9d52, type: 3}
+  m_Name: CombatHudAnimation
+  m_EditorClassIdentifier: Assembly-CSharp::CombatHudAnimationProfile
+  animateHealth: 1
+  fillDuration: 0.12
+  trailDelay: 0.15
+  trailDuration: 0.35
+  trailColor: {r: 1, g: 0.75, b: 0.2, a: 1}
+  healthShakePixels: 5
+  healthImpactDuration: 0.16
+  healthTextScale: 1.08
+  animateCritical: 1
+  criticalHealthRatio: 0.25
+  criticalWeaponRatio: 0.2
+  pulsePeriod: 0.7
+  animateEquip: 1
+  equipDuration: 0.18
+  equipOffset: 30
+  animateBanner: 1
+  bannerEnter: 0.18
+  bannerHold: 0.6
+  bannerExit: 0.15
