@@ -12,13 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07fcef2c98ab499b90c4c17767bffd81, type: 3}
   m_Name: Wave01
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
-  formation: {fileID: 11400000, guid: f4ce934bd84b745ca9a3d0aff6f9662a, type: 2}
-  enemies:
-  - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
-  - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
-  - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+  groups:
+  - formation: {fileID: 11400000, guid: 0622885c782e547a09cd5063a0813481, type: 2}
+    enemies:
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+  groupDelay: 0.75
   spawnInterval: 0.1
   delay: 1
-  approachDurationMultiplier: 1.3000
   swayAmplitudeMultiplier: 0.6000
   swayPeriodMultiplier: 1.3000

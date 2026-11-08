@@ -11,20 +11,25 @@ public sealed class EnemyApproach : MonoBehaviour
     private Vector3 entryStart, destination, control, viewportRight, viewportUp;
     private float entryElapsed, phase;
     private bool entering;
-    private float durationMultiplier = 1f, amplitudeMultiplier = 1f, periodMultiplier = 1f;
-    public void ConfigureDifficulty(float duration, float amplitude, float period)
+    private bool finished;
+    private float nextShot;
+    private Transform projectileParent;
+    public void SetProjectileParent(Transform parent) { projectileParent = parent; }
+    private float amplitudeMultiplier = 1f, periodMultiplier = 1f;
+    public void ConfigureDifficulty(float amplitude, float period)
     {
-        durationMultiplier = Mathf.Max(0.1f, duration);
         amplitudeMultiplier = Mathf.Max(0f, amplitude);
         periodMultiplier = Mathf.Max(0.1f, period);
     }
-    public bool IsFinished => enemy == null || enemy.IsDead || !isActiveAndEnabled || (initialized && elapsed >= (enemy.Data.ApproachDuration * durationMultiplier));
+    public bool IsFinished => enemy == null || enemy.IsDead || !isActiveAndEnabled || finished;
     public void Initialize(PlayerHealth player)
     {
         enemy = GetComponent<Enemy>();
         target = player;
         originalScale = transform.localScale;
         elapsed = 0f;
+        nextShot = enemy.Data.ShotInterval;
+        finished = false;
         initialized = enemy.Data != null;
         if (initialized) transform.localScale = originalScale * enemy.Data.InitialScale;
     }
@@ -57,15 +62,26 @@ public sealed class EnemyApproach : MonoBehaviour
             return;
         }
         elapsed += Time.deltaTime;
-        if (viewportRight != Vector3.zero)
+        if (enemy.Data.Movement == EnemyData.Behavior.Ranged)
+        {
+            if (elapsed >= nextShot)
+            {
+                nextShot = elapsed + enemy.Data.ShotInterval;
+                var projectile = Instantiate(enemy.Data.ProjectilePrefab, transform.position, transform.rotation, projectileParent);
+                projectile.Initialize(target, enemy.Data.AttackPoint);
+            }
+            return;
+        }
+        if (viewportRight != Vector3.zero && enemy.Data.Movement != EnemyData.Behavior.Charged)
         {
             float angle = elapsed * Mathf.PI * 2f / (enemy.Data.SwayPeriod * periodMultiplier) + phase;
             float ramp = Mathf.Clamp01(elapsed / 0.2f);
             transform.position = destination + ramp * (viewportRight * (Mathf.Sin(angle) * enemy.Data.SwayAmplitude.x * amplitudeMultiplier) + viewportUp * (Mathf.Sin(angle * 1.3f) * enemy.Data.SwayAmplitude.y * amplitudeMultiplier));
         }
-        float t = Mathf.Clamp01(elapsed / (enemy.Data.ApproachDuration * durationMultiplier));
+        float t = enemy.Data.Movement == EnemyData.Behavior.Charged ? Mathf.Clamp01((elapsed - 2f) / 0.5f) : Mathf.Clamp01(elapsed / enemy.Data.ApproachDuration);
         transform.localScale = originalScale * Mathf.Lerp(enemy.Data.InitialScale, enemy.Data.FinalScale, t * t);
         if (t < 1f) return;
+        finished = true;
         target.TakeDamage(enemy.Data.AttackPoint);
         Destroy(gameObject);
     }

@@ -1,0 +1,5 @@
+Tipe Musuh,HP (Health),Kecepatan (Speed),Damage,Tipe Serangan,Catatan,Waktu Terbang (TTI)
+Normal,100,Normal,10,Melee,Darah setara 1 hit Bambu Runcing,3 Detik
+Ranged,50,Berhenti di jarak tertentu,5,Ranged (Proyektil lambat),Darah tipis,1.5 Detik (Proyektil)
+Tank,200,Pelan,15,Melee,Darah 2x Normal,6 Detik
+Charged,75,Meningkat drastis saat dash,10,Melee Dash,Terlihat diam lalu nge-dash cepat,"2.5 Detik (2s diam, 0.5s dash)"

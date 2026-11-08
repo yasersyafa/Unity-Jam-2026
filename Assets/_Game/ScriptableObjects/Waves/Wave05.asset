@@ -12,14 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07fcef2c98ab499b90c4c17767bffd81, type: 3}
   m_Name: Wave05
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
-  formation: {fileID: 11400000, guid: 89297e6845ee4c08bd56c11eb2b97428, type: 2}
-  enemies:
-  - {fileID: 4879427133820728688, guid: bf4a26cf2045474cb3ee000f895970ea, type: 3}
-  - {fileID: 4879427133820728688, guid: bf4a26cf2045474cb3ee000f895970ea, type: 3}
-  - {fileID: 4879427133820728688, guid: bf4a26cf2045474cb3ee000f895970ea, type: 3}
-  - {fileID: 4879427133820728688, guid: bf4a26cf2045474cb3ee000f895970ea, type: 3}
+  groups:
+  - formation: {fileID: 11400000, guid: 0622885c782e547a09cd5063a0813481, type: 2}
+    enemies:
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
+  - formation: {fileID: 11400000, guid: 104e265deef6436c914b28b7375378c1, type: 2}
+    enemies:
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+  - formation: {fileID: 11400000, guid: 208dddff609994e2591c7c7547a24d28, type: 2}
+    enemies:
+    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+  groupDelay: 0.75
   spawnInterval: 0.1
   delay: 1
-  approachDurationMultiplier: 1.1182
-  swayAmplitudeMultiplier: 0.8909
-  swayPeriodMultiplier: 1.1182
+  swayAmplitudeMultiplier: 0.9556
+  swayPeriodMultiplier: 1.0778
