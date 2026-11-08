@@ -12,10 +12,21 @@ public sealed class WeaponDurationFeedback : MonoBehaviour
     private Tween pulse;
     private Color color;
     private bool critical;
-    private void Awake() { color = accent.color; }
+
+    private void Awake()
+    {
+        if (accent != null) color = accent.color;
+        if (flow == null) flow = FindFirstObjectByType<SlotGameplayFlow>();
+        if (player == null) player = FindFirstObjectByType<PlayerHealth>();
+    }
+
     private void Update()
     {
-        bool next = profile != null && profile.AnimateCritical && !player.IsDead && flow.CurrentWeaponDuration > 0f
+        if (flow == null) flow = FindFirstObjectByType<SlotGameplayFlow>();
+        if (player == null) player = FindFirstObjectByType<PlayerHealth>();
+        if (flow == null || player == null || profile == null || accent == null) return;
+
+        bool next = profile.AnimateCritical && !player.IsDead && flow.CurrentWeaponDuration > 0f
             && flow.WeaponRemainingDuration > 0f && flow.WeaponRemainingDuration / flow.CurrentWeaponDuration <= profile.CriticalWeaponRatio;
         if (next == critical) return;
         critical = next;
@@ -28,5 +39,11 @@ public sealed class WeaponDurationFeedback : MonoBehaviour
             accent.color = value;
         }, cycles: -1, useUnscaledTime: true);
     }
-    private void OnDisable() { pulse.Stop(); critical = false; if (accent != null) accent.color = color; }
+
+    private void OnDisable()
+    {
+        pulse.Stop();
+        critical = false;
+        if (accent != null) accent.color = color;
+    }
 }

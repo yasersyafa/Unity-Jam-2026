@@ -12,14 +12,14 @@ public static class SetupSlotDemoHUD
         string scenePath = "Assets/Scenes/SlotDemo.unity";
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
 
-        var playerHealth = Object.FindAnyObjectByType<PlayerHealth>();
+        var playerHealth = Object.FindFirstObjectByType<PlayerHealth>();
         if (playerHealth == null)
         {
             Debug.LogError("PlayerHealth not found in SlotDemo!");
             return;
         }
 
-        var gameplayFlow = Object.FindAnyObjectByType<SlotGameplayFlow>();
+        var gameplayFlow = Object.FindFirstObjectByType<SlotGameplayFlow>();
         if (gameplayFlow == null)
         {
             Debug.LogError("SlotGameplayFlow not found in SlotDemo!");
@@ -326,10 +326,33 @@ public static class SetupSlotDemoHUD
         if (textProp != null) textProp.objectReferenceValue = durationTmp;
         flowSo.ApplyModifiedProperties();
 
+        // 6. Connect WeaponDurationFeedback & WaveBannerPresentation if in scene
+        foreach (var wdf in Object.FindObjectsByType<WeaponDurationFeedback>(FindObjectsSortMode.None))
+        {
+            var so = new SerializedObject(wdf);
+            var fProp = so.FindProperty("flow");
+            var pProp = so.FindProperty("player");
+            if (fProp != null && fProp.objectReferenceValue == null) fProp.objectReferenceValue = gameplayFlow;
+            if (pProp != null && pProp.objectReferenceValue == null) pProp.objectReferenceValue = playerHealth;
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(wdf);
+        }
+
+        foreach (var wbp in Object.FindObjectsByType<WaveBannerPresentation>(FindObjectsSortMode.None))
+        {
+            var so = new SerializedObject(wbp);
+            var fProp = so.FindProperty("flow");
+            var pProp = so.FindProperty("player");
+            if (fProp != null && fProp.objectReferenceValue == null) fProp.objectReferenceValue = gameplayFlow;
+            if (pProp != null && pProp.objectReferenceValue == null) pProp.objectReferenceValue = playerHealth;
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(wbp);
+        }
+
         EditorUtility.SetDirty(gameplayFlow);
         EditorUtility.SetDirty(healthUI);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("Slot Demo HUD setup and FireRate Bar completed successfully.");
+        Debug.Log("Slot Demo HUD setup, FireRate Bar, and Feedback wiring completed successfully.");
     }
 }
