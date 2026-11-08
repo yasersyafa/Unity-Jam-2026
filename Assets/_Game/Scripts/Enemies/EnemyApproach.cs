@@ -78,7 +78,10 @@ public sealed class EnemyApproach : MonoBehaviour
             float ramp = Mathf.Clamp01(elapsed / 0.2f);
             transform.position = destination + ramp * (viewportRight * (Mathf.Sin(angle) * enemy.Data.SwayAmplitude.x * amplitudeMultiplier) + viewportUp * (Mathf.Sin(angle * 1.3f) * enemy.Data.SwayAmplitude.y * amplitudeMultiplier));
         }
-        float t = enemy.Data.Movement == EnemyData.Behavior.Charged ? Mathf.Clamp01((elapsed - 2f) / 0.5f) : Mathf.Clamp01(elapsed / enemy.Data.ApproachDuration);
+        float pause = Mathf.Max(0f, enemy.Data.ApproachDuration - 0.5f);
+        float t = enemy.Data.Movement == EnemyData.Behavior.Charged
+            ? Mathf.Clamp01((elapsed - pause) / 0.5f)
+            : Mathf.Clamp01(elapsed / enemy.Data.ApproachDuration);
         transform.localScale = originalScale * Mathf.Lerp(enemy.Data.InitialScale, enemy.Data.FinalScale, t * t);
         if (t < 1f) return;
         finished = true;

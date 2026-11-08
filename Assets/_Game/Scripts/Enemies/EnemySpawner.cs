@@ -12,6 +12,15 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private EnemyWave[] waves;
     [SerializeField] private UnityEngine.Events.UnityEvent onBossReady;
     [SerializeField] private BossConfig bossConfig;
+
+    [Header("Spawn Pacing Defaults")]
+    [Tooltip("Default minimum delay between enemy spawns (seconds).")]
+    [SerializeField, Min(0.05f)] private float defaultMinSpawnDelay = 1.0f;
+    [Tooltip("Default maximum delay between enemy spawns (seconds).")]
+    [SerializeField, Min(0.05f)] private float defaultMaxSpawnDelay = 2.5f;
+    [Tooltip("Default chance to spawn 2 enemies simultaneously (max 2).")]
+    [SerializeField, Range(0f, 1f)] private float defaultPairedSpawnChance = 0.3f;
+
     public event System.Action<int> WaveStarted;
     public event System.Action BossReady;
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
@@ -42,31 +51,57 @@ public sealed class EnemySpawner : MonoBehaviour
             {
                 var formation = group.formation;
                 var plane = new Plane(enemyParent.forward, enemyParent.position);
-                Vector2 entry = entryCenter + new Vector2(Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)), Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y)));
                 Vector3 origin = PointOnPlane(plane, Vector2.zero);
                 Vector3 right = PointOnPlane(plane, Vector2.right) - origin;
                 Vector3 up = PointOnPlane(plane, Vector2.up) - origin;
-                Vector3 start = PointOnPlane(plane, entry);
-                for (int i = 0; i < formation.Count; i++)
+
+                int i = 0;
+                while (i < formation.Count)
                 {
                     while (Time.timeScale <= 0f) yield return null;
                     if (player.IsDead) break;
-                    Vector2 slot = formation.GetSlot(i);
-                    Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(slot.x, slot.y, 0f));
-                    if (!plane.Raycast(ray, out float distance))
+
+                    // Maksimal 2 musuh muncul bersamaan
+                    float chance = wave.pairedSpawnChance > 0f ? wave.pairedSpawnChance : defaultPairedSpawnChance;
+                    int batchSize = (i + 1 < formation.Count && Random.value < chance) ? 2 : 1;
+
+                    for (int b = 0; b < batchSize; b++)
                     {
-                        Debug.LogError("Enemy spawn plane must face the camera.", this);
-                        enabled = false;
-                        yield break;
+                        int enemyIndex = i + b;
+                        Vector2 slot = formation.GetSlot(enemyIndex);
+                        Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(slot.x, slot.y, 0f));
+                        if (!plane.Raycast(ray, out float distance))
+                        {
+                            Debug.LogError("Enemy spawn plane must face the camera.", this);
+                            enabled = false;
+                            yield break;
+                        }
+
+                        Vector2 entry = entryCenter + new Vector2(
+                            Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)),
+                            Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y))
+                        );
+                        Vector3 start = PointOnPlane(plane, entry);
+
+                        var enemy = Instantiate(group.enemies[enemyIndex], start, enemyParent.rotation, enemyParent);
+                        enemy.SetProjectileParent(transform);
+                        enemy.ConfigureDifficulty(wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
+                        enemy.Initialize(player, ray.GetPoint(distance), enemyIndex % 2 == 0 ? 1f : -1f, enemyIndex * 2.399963f, right, up);
+                        spawned.Add(enemy);
                     }
-                    var enemy = Instantiate(group.enemies[i], start, enemyParent.rotation, enemyParent);
-                    enemy.SetProjectileParent(transform);
-                    enemy.ConfigureDifficulty( wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
-                    enemy.Initialize(player, ray.GetPoint(distance), i % 2 == 0 ? 1f : -1f, i * 2.399963f, right, up);
-                    spawned.Add(enemy);
-                    float interval = wave.spawnInterval;
-                    if (i + 1 < formation.Count && interval > 0f) yield return new WaitForSeconds(interval);
+
+                    i += batchSize;
+
+                    // Delay tidak konstan antara 0.5s sampai 1.5s
+                    if (i < formation.Count)
+                    {
+                        float minD = wave.minSpawnDelay > 0f ? wave.minSpawnDelay : defaultMinSpawnDelay;
+                        float maxD = wave.maxSpawnDelay >= minD ? wave.maxSpawnDelay : defaultMaxSpawnDelay;
+                        float delay = Random.Range(minD, maxD);
+                        yield return new WaitForSeconds(delay);
+                    }
                 }
+
                 while (!player.IsDead && spawned.Exists(e => e != null && !e.IsFinished)) yield return null;
                 var projectiles = GetComponentsInChildren<EnemyProjectile>();
                 while (!player.IsDead && System.Array.Exists(projectiles, p => p != null && p.isActiveAndEnabled)) yield return null;

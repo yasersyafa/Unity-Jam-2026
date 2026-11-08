@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 1971799392530205848}
   - component: {fileID: 1077696682884331338}
   - component: {fileID: 4879427133820728688}
+  - component: {fileID: 9082132592515821579}
   m_Layer: 0
   m_Name: ChargedEnemy
   m_TagString: Untagged
@@ -185,7 +186,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4acadee7638f4570ac6cb7593618978a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   data: {fileID: 11400000, guid: 12949efbf58c411797df0ecc507def5a, type: 2}
   feedback: {fileID: 1077696682884331338}
@@ -199,7 +200,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fcbea4d31ef4b6fafe3aab1fa2155f8, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFeedback
   visual: {fileID: 4599867642869431497}
   hitVfxPrefab: {fileID: 2170007468478245182, guid: 2724fe97daeaa484386019b4c247688c, type: 3}
@@ -217,8 +218,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: afe747f75fafb476ea5d92721e849f97, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyApproach
+--- !u!114 &9082132592515821579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564886878076266967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be0354a9ec21d2e44b433a908e28560c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBar
+  offset: {x: 0, y: 0.75, z: -0.05}
+  barWidth: 1.1
+  barHeight: 0.16
+  borderPadding: 0.03
+  fullColor: {r: 0.15, g: 0.95, b: 0.35, a: 1}
+  midColor: {r: 1, g: 0.78, b: 0.1, a: 1}
+  lowColor: {r: 0.95, g: 0.15, b: 0.15, a: 1}
+  backgroundColor: {r: 0.08, g: 0.08, b: 0.08, a: 0.88}
 --- !u!1 &8704447529118243808
 GameObject:
   m_ObjectHideFlags: 0

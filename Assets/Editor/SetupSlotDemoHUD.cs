@@ -12,19 +12,21 @@ public static class SetupSlotDemoHUD
         string scenePath = "Assets/Scenes/SlotDemo.unity";
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
 
-        var playerHealth = Object.FindAnyObjectByType<PlayerHealth>();
+        var playerHealth = Object.FindFirstObjectByType<PlayerHealth>();
         if (playerHealth == null)
         {
             Debug.LogError("PlayerHealth not found in SlotDemo!");
             return;
         }
 
-        var gameplayFlow = Object.FindAnyObjectByType<SlotGameplayFlow>();
+        var gameplayFlow = Object.FindFirstObjectByType<SlotGameplayFlow>();
         if (gameplayFlow == null)
         {
             Debug.LogError("SlotGameplayFlow not found in SlotDemo!");
             return;
         }
+
+        var shootingController = Object.FindFirstObjectByType<ShootingController>();
 
         // Get default TMP Font asset
         var tmpFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
@@ -179,6 +181,136 @@ public static class SetupSlotDemoHUD
         durationTmp.color = Color.white;
         durationTmp.text = "Weapon: 8.0s / 8.0s";
 
+        // 3. Build HUD FireRate Bar (under Weapon Duration Bar)
+        var hudFireRateGo = new GameObject("HUDFireRateBar", typeof(RectTransform), typeof(CanvasGroup));
+        hudFireRateGo.transform.SetParent(hudGo.transform, false);
+        var hudFireRateRect = hudFireRateGo.GetComponent<RectTransform>();
+        hudFireRateRect.anchorMin = new Vector2(0.5f, 0.5f);
+        hudFireRateRect.anchorMax = new Vector2(0.5f, 0.5f);
+        hudFireRateRect.pivot = new Vector2(0.5f, 0.5f);
+        hudFireRateRect.anchoredPosition = new Vector2(0f, 150f);
+        hudFireRateRect.sizeDelta = new Vector2(320f, 18f);
+
+        var hudFrBgGo = new GameObject("Background", typeof(RectTransform), typeof(Image));
+        hudFrBgGo.transform.SetParent(hudFireRateGo.transform, false);
+        var hudFrBgRect = hudFrBgGo.GetComponent<RectTransform>();
+        hudFrBgRect.anchorMin = Vector2.zero;
+        hudFrBgRect.anchorMax = Vector2.one;
+        hudFrBgRect.sizeDelta = Vector2.zero;
+        var hudFrBgImg = hudFrBgGo.GetComponent<Image>();
+        hudFrBgImg.color = new Color(0.1f, 0.1f, 0.1f, 0.85f);
+
+        var hudFrFillArea = new GameObject("Fill Area", typeof(RectTransform));
+        hudFrFillArea.transform.SetParent(hudFireRateGo.transform, false);
+        var hudFrFillAreaRect = hudFrFillArea.GetComponent<RectTransform>();
+        hudFrFillAreaRect.anchorMin = Vector2.zero;
+        hudFrFillAreaRect.anchorMax = Vector2.one;
+        hudFrFillAreaRect.offsetMin = new Vector2(2f, 2f);
+        hudFrFillAreaRect.offsetMax = new Vector2(-2f, -2f);
+
+        var hudFrFillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+        hudFrFillGo.transform.SetParent(hudFrFillArea.transform, false);
+        var hudFrFillRect = hudFrFillGo.GetComponent<RectTransform>();
+        hudFrFillRect.anchorMin = Vector2.zero;
+        hudFrFillRect.anchorMax = Vector2.one;
+        hudFrFillRect.sizeDelta = Vector2.zero;
+        var hudFrFillImg = hudFrFillGo.GetComponent<Image>();
+        hudFrFillImg.color = new Color(0.1f, 0.95f, 0.45f, 1f);
+
+        var hudFrSlider = hudFireRateGo.AddComponent<Slider>();
+        hudFrSlider.transition = Selectable.Transition.None;
+        hudFrSlider.direction = Slider.Direction.LeftToRight;
+        hudFrSlider.targetGraphic = hudFrFillImg;
+        hudFrSlider.fillRect = hudFrFillRect;
+        hudFrSlider.minValue = 0f;
+        hudFrSlider.maxValue = 1f;
+        hudFrSlider.value = 1f;
+
+        var hudFrTextGo = new GameObject("StatusText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        hudFrTextGo.transform.SetParent(hudFireRateGo.transform, false);
+        var hudFrTextRect = hudFrTextGo.GetComponent<RectTransform>();
+        hudFrTextRect.anchorMin = Vector2.zero;
+        hudFrTextRect.anchorMax = Vector2.one;
+        hudFrTextRect.sizeDelta = Vector2.zero;
+        var hudFrTmp = hudFrTextGo.GetComponent<TextMeshProUGUI>();
+        if (tmpFont != null) hudFrTmp.font = tmpFont;
+        hudFrTmp.fontSize = 13f;
+        hudFrTmp.fontStyle = FontStyles.Bold;
+        hudFrTmp.alignment = TextAlignmentOptions.Center;
+        hudFrTmp.color = Color.white;
+        hudFrTmp.text = "READY";
+
+        var hudFrUI = hudFireRateGo.AddComponent<WeaponFireRateUI>();
+        var hudFrSo = new SerializedObject(hudFrUI);
+        hudFrSo.FindProperty("shootingController").objectReferenceValue = shootingController;
+        hudFrSo.FindProperty("slider").objectReferenceValue = hudFrSlider;
+        hudFrSo.FindProperty("fillImage").objectReferenceValue = hudFrFillImg;
+        hudFrSo.FindProperty("canvasGroup").objectReferenceValue = hudFireRateGo.GetComponent<CanvasGroup>();
+        hudFrSo.FindProperty("statusText").objectReferenceValue = hudFrTmp;
+        hudFrSo.FindProperty("onlySemiAutomatic").boolValue = true;
+        hudFrSo.ApplyModifiedProperties();
+
+        // 4. Build Crosshair FireRate Bar (under Crosshair reticle)
+        var crosshairGo = GameObject.Find("Crosshair");
+        if (crosshairGo != null)
+        {
+            var oldBar = crosshairGo.transform.Find("CrosshairFireRateBar");
+            if (oldBar != null) Object.DestroyImmediate(oldBar.gameObject);
+
+            var chBarGo = new GameObject("CrosshairFireRateBar", typeof(RectTransform), typeof(CanvasGroup));
+            chBarGo.transform.SetParent(crosshairGo.transform, false);
+            var chBarRect = chBarGo.GetComponent<RectTransform>();
+            chBarRect.anchorMin = new Vector2(0.5f, 0.5f);
+            chBarRect.anchorMax = new Vector2(0.5f, 0.5f);
+            chBarRect.pivot = new Vector2(0.5f, 0.5f);
+            chBarRect.anchoredPosition = new Vector2(0f, -28f);
+            chBarRect.sizeDelta = new Vector2(46f, 5f);
+
+            var chBgGo = new GameObject("Background", typeof(RectTransform), typeof(Image));
+            chBgGo.transform.SetParent(chBarGo.transform, false);
+            var chBgRect = chBgGo.GetComponent<RectTransform>();
+            chBgRect.anchorMin = Vector2.zero;
+            chBgRect.anchorMax = Vector2.one;
+            chBgRect.sizeDelta = Vector2.zero;
+            var chBgImg = chBgGo.GetComponent<Image>();
+            chBgImg.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+
+            var chFillArea = new GameObject("Fill Area", typeof(RectTransform));
+            chFillArea.transform.SetParent(chBarGo.transform, false);
+            var chFillAreaRect = chFillArea.GetComponent<RectTransform>();
+            chFillAreaRect.anchorMin = Vector2.zero;
+            chFillAreaRect.anchorMax = Vector2.one;
+            chFillAreaRect.offsetMin = new Vector2(1f, 1f);
+            chFillAreaRect.offsetMax = new Vector2(-1f, -1f);
+
+            var chFillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            chFillGo.transform.SetParent(chFillArea.transform, false);
+            var chFillRect = chFillGo.GetComponent<RectTransform>();
+            chFillRect.anchorMin = Vector2.zero;
+            chFillRect.anchorMax = Vector2.one;
+            chFillRect.sizeDelta = Vector2.zero;
+            var chFillImg = chFillGo.GetComponent<Image>();
+            chFillImg.color = new Color(0.1f, 0.95f, 0.45f, 1f);
+
+            var chSlider = chBarGo.AddComponent<Slider>();
+            chSlider.transition = Selectable.Transition.None;
+            chSlider.direction = Slider.Direction.LeftToRight;
+            chSlider.targetGraphic = chFillImg;
+            chSlider.fillRect = chFillRect;
+            chSlider.minValue = 0f;
+            chSlider.maxValue = 1f;
+            chSlider.value = 1f;
+
+            var chUI = chBarGo.AddComponent<WeaponFireRateUI>();
+            var chSo = new SerializedObject(chUI);
+            chSo.FindProperty("shootingController").objectReferenceValue = shootingController;
+            chSo.FindProperty("slider").objectReferenceValue = chSlider;
+            chSo.FindProperty("fillImage").objectReferenceValue = chFillImg;
+            chSo.FindProperty("canvasGroup").objectReferenceValue = chBarGo.GetComponent<CanvasGroup>();
+            chSo.FindProperty("onlySemiAutomatic").boolValue = true;
+            chSo.ApplyModifiedProperties();
+        }
+
         // Save as Prefab
         if (!AssetDatabase.IsValidFolder("Assets/_Game/Prefabs/UI"))
         {
@@ -186,7 +318,7 @@ public static class SetupSlotDemoHUD
         }
         PrefabUtility.SaveAsPrefabAsset(hudGo, "Assets/_Game/Prefabs/UI/SlotDemoHUD.prefab");
 
-        // 3. Connect to SlotGameplayFlow
+        // 5. Connect to SlotGameplayFlow
         var flowSo = new SerializedObject(gameplayFlow);
         var sliderProp = flowSo.FindProperty("weaponDurationSlider");
         var textProp = flowSo.FindProperty("weaponDurationText");
@@ -194,10 +326,33 @@ public static class SetupSlotDemoHUD
         if (textProp != null) textProp.objectReferenceValue = durationTmp;
         flowSo.ApplyModifiedProperties();
 
+        // 6. Connect WeaponDurationFeedback & WaveBannerPresentation if in scene
+        foreach (var wdf in Object.FindObjectsByType<WeaponDurationFeedback>(FindObjectsSortMode.None))
+        {
+            var so = new SerializedObject(wdf);
+            var fProp = so.FindProperty("flow");
+            var pProp = so.FindProperty("player");
+            if (fProp != null && fProp.objectReferenceValue == null) fProp.objectReferenceValue = gameplayFlow;
+            if (pProp != null && pProp.objectReferenceValue == null) pProp.objectReferenceValue = playerHealth;
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(wdf);
+        }
+
+        foreach (var wbp in Object.FindObjectsByType<WaveBannerPresentation>(FindObjectsSortMode.None))
+        {
+            var so = new SerializedObject(wbp);
+            var fProp = so.FindProperty("flow");
+            var pProp = so.FindProperty("player");
+            if (fProp != null && fProp.objectReferenceValue == null) fProp.objectReferenceValue = gameplayFlow;
+            if (pProp != null && pProp.objectReferenceValue == null) pProp.objectReferenceValue = playerHealth;
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(wbp);
+        }
+
         EditorUtility.SetDirty(gameplayFlow);
         EditorUtility.SetDirty(healthUI);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("Slot Demo HUD setup and Prefab creation completed successfully.");
+        Debug.Log("Slot Demo HUD setup, FireRate Bar, and Feedback wiring completed successfully.");
     }
 }

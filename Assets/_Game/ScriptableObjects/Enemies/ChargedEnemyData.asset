@@ -17,7 +17,7 @@ MonoBehaviour:
   shotInterval: 3
   healthPoint: 75
   attackPoint: 10
-  approachDuration: 2.5
+  approachDuration: 3.5
   initialScale: 0.4
   finalScale: 1.6
   entryDuration: 0.8
