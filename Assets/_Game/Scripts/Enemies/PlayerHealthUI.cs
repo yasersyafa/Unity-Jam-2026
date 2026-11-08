@@ -20,7 +20,7 @@ public sealed class PlayerHealthUI : MonoBehaviour
     private void Awake()
     {
         if (playerHealth == null)
-            playerHealth = GetComponentInParent<PlayerHealth>() ?? FindFirstObjectByType<PlayerHealth>();
+            playerHealth = GetComponentInParent<PlayerHealth>() ?? FindAnyObjectByType<PlayerHealth>();
     }
 
     private void OnEnable()

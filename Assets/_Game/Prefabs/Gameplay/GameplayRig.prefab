@@ -959,6 +959,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maximumHealth: 100
+--- !u!114 &6581021842661484588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496288998435949076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5654f0772fb5411ab87e7e6a390713e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageFeedback
+  preset: {fileID: 0}
+  cameraFeedback: {fileID: 0}
+  audioSource: {fileID: 0}
+  damageOverlaySprite: {fileID: 21300000, guid: 1022a005352764d9a9bea20d9b1f41b6, type: 3}
+  overlayTint: {r: 1, g: 1, b: 1, a: 1}
+  overlayDuration: 0.2
+  criticalOpacity: 0.15
 --- !u!1 &645166140058589164
 GameObject:
   m_ObjectHideFlags: 0
@@ -12391,18 +12410,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6581021842661484588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 496288998435949076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5654f0772fb5411ab87e7e6a390713e5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageFeedback
-  preset: {fileID: 0}
-  cameraFeedback: {fileID: 0}
-  audioSource: {fileID: 0}
