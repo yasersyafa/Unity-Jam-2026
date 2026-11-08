@@ -24,16 +24,24 @@ public sealed class WeaponFeedback : MonoBehaviour
     [SerializeField] private RectTransform equipRoot;
 
     [Header("Aim & Sway Presentation")]
-    [Tooltip("Maximum horizontal sway offset in pixels when crosshair moves.")]
-    [SerializeField, Min(0f)] private float maxSwayX = 25f;
+    [Tooltip("Base position offset for the weapon (negative X moves weapon left).")]
+    [SerializeField] private Vector2 weaponOffset = new Vector2(-50f, 0f);
+
+    [Tooltip("Maximum horizontal sway offset in pixels when crosshair moves (+70% boost).")]
+    [SerializeField, Min(0f)] private float maxSwayX = 42.5f;
+
     [Tooltip("Maximum vertical sway offset in pixels when crosshair moves.")]
-    [SerializeField, Min(0f)] private float maxSwayY = 15f;
+    [SerializeField, Min(0f)] private float maxSwayY = 18f;
+
     [Tooltip("Speed of positional sway interpolation.")]
     [SerializeField, Min(0.1f)] private float swaySpeed = 10f;
+
     [Tooltip("Multiplier for how much the muzzle rotates towards the crosshair.")]
     [SerializeField, Range(0.1f, 2f)] private float aimRotationWeight = 1.0f;
+
     [Tooltip("Maximum rotation angle in degrees from base resting orientation.")]
     [SerializeField, Range(5f, 60f)] private float maxAimAngle = 40f;
+
     [Tooltip("Speed of aim rotation smoothing.")]
     [SerializeField, Min(0.1f)] private float aimRotationSpeed = 16f;
 
@@ -46,6 +54,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     private Vector3 appliedShake;
     private CombatCameraFeedback combatCamera;
     private float weaponKick;
+    private Vector2 rawOrigin;
     private Vector2 weaponOrigin;
     private Quaternion weaponRotation;
     private bool feedbackInitialized;
@@ -68,7 +77,8 @@ public sealed class WeaponFeedback : MonoBehaviour
         if (feedbackInitialized) return;
         feedbackInitialized = true;
         combatCamera = cameraTransform.GetComponent<CombatCameraFeedback>() ?? cameraTransform.gameObject.AddComponent<CombatCameraFeedback>();
-        weaponOrigin = weaponImage.rectTransform.anchoredPosition;
+        rawOrigin = weaponImage.rectTransform.anchoredPosition;
+        weaponOrigin = rawOrigin + weaponOffset;
         weaponRotation = weaponImage.rectTransform.localRotation;
         if (equipRoot != null) { equipPosition = equipRoot.anchoredPosition; equipScale = equipRoot.localScale; }
     }
@@ -128,7 +138,10 @@ public sealed class WeaponFeedback : MonoBehaviour
         float dt = deltaTime > 0f ? deltaTime : Time.unscaledDeltaTime;
         if (dt <= 0f) dt = 0.016f;
 
-        // Subtle positional sway (dikit banget, tidak geser jauh dari tempatnya)
+        // Base resting position with inspector offset
+        weaponOrigin = rawOrigin + weaponOffset;
+
+        // Subtle positional sway (+70% horizontal sway distance)
         Vector2 canvasSize = ((RectTransform)canvas.transform).rect.size;
         float halfW = canvasSize.x > 0f ? canvasSize.x * 0.5f : 960f;
         float halfH = canvasSize.y > 0f ? canvasSize.y * 0.5f : 540f;
@@ -192,6 +205,7 @@ public sealed class WeaponFeedback : MonoBehaviour
         if (visualInstance != null) visualInstance.ResetEffects();
         equipTween.Stop();
         if (equipRoot != null) { equipRoot.anchoredPosition = equipPosition; equipRoot.localScale = equipScale; }
+        weaponOrigin = rawOrigin + weaponOffset;
         if (weaponImage != null)
         {
             weaponImage.rectTransform.anchoredPosition = weaponOrigin;
