@@ -10,8 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 380756b5ee8943e583ea9cf9042f5c3c, type: 3}
-  m_Name: NormalEnemyData
-  m_EditorClassIdentifier:
+  m_Name: ChargedEnemyData
+  m_EditorClassIdentifier: 
+  behavior: 3
+  projectilePrefab: {fileID: 1004, guid: 9bf9e8cdbb184b629fa6f6cadc4bc94a, type: 3}
+  shotInterval: 3
   healthPoint: 75
   attackPoint: 10
   approachDuration: 2.5
@@ -21,6 +24,3 @@ MonoBehaviour:
   entryCurvature: 0.15
   swayAmplitude: {x: 0.012, y: 0.008}
   swayPeriod: 1.6
-  behavior: 3
-  projectilePrefab: {fileID: 1004, guid: 9bf9e8cdbb184b629fa6f6cadc4bc94a, type: 3}
-  shotInterval: 3
