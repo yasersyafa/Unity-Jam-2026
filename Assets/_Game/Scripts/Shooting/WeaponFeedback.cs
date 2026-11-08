@@ -28,8 +28,10 @@ public sealed class WeaponFeedback : MonoBehaviour
     private Vector2 recoil;
     private Vector3 appliedShake;
     private CombatCameraFeedback combatCamera;
-    private float pulse;
+    private float weaponKick;
     private Vector2 weaponOrigin;
+    private float weaponX;
+    private Quaternion weaponRotation;
     private bool feedbackInitialized;
 
     public void Configure(Canvas hud, RectTransform aim, UnityEngine.UI.Image image, Transform camera)
@@ -46,6 +48,8 @@ public sealed class WeaponFeedback : MonoBehaviour
         if (feedbackInitialized) return;
         feedbackInitialized = true;
         combatCamera = cameraTransform.GetComponent<CombatCameraFeedback>() ?? cameraTransform.gameObject.AddComponent<CombatCameraFeedback>(); weaponOrigin = weaponImage.rectTransform.anchoredPosition;
+        weaponX = weaponImage.rectTransform.localPosition.x;
+        weaponRotation = weaponImage.rectTransform.localRotation;
         if (equipRoot != null) { equipPosition = equipRoot.anchoredPosition; equipScale = equipRoot.localScale; }
     }
     public void SetWeapon(WeaponData data)
@@ -96,6 +100,9 @@ public sealed class WeaponFeedback : MonoBehaviour
         aim.y = Mathf.Clamp(aim.y, 0f, Screen.height);
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform, aim, null, out Vector2 local);
         crosshair.anchoredPosition = local;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform, pointer, null, out Vector2 weaponLocal);
+        weaponX = weaponImage.transform.parent.InverseTransformPoint(canvas.transform.TransformPoint(weaponLocal)).x;
+        weaponImage.rectTransform.localRotation = Quaternion.Euler(0f, weaponLocal.x < 0f ? 180f : 0f, 0f);
         return aim;
     }
     public void SetContinuousFire(bool value)
@@ -109,17 +116,19 @@ public sealed class WeaponFeedback : MonoBehaviour
         if (weapon.EnableRecoil)
         {
             recoil = Vector2.up * Mathf.Min(recoil.y + weapon.UpwardKick, weapon.MaximumRecoil);
-            pulse = 1f;
+            weaponKick = 18f;
         }
         crosshair.GetComponent<UnityEngine.UI.Image>().color = hit ? Color.red : Color.white;
     }
     private void LateUpdate()
     {
         RemoveShake();
-        if (weapon != null && !weapon.EnableRecoil)
-            pulse = 0f;
-        pulse = Mathf.MoveTowards(pulse, 0f, Time.deltaTime * 8f);
-        weaponImage.rectTransform.anchoredPosition = weaponOrigin + Vector2.down * (pulse * 25f);
+        if (weapon != null && !weapon.EnableRecoil) weaponKick = 0f;
+        weaponImage.rectTransform.anchoredPosition = weaponOrigin + Vector2.up * weaponKick;
+        Vector3 position = weaponImage.rectTransform.localPosition;
+        position.x = weaponX;
+        weaponImage.rectTransform.localPosition = position;
+        weaponKick = Mathf.MoveTowards(weaponKick, 0f, Time.deltaTime * 144f);
         appliedShake = Vector3.zero;
         cameraTransform.localPosition += appliedShake;
     }
@@ -134,10 +143,15 @@ public sealed class WeaponFeedback : MonoBehaviour
         if (visualInstance != null) visualInstance.ResetEffects();
         equipTween.Stop();
         if (equipRoot != null) { equipRoot.anchoredPosition = equipPosition; equipRoot.localScale = equipScale; }
-        if (weaponImage != null) weaponImage.rectTransform.anchoredPosition = weaponOrigin;
+        if (weaponImage != null)
+        {
+            weaponImage.rectTransform.anchoredPosition = weaponOrigin;
+            weaponImage.rectTransform.localRotation = weaponRotation;
+            weaponX = weaponImage.rectTransform.localPosition.x;
+        }
         RemoveShake();
         recoil = Vector2.zero;
-        pulse = 0f;
+        weaponKick = 0f;
     }
     private void OnDisable() { ResetFeedback(); }
 }
