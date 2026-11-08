@@ -15,9 +15,9 @@ public sealed class EnemySpawner : MonoBehaviour
 
     [Header("Spawn Pacing Defaults")]
     [Tooltip("Default minimum delay between enemy spawns (seconds).")]
-    [SerializeField, Min(0.05f)] private float defaultMinSpawnDelay = 0.5f;
+    [SerializeField, Min(0.05f)] private float defaultMinSpawnDelay = 1.0f;
     [Tooltip("Default maximum delay between enemy spawns (seconds).")]
-    [SerializeField, Min(0.05f)] private float defaultMaxSpawnDelay = 1.5f;
+    [SerializeField, Min(0.05f)] private float defaultMaxSpawnDelay = 2.5f;
     [Tooltip("Default chance to spawn 2 enemies simultaneously (max 2).")]
     [SerializeField, Range(0f, 1f)] private float defaultPairedSpawnChance = 0.3f;
 

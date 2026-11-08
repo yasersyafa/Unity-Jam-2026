@@ -16,10 +16,10 @@ public sealed class EnemyWave : ScriptableObject
 
     [Header("Spawn Pacing (Randomized Delay)")]
     [Tooltip("Minimum delay between spawns in seconds")]
-    [Min(0.05f)] public float minSpawnDelay = 0.5f;
+    [Min(0.05f)] public float minSpawnDelay = 1.0f;
 
     [Tooltip("Maximum delay between spawns in seconds")]
-    [Min(0.05f)] public float maxSpawnDelay = 1.5f;
+    [Min(0.05f)] public float maxSpawnDelay = 2.5f;
 
     [Tooltip("Chance that up to 2 enemies spawn simultaneously (never more than 2)")]
     [Range(0f, 1f)] public float pairedSpawnChance = 0.3f;

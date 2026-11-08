@@ -15,8 +15,8 @@ MonoBehaviour:
   groups: []
   groupDelay: 0.75
   spawnInterval: 0.1
-  minSpawnDelay: 0.5
-  maxSpawnDelay: 1.5
+  minSpawnDelay: 1
+  maxSpawnDelay: 2.5
   pairedSpawnChance: 0.3
   delay: 1
   swayAmplitudeMultiplier: 1.3273

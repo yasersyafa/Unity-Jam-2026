@@ -53,8 +53,8 @@ public static class ApplyNewGameBalance
             if (wave != null)
             {
                 var so = new SerializedObject(wave);
-                so.FindProperty("minSpawnDelay").floatValue = 0.5f;
-                so.FindProperty("maxSpawnDelay").floatValue = 1.5f;
+                so.FindProperty("minSpawnDelay").floatValue = 1.0f;
+                so.FindProperty("maxSpawnDelay").floatValue = 2.5f;
                 so.FindProperty("pairedSpawnChance").floatValue = 0.3f;
                 so.ApplyModifiedProperties();
                 EditorUtility.SetDirty(wave);

@@ -30,8 +30,8 @@ MonoBehaviour:
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
   groupDelay: 0.75
   spawnInterval: 0.1
-  minSpawnDelay: 0.5
-  maxSpawnDelay: 1.5
+  minSpawnDelay: 1
+  maxSpawnDelay: 2.5
   pairedSpawnChance: 0.3
   delay: 1
   swayAmplitudeMultiplier: 0.8667
