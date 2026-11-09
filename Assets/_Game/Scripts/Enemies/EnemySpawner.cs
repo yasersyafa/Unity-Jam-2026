@@ -21,10 +21,119 @@ public sealed class EnemySpawner : MonoBehaviour
     [Tooltip("Default chance to spawn 2 enemies simultaneously (max 2).")]
     [SerializeField, Range(0f, 1f)] private float defaultPairedSpawnChance = 0.3f;
 
+    [Header("Wave Alive Cap")]
+    [Tooltip("Maximum alive enemies present at once at Wave 1 (increments by +1 at Wave 5, Wave 9, and Wave 10).")]
+    [SerializeField, Min(1)] private int baseMaxAliveEnemies = 3;
+
+    [Header("Wave Progression Pacing")]
+    [Tooltip("Controls how strongly later waves favor shorter delays within [minSpawnDelay, maxSpawnDelay]. 1 = uniform; higher = higher chance of fast delays as waves advance.")]
+    [SerializeField, Min(1f)] private float maxWaveDelayFastBias = 3.5f;
+
+    [Header("Dynamic Asymmetry")]
+    [Tooltip("Chance a group mirrors its formation slots horizontally to vary flank side.")]
+    [SerializeField, Range(0f, 1f)] private float horizontalMirrorChance = 0.5f;
+    [Tooltip("Random viewport offset applied to the whole group formation (clamped inside safe screen bounds).")]
+    [SerializeField] private Vector2 groupViewportOffsetJitter = new Vector2(0.05f, 0.035f);
+    [Tooltip("Subtle per-enemy viewport jitter added to formation slots.")]
+    [SerializeField] private Vector2 slotJitter = new Vector2(0.015f, 0.015f);
+    [Tooltip("When enabled, enemies in a group spawn in randomized slot order instead of fixed sequential order.")]
+    [SerializeField] private bool randomizeSpawnOrder = true;
+
     public event System.Action<int> WaveStarted;
     public event System.Action BossReady;
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
+    private readonly List<int> spawnOrder = new List<int>();
+
+    public int AliveEnemyCount
+    {
+        get
+        {
+            spawned.RemoveAll(e => e == null);
+            int count = 0;
+            for (int k = 0; k < spawned.Count; k++)
+            {
+                if (!spawned[k].IsFinished) count++;
+            }
+            return count;
+        }
+    }
+
     private void OnEnable() { StartCoroutine(Run()); }
+
+    public static int EvaluateMaxAliveEnemies(int waveIndex, int baseMaxAlive = 3, int overrideMaxAlive = 0)
+    {
+        if (overrideMaxAlive > 0) return overrideMaxAlive;
+        int waveNumber = waveIndex + 1;
+        int maxAlive = Mathf.Max(1, baseMaxAlive);
+        if (waveNumber >= 5) maxAlive++;
+        if (waveNumber >= 9) maxAlive++;
+        if (waveNumber >= 10) maxAlive++;
+        return maxAlive;
+    }
+
+    public static int ComputeBatchSize(int remainingInGroup, int aliveCount, int maxAlive, float pairedChance, float randomSample)
+    {
+        int availableSlots = maxAlive - aliveCount;
+        if (remainingInGroup <= 0 || availableSlots <= 0) return 0;
+
+        int cap = Mathf.Min(2, Mathf.Min(remainingInGroup, availableSlots));
+        return (cap >= 2 && randomSample < pairedChance) ? 2 : 1;
+    }
+
+    public static float EvaluateSpawnDelay(float minDelay, float maxDelay, int waveIndex, int waveCount, float maxFastBias, float randomSample)
+    {
+        float safeMin = Mathf.Max(0.05f, minDelay);
+        float safeMax = Mathf.Max(safeMin, maxDelay);
+        float progress = waveCount > 1 ? Mathf.Clamp01((float)waveIndex / (waveCount - 1)) : 0f;
+        float exponent = Mathf.Lerp(1f, Mathf.Max(1f, maxFastBias), progress);
+        float u = Mathf.Clamp01(randomSample);
+        float skewed = Mathf.Pow(u, exponent);
+        return Mathf.Lerp(safeMin, safeMax, skewed);
+    }
+
+    public static Vector2 EvaluateCenterEntryViewport(Vector2 center, Vector2 randomOffset, float normalizedX, float normalizedY)
+    {
+        float rx = Mathf.Clamp(normalizedX, -1f, 1f);
+        float ry = Mathf.Clamp(normalizedY, -1f, 1f);
+        return center + new Vector2(Mathf.Abs(randomOffset.x) * rx, Mathf.Abs(randomOffset.y) * ry);
+    }
+
+    public static Vector2 TransformSlotViewport(Vector2 baseSlot, bool mirrorHorizontal, Vector2 groupOffset, Vector2 perSlotJitter)
+    {
+        float x = mirrorHorizontal ? 1f - baseSlot.x : baseSlot.x;
+        float y = baseSlot.y;
+        x = Mathf.Clamp(x + groupOffset.x + perSlotJitter.x, 0.18f, 0.82f);
+        y = Mathf.Clamp(y + groupOffset.y + perSlotJitter.y, 0.38f, 0.74f);
+        return new Vector2(x, y);
+    }
+
+    private static float ComputeBendDirection(Vector2 entryViewport, Vector2 targetViewport)
+    {
+        Vector2 chord = targetViewport - entryViewport;
+        if (chord.sqrMagnitude < 0.0001f) return Random.value < 0.5f ? 1f : -1f;
+
+        Vector2 perp = new Vector2(-chord.y, chord.x).normalized;
+        Vector2 toCenter = new Vector2(0.5f, 0.52f) - (entryViewport + targetViewport) * 0.5f;
+        float dot = Vector2.Dot(perp, toCenter);
+        float inwardSign = Mathf.Abs(dot) < 0.05f
+            ? (Random.value < 0.5f ? 1f : -1f)
+            : (dot >= 0f ? 1f : -1f);
+        float sign = Random.value < 0.65f ? inwardSign : -inwardSign;
+        return sign * Random.Range(0.75f, 1.35f);
+    }
+
+    private void PrepareSpawnOrder(int count)
+    {
+        spawnOrder.Clear();
+        for (int idx = 0; idx < count; idx++) spawnOrder.Add(idx);
+        if (!randomizeSpawnOrder) return;
+        for (int idx = count - 1; idx > 0; idx--)
+        {
+            int swap = Random.Range(0, idx + 1);
+            (spawnOrder[idx], spawnOrder[swap]) = (spawnOrder[swap], spawnOrder[idx]);
+        }
+    }
+
     private IEnumerator Run()
     {
         yield return null;
@@ -46,6 +155,7 @@ public sealed class EnemySpawner : MonoBehaviour
         {
             spawned.RemoveAll(e => e == null);
             var wave = waves[index];
+            int maxAlive = EvaluateMaxAliveEnemies(index, baseMaxAliveEnemies, wave.maxAliveEnemies);
             WaveStarted?.Invoke(index + 1);
             foreach (var group in wave.groups)
             {
@@ -54,21 +164,34 @@ public sealed class EnemySpawner : MonoBehaviour
                 Vector3 origin = PointOnPlane(plane, Vector2.zero);
                 Vector3 right = PointOnPlane(plane, Vector2.right) - origin;
                 Vector3 up = PointOnPlane(plane, Vector2.up) - origin;
+                Vector3 viewportCenter = origin + right * 0.5f + up * 0.5f;
+
+                bool mirrorHorizontal = Random.value < horizontalMirrorChance;
+                Vector2 groupOffset = new Vector2(
+                    Random.Range(-Mathf.Abs(groupViewportOffsetJitter.x), Mathf.Abs(groupViewportOffsetJitter.x)),
+                    Random.Range(-Mathf.Abs(groupViewportOffsetJitter.y), Mathf.Abs(groupViewportOffsetJitter.y))
+                );
+                float groupPhaseOffset = Random.Range(0f, Mathf.PI * 2f);
+                PrepareSpawnOrder(formation.Count);
 
                 int i = 0;
                 while (i < formation.Count)
                 {
-                    while (Time.timeScale <= 0f) yield return null;
+                    while (!player.IsDead && (Time.timeScale <= 0f || AliveEnemyCount >= maxAlive)) yield return null;
                     if (player.IsDead) break;
 
-                    // Maksimal 2 musuh muncul bersamaan
+                    // Maksimal 2 musuh muncul bersamaan dan tidak melewati batas hidup wave
                     float chance = wave.pairedSpawnChance > 0f ? wave.pairedSpawnChance : defaultPairedSpawnChance;
-                    int batchSize = (i + 1 < formation.Count && Random.value < chance) ? 2 : 1;
+                    int batchSize = ComputeBatchSize(formation.Count - i, AliveEnemyCount, maxAlive, chance, Random.value);
 
                     for (int b = 0; b < batchSize; b++)
                     {
-                        int enemyIndex = i + b;
-                        Vector2 slot = formation.GetSlot(enemyIndex);
+                        int enemyIndex = spawnOrder[i + b];
+                        Vector2 perSlotJitter = new Vector2(
+                            Random.Range(-Mathf.Abs(slotJitter.x), Mathf.Abs(slotJitter.x)),
+                            Random.Range(-Mathf.Abs(slotJitter.y), Mathf.Abs(slotJitter.y))
+                        );
+                        Vector2 slot = TransformSlotViewport(formation.GetSlot(enemyIndex), mirrorHorizontal, groupOffset, perSlotJitter);
                         Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(slot.x, slot.y, 0f));
                         if (!plane.Raycast(ray, out float distance))
                         {
@@ -77,33 +200,39 @@ public sealed class EnemySpawner : MonoBehaviour
                             yield break;
                         }
 
-                        Vector2 entry = entryCenter + new Vector2(
-                            Random.Range(-Mathf.Abs(entryRandomOffset.x), Mathf.Abs(entryRandomOffset.x)),
-                            Random.Range(-Mathf.Abs(entryRandomOffset.y), Mathf.Abs(entryRandomOffset.y))
+                        // Kemunculan selalu dari tengah arena seperti wave sebelumnya
+                        Vector2 entry = EvaluateCenterEntryViewport(
+                            entryCenter,
+                            entryRandomOffset,
+                            Random.Range(-1f, 1f),
+                            Random.Range(-1f, 1f)
                         );
                         Vector3 start = PointOnPlane(plane, entry);
+                        float bendDirection = ComputeBendDirection(entry, slot);
+                        float spinDirection = Random.value < 0.5f ? 1f : -1f;
+                        float phase = groupPhaseOffset + enemyIndex * 2.399963f;
 
                         var enemy = Instantiate(group.enemies[enemyIndex], start, enemyParent.rotation, enemyParent);
                         if (!enemy.TryGetComponent<EnemyHealthBar>(out _)) enemy.gameObject.AddComponent<EnemyHealthBar>();
                         enemy.SetProjectileParent(transform);
                         enemy.ConfigureDifficulty(wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
-                        enemy.Initialize(player, ray.GetPoint(distance), enemyIndex % 2 == 0 ? 1f : -1f, enemyIndex * 2.399963f, right, up);
+                        enemy.Initialize(player, ray.GetPoint(distance), bendDirection, phase, right, up, viewportCenter, spinDirection);
                         spawned.Add(enemy);
                     }
 
                     i += batchSize;
 
-                    // Delay tidak konstan antara 0.5s sampai 1.5s
+                    // Delay dalam range [minD, maxD], probabilitas cepat meningkat seiring naiknya wave
                     if (i < formation.Count)
                     {
                         float minD = wave.minSpawnDelay > 0f ? wave.minSpawnDelay : defaultMinSpawnDelay;
                         float maxD = wave.maxSpawnDelay >= minD ? wave.maxSpawnDelay : defaultMaxSpawnDelay;
-                        float delay = Random.Range(minD, maxD);
+                        float delay = EvaluateSpawnDelay(minD, maxD, index, waves.Length, maxWaveDelayFastBias, Random.value);
                         yield return new WaitForSeconds(delay);
                     }
                 }
 
-                while (!player.IsDead && spawned.Exists(e => e != null && !e.IsFinished)) yield return null;
+                while (!player.IsDead && AliveEnemyCount > 0) yield return null;
                 var projectiles = GetComponentsInChildren<EnemyProjectile>();
                 while (!player.IsDead && System.Array.Exists(projectiles, p => p != null && p.isActiveAndEnabled)) yield return null;
                 if (player.IsDead) break;

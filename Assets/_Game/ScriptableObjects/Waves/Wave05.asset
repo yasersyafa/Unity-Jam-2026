@@ -13,22 +13,22 @@ MonoBehaviour:
   m_Name: Wave05
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
   groups:
-  - formation: {fileID: 11400000, guid: 0622885c782e547a09cd5063a0813481, type: 2}
+  - formation: {fileID: 11400000, guid: b2d3608f10ff44d18ad7037d90026d81, type: 2}
+    enemies:
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+  - formation: {fileID: 11400000, guid: 19648080063f4ce4b56c8b7d01ac94d0, type: 2}
     enemies:
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
     - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
     - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
     - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
-    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
-  - formation: {fileID: 11400000, guid: 104e265deef6436c914b28b7375378c1, type: 2}
-    enemies:
-    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
-    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
-    - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
-    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
-    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
-  - formation: {fileID: 11400000, guid: 208dddff609994e2591c7c7547a24d28, type: 2}
+  - formation: {fileID: 11400000, guid: d36ef74188b1490fa573d4c4b9f5d53b, type: 2}
     enemies:
     - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
