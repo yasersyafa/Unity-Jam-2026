@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,6 +26,25 @@ public sealed class ShootingController : MonoBehaviour
     private bool hasAim;
     private bool shootingAllowed = true;
     private int resumeFrame;
+
+    public event Action ShotFired;
+    public event Action<WeaponData> WeaponEquipped;
+
+    public WeaponData CurrentWeapon => weapon;
+    public double NextShotTime => nextShot;
+    public float ShotInterval => weapon != null ? weapon.ShotInterval : 0f;
+    public bool IsSemiAutomatic => weapon != null && weapon.FiringMode == WeaponData.FireMode.SemiAutomatic;
+
+    public float FireCooldownProgress
+    {
+        get
+        {
+            if (weapon == null || weapon.ShotInterval <= 0f) return 1f;
+            double remaining = nextShot - Time.timeAsDouble;
+            if (remaining <= 0) return 1f;
+            return 1f - Mathf.Clamp01((float)(remaining / weapon.ShotInterval));
+        }
+    }
 
     public void Configure(Camera camera, WeaponData initialWeapon, WeaponFeedback presentation, InputActionReference action)
     {
@@ -67,6 +87,13 @@ public sealed class ShootingController : MonoBehaviour
 
     private void Update()
     {
+        bool overUI = UnityEngine.EventSystems.EventSystem.current != null
+            && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+        bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        if (feedback != null) feedback.SetContinuousFire(shootingAllowed && !cursorMode
+            && Mouse.current != null && Application.isFocused && Time.timeScale > 0f
+            && !escape && !overUI && fire != null && weapon != null
+            && weapon.FiringMode == WeaponData.FireMode.Automatic && fire.IsPressed());
         if (!shootingAllowed || Time.frameCount == resumeFrame) { UpdateCursorVisibility(); return; }
         if (Mouse.current == null) return;
         bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
@@ -101,6 +128,7 @@ public sealed class ShootingController : MonoBehaviour
         if (!wantsToFire || Time.timeAsDouble < nextShot)
             return;
         nextShot = Time.timeAsDouble + weapon.ShotInterval;
+        ShotFired?.Invoke();
         // Camera shake is removed before Update; hit selection precedes this shot's recoil.
         Ray ray = gameplayCamera.ScreenPointToRay(aim);
         RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, hitMask);
@@ -117,6 +145,7 @@ public sealed class ShootingController : MonoBehaviour
         if (data == null) return;
         weapon = data;
         if (feedback != null) feedback.SetWeapon(data);
+        WeaponEquipped?.Invoke(data);
     }
 
     private void UpdateCursorVisibility()

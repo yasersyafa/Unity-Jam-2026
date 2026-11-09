@@ -7,6 +7,8 @@ public sealed class PlayerDamageFeedback : MonoBehaviour
     [SerializeField] private CombatFeedbackPreset preset;
     [SerializeField] private CombatCameraFeedback cameraFeedback;
     [SerializeField] private AudioSource audioSource;
+    [Tooltip("Preferred damage cue. Empty uses the existing preset audio.")]
+    [SerializeField] private AudioCue damageSound;
     [Header("Damage Artwork")]
     [Tooltip("Drag a transparent comic border sprite here. Import PNG as Sprite (2D and UI). Keep the center transparent. Stretches to fill the screen.")]
     [SerializeField] private Sprite damageOverlaySprite;
@@ -55,7 +57,8 @@ public sealed class PlayerDamageFeedback : MonoBehaviour
     {
         remaining = Mathf.Max(0.01f, overlayDuration);
         if (cameraFeedback != null) cameraFeedback.Play(preset != null ? preset.shakeStrength : 0.06f, preset != null ? preset.duration : 0.16f);
-        if (audioSource != null && preset != null && preset.impactSound != null)
+        if (damageSound != null) AudioService.Ensure().Play(damageSound);
+        else if (audioSource != null && preset != null && preset.impactSound != null)
             audioSource.PlayOneShot(preset.impactSound, preset.volume);
     }
     private void Update()

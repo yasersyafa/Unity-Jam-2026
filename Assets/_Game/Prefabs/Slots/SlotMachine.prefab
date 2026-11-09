@@ -64,6 +64,8 @@ MonoBehaviour:
   - {fileID: 5879466523121439181}
   - {fileID: 57022022329179942}
   - {fileID: 6092883591871109340}
+  panelPresentation: {fileID: 0}
+  rewardPresentation: {fileID: 0}
 --- !u!1 &22747786879908135
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,6 +455,7 @@ GameObject:
   - component: {fileID: 7975159607310209626}
   - component: {fileID: 7574726050452285048}
   - component: {fileID: 5879466523121439181}
+  - component: {fileID: 7111762306330034343}
   m_Layer: 5
   m_Name: Reel1
   m_TagString: Untagged
@@ -601,6 +604,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
   popup: {fileID: 3830521433715798569}
   popupGroup: {fileID: 4982831204527847925}
+--- !u!114 &7111762306330034343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661511748871663190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
+  reel: {fileID: 7574726050452285048}
+  rewards: {fileID: 0}
+  stopped: {fileID: 11400000, guid: caeff8875de2f46b5a3218aa9fc8591a, type: 2}
+  awarded: {fileID: 0}
 --- !u!1 &673481423500400131
 GameObject:
   m_ObjectHideFlags: 0
@@ -765,6 +784,7 @@ GameObject:
   - component: {fileID: 6189393153324255911}
   - component: {fileID: 6422292120542223125}
   - component: {fileID: 6092883591871109340}
+  - component: {fileID: 6788949496772249408}
   m_Layer: 5
   m_Name: Reel3
   m_TagString: Untagged
@@ -913,6 +933,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
   popup: {fileID: 8942263666676549735}
   popupGroup: {fileID: 3338352059849040684}
+--- !u!114 &6788949496772249408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001412137308722390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
+  reel: {fileID: 6422292120542223125}
+  rewards: {fileID: 0}
+  stopped: {fileID: 11400000, guid: caeff8875de2f46b5a3218aa9fc8591a, type: 2}
+  awarded: {fileID: 0}
 --- !u!1 &1031554507069351501
 GameObject:
   m_ObjectHideFlags: 0
@@ -2529,6 +2565,7 @@ GameObject:
   - component: {fileID: 2567766146415801861}
   - component: {fileID: 1387572221263425576}
   - component: {fileID: 5999914173278338389}
+  - component: {fileID: 5222216079972323539}
   m_Layer: 5
   m_Name: Skip
   m_TagString: Untagged
@@ -2650,6 +2687,31 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5222216079972323539}
+        m_TargetAssemblyTypeName: AudioTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5222216079972323539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2293222461800308227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80ad903b04c14bbe82c3097415cd4b1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioTrigger
+  cue: {fileID: 11400000, guid: 4c7a62c6f17e243f486cd326b45c0a48, type: 2}
 --- !u!1 &2295045057948974818
 GameObject:
   m_ObjectHideFlags: 0
@@ -4971,6 +5033,7 @@ GameObject:
   - component: {fileID: 8366250128713986475}
   - component: {fileID: 4978404419672335791}
   - component: {fileID: 5032041308306905744}
+  - component: {fileID: 3760865109696925263}
   m_Layer: 5
   m_Name: Spin
   m_TagString: Untagged
@@ -5092,6 +5155,31 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 3760865109696925263}
+        m_TargetAssemblyTypeName: AudioTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3760865109696925263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5000995201408597319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80ad903b04c14bbe82c3097415cd4b1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioTrigger
+  cue: {fileID: 11400000, guid: 4c7a62c6f17e243f486cd326b45c0a48, type: 2}
 --- !u!1 &5160853758119673063
 GameObject:
   m_ObjectHideFlags: 0
@@ -8944,6 +9032,7 @@ GameObject:
   - component: {fileID: 448208727570659106}
   - component: {fileID: 1610047366988924218}
   - component: {fileID: 57022022329179942}
+  - component: {fileID: 7397270396393156924}
   m_Layer: 5
   m_Name: Reel2
   m_TagString: Untagged
@@ -9092,6 +9181,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
   popup: {fileID: 1804141575301967250}
   popupGroup: {fileID: 757485623901142726}
+--- !u!114 &7397270396393156924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8719657010642631299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
+  reel: {fileID: 1610047366988924218}
+  rewards: {fileID: 0}
+  stopped: {fileID: 11400000, guid: caeff8875de2f46b5a3218aa9fc8591a, type: 2}
+  awarded: {fileID: 0}
 --- !u!1 &8898245649615967457
 GameObject:
   m_ObjectHideFlags: 0

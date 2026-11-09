@@ -12,15 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07fcef2c98ab499b90c4c17767bffd81, type: 3}
   m_Name: Wave12
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
-  formation: {fileID: 11400000, guid: d36ef74188b1490fa573d4c4b9f5d53b, type: 2}
-  enemies:
-  - {fileID: 4879427133820728688, guid: bf4a26cf2045474cb3ee000f895970ea, type: 3}
-  - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
-  - {fileID: 4879427133820728688, guid: 97266c2f9a264f1196522b0bae1408f1, type: 3}
-  - {fileID: 4879427133820728688, guid: 2945f30bacb5470c8332319ab4b5a6d3, type: 3}
-  - {fileID: 4879427133820728688, guid: bf4a26cf2045474cb3ee000f895970ea, type: 3}
+  groups: []
+  groupDelay: 0.75
   spawnInterval: 0.1
+  minSpawnDelay: 1
+  maxSpawnDelay: 2.5
+  pairedSpawnChance: 0.3
   delay: 1
-  approachDurationMultiplier: 0.8000
-  swayAmplitudeMultiplier: 1.4000
-  swayPeriodMultiplier: 0.8000
+  swayAmplitudeMultiplier: 1.4
+  swayPeriodMultiplier: 0.8

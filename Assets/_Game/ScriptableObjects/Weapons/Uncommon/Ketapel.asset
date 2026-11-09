@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c4bb3b4a1a14dca88235cb123bacda8, type: 3}
-  m_Name: "Ketapel"
+  m_Name: Ketapel
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 1
   usageDuration: 30
   sprite: {fileID: 0}
+  visualPrefab: {fileID: 0}
+  shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 80
-  fireRate: 1.0
+  fireRate: 1.5
   enableRecoil: 1
   upwardKick: 6
   maximumRecoil: 30

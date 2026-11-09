@@ -15,9 +15,11 @@ MonoBehaviour:
   tier: 0
   usageDuration: 30
   sprite: {fileID: 0}
-  firingMode: 1
+  visualPrefab: {fileID: 0}
+  shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  firingMode: 0
   damage: 20
-  fireRate: 2.0
+  fireRate: 3.5
   enableRecoil: 1
   upwardKick: 6
   maximumRecoil: 30

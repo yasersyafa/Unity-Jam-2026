@@ -1,0 +1,14 @@
+{
+    "name": "Game.EditMode.Tests",
+    "references": [
+        "Game.Runtime",
+        "Game.Profiling.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "autoReferenced": false
+}
