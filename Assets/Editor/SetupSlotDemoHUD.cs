@@ -12,21 +12,21 @@ public static class SetupSlotDemoHUD
         string scenePath = "Assets/Scenes/SlotDemo.unity";
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
 
-        var playerHealth = Object.FindFirstObjectByType<PlayerHealth>();
+        var playerHealth = Object.FindAnyObjectByType<PlayerHealth>();
         if (playerHealth == null)
         {
             Debug.LogError("PlayerHealth not found in SlotDemo!");
             return;
         }
 
-        var gameplayFlow = Object.FindFirstObjectByType<SlotGameplayFlow>();
+        var gameplayFlow = Object.FindAnyObjectByType<SlotGameplayFlow>();
         if (gameplayFlow == null)
         {
             Debug.LogError("SlotGameplayFlow not found in SlotDemo!");
             return;
         }
 
-        var shootingController = Object.FindFirstObjectByType<ShootingController>();
+        var shootingController = Object.FindAnyObjectByType<ShootingController>();
 
         // Get default TMP Font asset
         var tmpFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
