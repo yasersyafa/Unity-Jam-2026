@@ -327,7 +327,7 @@ public static class SetupSlotDemoHUD
         flowSo.ApplyModifiedProperties();
 
         // 6. Connect WeaponDurationFeedback & WaveBannerPresentation if in scene
-        foreach (var wdf in Object.FindObjectsByType<WeaponDurationFeedback>(FindObjectsSortMode.None))
+        foreach (var wdf in Object.FindObjectsByType<WeaponDurationFeedback>())
         {
             var so = new SerializedObject(wdf);
             var fProp = so.FindProperty("flow");
@@ -338,7 +338,7 @@ public static class SetupSlotDemoHUD
             EditorUtility.SetDirty(wdf);
         }
 
-        foreach (var wbp in Object.FindObjectsByType<WaveBannerPresentation>(FindObjectsSortMode.None))
+        foreach (var wbp in Object.FindObjectsByType<WaveBannerPresentation>())
         {
             var so = new SerializedObject(wbp);
             var fProp = so.FindProperty("flow");
