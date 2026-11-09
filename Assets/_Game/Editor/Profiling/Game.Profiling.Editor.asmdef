@@ -1,0 +1,9 @@
+{
+    "name": "Game.Profiling.Editor",
+    "includePlatforms": [
+        "Editor"
+    ],
+    "references": [
+        "Unity.Newtonsoft.Json"
+    ]
+}
