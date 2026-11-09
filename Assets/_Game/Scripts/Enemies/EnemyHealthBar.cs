@@ -25,6 +25,8 @@ public sealed class EnemyHealthBar : MonoBehaviour
     private TextMeshPro tmpText;
     private float maxHealth = 1f;
     private Camera cam;
+    private float displayedHealth = float.NaN, displayedMaximum = float.NaN;
+    private int displayedHealthNumber = -1, displayedMaximumNumber = -1;
 
     private static Sprite centerPivotSprite;
     private static Sprite leftPivotSprite;
@@ -48,6 +50,8 @@ public sealed class EnemyHealthBar : MonoBehaviour
         {
             BuildVisuals();
         }
+        if (barRoot != null) barRoot.gameObject.SetActive(enemy != null && !enemy.IsDead);
+        displayedHealth = float.NaN;
         UpdateDisplay();
     }
 
@@ -137,6 +141,9 @@ public sealed class EnemyHealthBar : MonoBehaviour
 
         maxHealth = Mathf.Max(1f, enemy.Data.HealthPoint);
         float current = Mathf.Max(0f, enemy.CurrentHealth);
+        if (displayedHealth == current && displayedMaximum == maxHealth) return;
+        displayedHealth = current;
+        displayedMaximum = maxHealth;
         float ratio = Mathf.Clamp01(current / maxHealth);
 
         float innerWidth = barWidth - (borderPadding * 2f);
@@ -150,33 +157,14 @@ public sealed class EnemyHealthBar : MonoBehaviour
 
         if (tmpText != null)
         {
-            tmpText.text = $"{Mathf.CeilToInt(current)}/{Mathf.CeilToInt(maxHealth)}";
-        }
-    }
-
-    // Auto-attach runner for runtime testing
-    private sealed class AutoAttacher : MonoBehaviour
-    {
-        private void Update()
-        {
-            var enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            for (int i = 0; i < enemies.Length; i++)
+            int healthNumber = Mathf.CeilToInt(current), maximumNumber = Mathf.CeilToInt(maxHealth);
+            if (healthNumber != displayedHealthNumber || maximumNumber != displayedMaximumNumber)
             {
-                var e = enemies[i];
-                if (e != null && !e.TryGetComponent<EnemyHealthBar>(out _))
-                {
-                    e.gameObject.AddComponent<EnemyHealthBar>();
-                }
+                tmpText.text = $"{healthNumber}/{maximumNumber}";
+                displayedHealthNumber = healthNumber;
+                displayedMaximumNumber = maximumNumber;
             }
         }
     }
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void Bootstrap()
-    {
-        var runner = new GameObject("[EnemyHealthBar_AutoAttacher]");
-        runner.hideFlags = HideFlags.DontSave;
-        DontDestroyOnLoad(runner);
-        runner.AddComponent<AutoAttacher>();
-    }
 }

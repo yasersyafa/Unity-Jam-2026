@@ -28,6 +28,15 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     private float currentWeaponDuration;
     private float weaponRemainingDuration;
     private bool weaponActive;
+    private TextMeshProUGUI lastStatusTarget, lastDurationTarget;
+    private WeaponData lastStatusWeapon, lastDurationWeapon;
+    private string lastMissingTiers;
+    private SlotTier lastStatusTier;
+    private double lastStatusWeaponTime = double.NaN, lastStatusCooldown = double.NaN;
+    private double lastDurationTime = double.NaN, lastDurationMaximum = double.NaN;
+    private bool lastOpen, lastDead, lastCooldownActive;
+
+    private static double DisplayTime(float seconds) => System.Math.Round(seconds, 1, System.MidpointRounding.ToEven);
 
     public float SlotCooldown => slotCooldown;
     public float RemainingCooldown => remaining;
@@ -37,6 +46,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
 
     public void ConfigureDurationUI(Slider slider, TextMeshProUGUI text = null)
     {
+        lastDurationTarget = null;
         weaponDurationSlider = slider;
         weaponDurationText = text;
         UpdateWeaponDurationUI();
@@ -50,6 +60,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
 
     private void OnEnable()
     {
+        lastStatusTarget = lastDurationTarget = null;
         input = interact.action.Clone();
         input.Enable();
         rewards.SetShootingController(shooting);
@@ -150,14 +161,29 @@ public sealed class SlotGameplayFlow : MonoBehaviour
             }
         }
 
-        var weapon = rewards.CurrentWeapon;
-        string weaponInfo = weapon != null
-            ? $"{weapon.name} | {weapon.Tier} | Durasi: {weaponRemainingDuration:0.0}s\n"
-            : "";
+        UpdateStatusUI();
+    }
 
+    private void UpdateStatusUI()
+    {
+        if (status == null) return;
+        var weapon = rewards.CurrentWeapon;
+        SlotTier tier = weapon != null ? weapon.Tier : default;
+        string missing = rewards.MissingTiers;
+        bool dead = player != null && player.IsDead;
+        bool cooldownActive = remaining > 0f;
+        double weaponTime = weapon != null ? DisplayTime(weaponRemainingDuration) : 0;
+        double cooldown = !open && !dead && cooldownActive ? DisplayTime(remaining) : 0;
+        if (lastStatusTarget == status && lastStatusWeapon == weapon && lastStatusTier == tier
+            && lastMissingTiers == missing && lastOpen == open && lastDead == dead && lastCooldownActive == cooldownActive
+            && lastStatusWeaponTime == weaponTime && lastStatusCooldown == cooldown) return;
+        lastStatusTarget = status; lastStatusWeapon = weapon; lastStatusTier = tier;
+        lastMissingTiers = missing; lastOpen = open; lastDead = dead; lastCooldownActive = cooldownActive;
+        lastStatusWeaponTime = weaponTime; lastStatusCooldown = cooldown;
+        string weaponInfo = weapon != null ? $"{weapon.name} | {tier} | Durasi: {weaponRemainingDuration:0.0}s\n" : "";
         status.text = weaponInfo
-            + (open ? (string.IsNullOrEmpty(rewards.MissingTiers) ? "Spin untuk lanjut" : "Isi weapon: " + rewards.MissingTiers)
-            : player.IsDead ? "Player kalah" : remaining > 0f ? $"Slot: {remaining:0.0}s" : "Interact: buka slot");
+            + (open ? (string.IsNullOrEmpty(missing) ? "Spin untuk lanjut" : "Isi weapon: " + missing)
+            : dead ? "Player kalah" : cooldownActive ? $"Slot: {remaining:0.0}s" : "Interact: buka slot");
     }
 
     private void UpdateWeaponDurationUI()
@@ -172,6 +198,12 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         if (weaponDurationText != null)
         {
             var weapon = rewards != null ? rewards.CurrentWeapon : null;
+            double time = DisplayTime(weaponRemainingDuration);
+            double maximum = DisplayTime(currentWeaponDuration);
+            if (lastDurationTarget == weaponDurationText && lastDurationWeapon == weapon
+                && lastDurationTime == time && lastDurationMaximum == maximum) return;
+            lastDurationTarget = weaponDurationText; lastDurationWeapon = weapon;
+            lastDurationTime = time; lastDurationMaximum = maximum;
             string weaponName = weapon != null ? weapon.name : "Weapon";
             weaponDurationText.text = $"{weaponName}: {weaponRemainingDuration:0.0}s / {currentWeaponDuration:0.0}s";
         }

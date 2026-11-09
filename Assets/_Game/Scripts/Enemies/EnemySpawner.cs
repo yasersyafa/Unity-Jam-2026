@@ -84,6 +84,7 @@ public sealed class EnemySpawner : MonoBehaviour
                         Vector3 start = PointOnPlane(plane, entry);
 
                         var enemy = Instantiate(group.enemies[enemyIndex], start, enemyParent.rotation, enemyParent);
+                        if (!enemy.TryGetComponent<EnemyHealthBar>(out _)) enemy.gameObject.AddComponent<EnemyHealthBar>();
                         enemy.SetProjectileParent(transform);
                         enemy.ConfigureDifficulty(wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
                         enemy.Initialize(player, ray.GetPoint(distance), enemyIndex % 2 == 0 ? 1f : -1f, enemyIndex * 2.399963f, right, up);
