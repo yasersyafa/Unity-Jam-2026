@@ -924,6 +924,7 @@ GameObject:
   - component: {fileID: 478420209293159004}
   - component: {fileID: 6581021842661484587}
   - component: {fileID: 6581021842661484588}
+  - component: {fileID: 2365630790195577863}
   m_Layer: 0
   m_Name: PlayerHealth
   m_TagString: Untagged
@@ -974,10 +975,29 @@ MonoBehaviour:
   preset: {fileID: 0}
   cameraFeedback: {fileID: 0}
   audioSource: {fileID: 0}
+  damageSound: {fileID: 11400000, guid: 549f1851b866e425c827d27c0ba0c926, type: 2}
   damageOverlaySprite: {fileID: 21300000, guid: 1022a005352764d9a9bea20d9b1f41b6, type: 3}
   overlayTint: {r: 1, g: 1, b: 1, a: 1}
   overlayDuration: 0.2
   criticalOpacity: 0.15
+--- !u!114 &2365630790195577863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496288998435949076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa388e56397d47908ad80e8c7d0eafeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAudio
+  shooting: {fileID: 0}
+  enemy: {fileID: 0}
+  player: {fileID: 6581021842661484587}
+  shot: {fileID: 0}
+  damaged: {fileID: 11400000, guid: 549f1851b866e425c827d27c0ba0c926, type: 2}
+  died: {fileID: 11400000, guid: 9e7f176ae6bee4e7a97e3b8614cf3d57, type: 2}
 --- !u!1 &645166140058589164
 GameObject:
   m_ObjectHideFlags: 0
@@ -2460,6 +2480,7 @@ GameObject:
   - component: {fileID: 1123792704134561232}
   - component: {fileID: 5731695272678345954}
   - component: {fileID: 6595602928306064503}
+  - component: {fileID: 5495742682701079866}
   m_Layer: 5
   m_Name: Reel1
   m_TagString: Untagged
@@ -2608,6 +2629,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
   popup: {fileID: 2297832224543117345}
   popupGroup: {fileID: 8407707839319257051}
+--- !u!114 &5495742682701079866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1538523320286717640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
+  reel: {fileID: 5731695272678345954}
+  rewards: {fileID: 0}
+  stopped: {fileID: 11400000, guid: caeff8875de2f46b5a3218aa9fc8591a, type: 2}
+  awarded: {fileID: 0}
 --- !u!1 &1540775181670193401
 GameObject:
   m_ObjectHideFlags: 0
@@ -3209,6 +3246,7 @@ GameObject:
   - component: {fileID: 3046832736807663108}
   - component: {fileID: 8177524226316091265}
   - component: {fileID: 8444138883603943588}
+  - component: {fileID: 3483896282686389031}
   m_Layer: 5
   m_Name: CanvasHUD
   m_TagString: Untagged
@@ -3351,6 +3389,24 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &3483896282686389031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953957321236626281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa388e56397d47908ad80e8c7d0eafeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAudio
+  shooting: {fileID: 8444138883603943588}
+  enemy: {fileID: 0}
+  player: {fileID: 0}
+  shot: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  damaged: {fileID: 0}
+  died: {fileID: 0}
 --- !u!1 &1961994551888166887
 GameObject:
   m_ObjectHideFlags: 0
@@ -7917,6 +7973,7 @@ GameObject:
   - component: {fileID: 4610611059787639727}
   - component: {fileID: 319605729600896852}
   - component: {fileID: 7159149112399449016}
+  - component: {fileID: 5851109973115343559}
   m_Layer: 5
   m_Name: Reel2
   m_TagString: Untagged
@@ -8065,6 +8122,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
   popup: {fileID: 6618936888730404447}
   popupGroup: {fileID: 1398489523350154945}
+--- !u!114 &5851109973115343559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5836262808621556824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
+  reel: {fileID: 319605729600896852}
+  rewards: {fileID: 0}
+  stopped: {fileID: 11400000, guid: caeff8875de2f46b5a3218aa9fc8591a, type: 2}
+  awarded: {fileID: 0}
 --- !u!1 &5864271476913354116
 GameObject:
   m_ObjectHideFlags: 0
@@ -10621,6 +10694,7 @@ GameObject:
   - component: {fileID: 6772782943215912702}
   - component: {fileID: 7277927276061023331}
   - component: {fileID: 5751044488133648914}
+  - component: {fileID: 5572966848300090723}
   m_Layer: 5
   m_Name: Skip
   m_TagString: Untagged
@@ -10742,6 +10816,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5572966848300090723}
+        m_TargetAssemblyTypeName: AudioTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5751044488133648914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10756,6 +10842,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComicButtonFeedback
   profile: {fileID: 11400000, guid: 2f586840d53f342858f0a2b5937a321f, type: 2}
   visual: {fileID: 5590247052628401025}
+--- !u!114 &5572966848300090723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7656580760039729909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80ad903b04c14bbe82c3097415cd4b1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioTrigger
+  cue: {fileID: 11400000, guid: 4c7a62c6f17e243f486cd326b45c0a48, type: 2}
 --- !u!1 &7717012698725938163
 GameObject:
   m_ObjectHideFlags: 0
@@ -10995,6 +11094,7 @@ GameObject:
   - component: {fileID: 7952986308429238048}
   - component: {fileID: 1891416014669992263}
   - component: {fileID: 563264228731605825}
+  - component: {fileID: 5404645182997472263}
   m_Layer: 5
   m_Name: Reel3
   m_TagString: Untagged
@@ -11143,6 +11243,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
   popup: {fileID: 875657154664120553}
   popupGroup: {fileID: 5609968419840867332}
+--- !u!114 &5404645182997472263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766212104130156605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
+  reel: {fileID: 1891416014669992263}
+  rewards: {fileID: 0}
+  stopped: {fileID: 11400000, guid: caeff8875de2f46b5a3218aa9fc8591a, type: 2}
+  awarded: {fileID: 0}
 --- !u!1 &7933824511892854561
 GameObject:
   m_ObjectHideFlags: 0
@@ -12337,6 +12453,7 @@ GameObject:
   - component: {fileID: 7344306348413338032}
   - component: {fileID: 1892430282711190380}
   - component: {fileID: 814086456238334976}
+  - component: {fileID: 7414041304743874168}
   m_Layer: 5
   m_Name: Spin
   m_TagString: Untagged
@@ -12458,6 +12575,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 7414041304743874168}
+        m_TargetAssemblyTypeName: AudioTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &814086456238334976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12472,6 +12601,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComicButtonFeedback
   profile: {fileID: 11400000, guid: 2f586840d53f342858f0a2b5937a321f, type: 2}
   visual: {fileID: 1748748356104065201}
+--- !u!114 &7414041304743874168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9191047328850411662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80ad903b04c14bbe82c3097415cd4b1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioTrigger
+  cue: {fileID: 11400000, guid: 4c7a62c6f17e243f486cd326b45c0a48, type: 2}
 --- !u!1 &9201917885856280449
 GameObject:
   m_ObjectHideFlags: 0

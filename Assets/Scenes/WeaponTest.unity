@@ -1502,6 +1502,53 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
   m_Asset: {fileID: 1053442462}
   m_ActionId: dad70c86-b58c-4b17-88ad-f5e53adf419e
+--- !u!1 &1167593924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1167593926}
+  - component: {fileID: 1167593925}
+  m_Layer: 0
+  m_Name: Scene Music
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1167593925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167593924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b7cba43934344618f33e0d27f19ef94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
+  clip: {fileID: 0}
+  volume: 1
+  fadeSeconds: 1
+--- !u!4 &1167593926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167593924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1185965288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2346,6 +2393,7 @@ GameObject:
   - component: {fileID: 1561682891}
   - component: {fileID: 1561682890}
   - component: {fileID: 1561682889}
+  - component: {fileID: 1561682893}
   m_Layer: 0
   m_Name: Uji Senjata
   m_TagString: Untagged
@@ -2396,7 +2444,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1561682890}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1561682893}
+        m_TargetAssemblyTypeName: AudioTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1561682890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2455,6 +2515,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -150}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1561682893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561682888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80ad903b04c14bbe82c3097415cd4b1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioTrigger
+  cue: {fileID: 11400000, guid: 4c7a62c6f17e243f486cd326b45c0a48, type: 2}
 --- !u!1 &1600846887
 GameObject:
   m_ObjectHideFlags: 0
@@ -3947,6 +4020,7 @@ GameObject:
   - component: {fileID: 6800751401762668484}
   - component: {fileID: 384494337670952513}
   - component: {fileID: 73749701026437476}
+  - component: {fileID: 8160212201777445687}
   m_Layer: 5
   m_Name: CanvasHUD
   m_TagString: Untagged
@@ -4000,6 +4074,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &8160212201777445687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8013100769209954985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa388e56397d47908ad80e8c7d0eafeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAudio
+  shooting: {fileID: 73749701026437476}
+  enemy: {fileID: 0}
+  player: {fileID: 0}
+  shot: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  damaged: {fileID: 0}
+  died: {fileID: 0}
 --- !u!4 &8253455172810269596
 Transform:
   m_ObjectHideFlags: 0
@@ -4200,3 +4292,4 @@ SceneRoots:
   - {fileID: 1987886876}
   - {fileID: 1351036364}
   - {fileID: 2083093175}
+  - {fileID: 1167593926}

@@ -22,6 +22,10 @@ public sealed class WeaponData : ScriptableObject
     [Tooltip("Optional UI visual prefab with its own muzzle and effects. Empty uses the legacy sprite.")]
     [SerializeField] private WeaponVisual visualPrefab;
     public WeaponVisual VisualPrefab => visualPrefab;
+    [Header("Audio")]
+    [SerializeField] private AudioCue shotSound;
+    public AudioCue ShotSound => shotSound;
+
     [Header("Shooting")]
     [Tooltip("Automatic fires while Attack is held. Semi Automatic fires once per press; presses during cooldown are ignored.")]
     [SerializeField] private FireMode firingMode = FireMode.Automatic;

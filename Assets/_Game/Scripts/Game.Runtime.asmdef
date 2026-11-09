@@ -1,0 +1,9 @@
+{
+    "name": "Game.Runtime",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "Unity.ugui",
+        "PrimeTween.Runtime"
+    ]
+}

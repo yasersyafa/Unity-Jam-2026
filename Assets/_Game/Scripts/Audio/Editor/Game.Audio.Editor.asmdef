@@ -1,0 +1,10 @@
+{
+    "name": "Game.Audio.Editor",
+    "references": [
+        "Game.Runtime",
+        "Unity.ugui"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}
