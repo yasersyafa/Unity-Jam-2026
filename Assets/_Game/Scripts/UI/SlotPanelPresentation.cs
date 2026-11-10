@@ -11,7 +11,12 @@ public sealed class SlotPanelPresentation : MonoBehaviour
     [SerializeField] private RectTransform dockTarget;
     private SlotGenieMeshEffect[] genieEffects;
     private float genieAmount;
-    private UnityEngine.UI.RectMask2D[] genieMasks;
+    // RectMask2D clips to an unwarped rectangle, so during the Genie warp each one is swapped for a
+    // stencil Mask on the same (warped) graphic and the clip follows the curve.
+    private UnityEngine.UI.RectMask2D[] rectMasks;
+    private UnityEngine.UI.Mask[] stencilMasks;
+    private Canvas sourceCanvas;
+    private Canvas destinationCanvas;
     private Tween animation;
     private Vector2 position;
     private Vector3 scale;
@@ -26,9 +31,44 @@ public sealed class SlotPanelPresentation : MonoBehaviour
         scale = panel.localScale;
         rotation = panel.localRotation;
     }
-    public void Show(bool visible)
+    /// <summary>Builds the Genie components up front so the first open does not hitch.</summary>
+    public void Prewarm()
     {
         Initialize();
+        if (dockTarget == null || genieEffects != null) return;
+        var graphics = panel.GetComponentsInChildren<UnityEngine.UI.Graphic>(true);
+        genieEffects = new SlotGenieMeshEffect[graphics.Length];
+        for (int i = 0; i < graphics.Length; i++)
+            genieEffects[i] = graphics[i].GetComponent<SlotGenieMeshEffect>() ?? graphics[i].gameObject.AddComponent<SlotGenieMeshEffect>();
+
+        rectMasks = System.Array.FindAll(panel.GetComponentsInChildren<UnityEngine.UI.RectMask2D>(true), mask => mask.enabled);
+        stencilMasks = new UnityEngine.UI.Mask[rectMasks.Length];
+        for (int i = 0; i < rectMasks.Length; i++)
+        {
+            if (rectMasks[i].GetComponent<UnityEngine.UI.Graphic>() == null) continue; // a stencil mask needs a graphic shape
+            if (!rectMasks[i].TryGetComponent(out UnityEngine.UI.Mask stencil))
+                stencil = rectMasks[i].gameObject.AddComponent<UnityEngine.UI.Mask>();
+            stencil.showMaskGraphic = true;
+            stencil.enabled = false;
+            stencilMasks[i] = stencil;
+        }
+        sourceCanvas = dockTarget.GetComponentInParent<Canvas>(true);
+        destinationCanvas = panel.GetComponentInParent<Canvas>(true);
+    }
+    private void SetWarpMasks(bool warping)
+    {
+        if (rectMasks == null) return;
+        for (int i = 0; i < rectMasks.Length; i++)
+        {
+            if (rectMasks[i] == null) continue;
+            bool swap = warping && stencilMasks[i] != null;
+            if (stencilMasks[i] != null) stencilMasks[i].enabled = swap;
+            rectMasks[i].enabled = !swap;
+        }
+    }
+    public void Show(bool visible)
+    {
+        Prewarm();
         bool interrupted = animation.isAlive;
         animation.Stop();
         gameObject.SetActive(true);
@@ -37,16 +77,7 @@ public sealed class SlotPanelPresentation : MonoBehaviour
         if (profile == null || !profile.AnimatePanel) { Finish(visible); return; }
         if (dockTarget != null)
         {
-            if (genieEffects == null)
-            {
-                var graphics = panel.GetComponentsInChildren<UnityEngine.UI.Graphic>(true);
-                genieEffects = new SlotGenieMeshEffect[graphics.Length];
-                for (int i = 0; i < graphics.Length; i++)
-                    genieEffects[i] = graphics[i].GetComponent<SlotGenieMeshEffect>() ?? graphics[i].gameObject.AddComponent<SlotGenieMeshEffect>();
-            }
-            if (genieMasks == null)
-                genieMasks = System.Array.FindAll(panel.GetComponentsInChildren<UnityEngine.UI.RectMask2D>(true), mask => mask.enabled);
-            foreach (var mask in genieMasks) if (mask != null) mask.enabled = false;
+            SetWarpMasks(true);
             if (!interrupted) genieAmount = visible ? 1f : 0f;
             float start = genieAmount;
             animation = Tween.Custom(0f, 1f, visible ? profile.EnterDuration : profile.ExitDuration, t =>
@@ -70,10 +101,8 @@ public sealed class SlotPanelPresentation : MonoBehaviour
     private void UpdateGenie()
     {
         if (dockTarget == null || genieEffects == null) return;
-        Canvas source = dockTarget.GetComponentInParent<Canvas>();
-        Canvas destination = panel.GetComponentInParent<Canvas>();
-        Camera sourceCamera = source != null && source.renderMode != RenderMode.ScreenSpaceOverlay ? source.worldCamera : null;
-        Camera destinationCamera = destination != null && destination.renderMode != RenderMode.ScreenSpaceOverlay ? destination.worldCamera : null;
+        Camera sourceCamera = sourceCanvas != null && sourceCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? sourceCanvas.worldCamera : null;
+        Camera destinationCamera = destinationCanvas != null && destinationCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? destinationCanvas.worldCamera : null;
         Vector2 screen = RectTransformUtility.WorldToScreenPoint(sourceCamera, dockTarget.TransformPoint(dockTarget.rect.center));
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(panel, screen, destinationCamera, out Vector2 local))
             foreach (var effect in genieEffects)
@@ -98,7 +127,7 @@ public sealed class SlotPanelPresentation : MonoBehaviour
     {
         genieAmount = 0f;
         UpdateGenie();
-        if (genieMasks != null) foreach (var mask in genieMasks) if (mask != null) mask.enabled = true;
+        SetWarpMasks(false);
         panel.anchoredPosition = position;
         panel.localScale = scale;
         panel.localRotation = rotation;

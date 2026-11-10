@@ -98,6 +98,7 @@ public sealed class SlotMachineView : MonoBehaviour
             reels[i].Stopped += stopFeedback[i].Play;
         }
         skipButton.interactable = false;
+        if (panelPresentation != null) panelPresentation.Prewarm();
         SetSpinAllowed(spinAllowed);
         initialized = true;
         return true;
