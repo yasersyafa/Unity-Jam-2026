@@ -5,8 +5,8 @@ public sealed class SlotPresentationProfile : ScriptableObject
 {
     [Header("Panel")]
     [SerializeField] private bool animatePanel = true;
-    [SerializeField, Min(0.01f)] private float enterDuration = 0.25f;
-    [SerializeField, Min(0.01f)] private float exitDuration = 0.15f;
+    [SerializeField, Min(0.01f)] private float enterDuration = 0.35f;
+    [SerializeField, Min(0.01f)] private float exitDuration = 0.25f;
     [SerializeField, Range(0.1f, 1f)] private float enterScale = 0.85f;
     [SerializeField, Min(0f)] private float enterOffset = 60f;
     [SerializeField] private float enterAngle = -3f;
@@ -21,6 +21,8 @@ public sealed class SlotPresentationProfile : ScriptableObject
     [Tooltip("Common, Uncommon, Rare, Epic, Jackpot; seconds after the pop.")]
     [SerializeField] private float[] rewardHold = { 0.35f, 0.35f, 0.5f, 0.65f, 0.8f };
     [SerializeField] private Color[] rarityColors = { Color.white, new Color(0.4f, 1f, 0.5f), new Color(0.3f, 0.7f, 1f), new Color(0.85f, 0.4f, 1f), new Color(1f, 0.8f, 0.2f) };
+    [SerializeField, Range(0.01f, 1f)] private float dockScale = 0.08f;
+    public float DockScale => dockScale;
     public bool AnimatePanel => animatePanel;
     public float EnterDuration => Mathf.Max(0.01f, enterDuration);
     public float ExitDuration => Mathf.Max(0.01f, exitDuration);

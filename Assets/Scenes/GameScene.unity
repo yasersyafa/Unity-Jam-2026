@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b7cba43934344618f33e0d27f19ef94, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
   clip: {fileID: 0}
   volume: 1
@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &856696543 stripped
 MonoBehaviour:
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &856696544 stripped
 MonoBehaviour:
@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!114 &856696545 stripped
 MonoBehaviour:
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!114 &856696546 stripped
 MonoBehaviour:
@@ -316,7 +316,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 210e08802c3649c5a02a5974ff2e15ad, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
 --- !u!114 &856696547 stripped
 MonoBehaviour:
@@ -327,7 +327,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c2932fd39154edbae32133cb3a1498b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotReelView
 --- !u!114 &856696548 stripped
 MonoBehaviour:
@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 210e08802c3649c5a02a5974ff2e15ad, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
 --- !u!114 &856696549 stripped
 MonoBehaviour:
@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c2932fd39154edbae32133cb3a1498b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotReelView
 --- !u!114 &856696550 stripped
 MonoBehaviour:
@@ -360,7 +360,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 210e08802c3649c5a02a5974ff2e15ad, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotStopFeedback
 --- !u!114 &856696551 stripped
 MonoBehaviour:
@@ -371,7 +371,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c2932fd39154edbae32133cb3a1498b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotReelView
 --- !u!1 &856696552 stripped
 GameObject:
@@ -387,7 +387,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28e592873bf0946139cb1a1bfa3e1b19, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
 --- !u!114 &856696555 stripped
 MonoBehaviour:
@@ -398,8 +398,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e909d88c717f4289b1225161641cdd14, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ShootingController
+--- !u!114 &900000101 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 856696541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856696552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070c5031f31c434eb547dc4707be4bd2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SlotPanelPresentation
 --- !u!1 &1384764983
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,7 +438,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67a2072029e04e54890884646a9ee2b0, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: 
   firstStopDuration: 2
   stopInterval: 0.4
@@ -448,7 +459,7 @@ MonoBehaviour:
   - {fileID: 856696550}
   - {fileID: 856696548}
   - {fileID: 856696546}
-  panelPresentation: {fileID: 0}
+  panelPresentation: {fileID: 900000101}
   rewardPresentation: {fileID: 0}
 --- !u!4 &1384764985
 Transform:
@@ -509,7 +520,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4b618c86a1e4c899d396d3146d00a90, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotGameplayFlow
   machine: {fileID: 1384764984}
   rewards: {fileID: 1691777525}
@@ -530,7 +541,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8e684ed88bc426ebff09c705987896f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotWeaponRewards
   machine: {fileID: 1384764984}
   weapons:
@@ -560,7 +571,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0fd1f902e2f32487fba055f550729198, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::SlotAudio
   reel: {fileID: 0}
   rewards: {fileID: 1691777525}
@@ -609,7 +620,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!114 &2066725538 stripped
 MonoBehaviour:
@@ -620,7 +631,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
