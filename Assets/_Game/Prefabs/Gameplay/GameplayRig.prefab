@@ -5535,9 +5535,17 @@ MonoBehaviour:
   stickerOffset: {x: 0, y: 70}
   stickerSize: {x: 360, y: 180}
   stickerAngle: -10
-  stickerPopDuration: 0.08
-  stickerHoldDuration: 0.12
-  stickerExitDuration: 0.1
+  stickerPopDuration: 0.04
+  stickerHoldDuration: 0.08
+  stickerExitDuration: 0.08
+  stickerSlamDuration: 0.04
+  stickerReboundDuration: 0.02
+  stickerEntryScale: 1.35
+  stickerEntryRotation: 8
+  stickerShakeDuration: 0.12
+  stickerShakePosition: {x: 6, y: 4}
+  stickerShakeRotation: 4
+  stickerShakeFrequency: 24
 --- !u!114 &2582071077424640011
 MonoBehaviour:
   m_ObjectHideFlags: 0

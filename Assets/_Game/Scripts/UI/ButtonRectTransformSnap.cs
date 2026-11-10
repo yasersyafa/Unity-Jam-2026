@@ -33,9 +33,19 @@ public sealed class ButtonRectTransformSnap : MonoBehaviour
     [SerializeField] private Vector2 stickerOffset = new Vector2(0f, 70f);
     [SerializeField] private Vector2 stickerSize = new Vector2(180f, 90f);
     [SerializeField] private float stickerAngle = -10f;
-    [SerializeField, Min(0.001f)] private float stickerPopDuration = 0.08f;
-    [SerializeField, Min(0f)] private float stickerHoldDuration = 0.12f;
-    [SerializeField, Min(0.001f)] private float stickerExitDuration = 0.1f;
+    [SerializeField, Min(0.001f)] private float stickerPopDuration = 0.04f;
+    [SerializeField, Min(0f)] private float stickerHoldDuration = 0.08f;
+    [SerializeField, Min(0.001f)] private float stickerExitDuration = 0.08f;
+
+    [SerializeField, Min(0.001f)] private float stickerSlamDuration = 0.04f;
+    [SerializeField, Min(0.001f)] private float stickerReboundDuration = 0.02f;
+    [SerializeField] private float stickerEntryScale = 1.35f;
+    [SerializeField] private float stickerEntryRotation = 8f;
+    [SerializeField, Min(0f)] private float stickerShakeDuration = 0.12f;
+    [SerializeField] private Vector2 stickerShakePosition = new Vector2(6f, 4f);
+    [SerializeField, Min(0f)] private float stickerShakeRotation = 4f;
+    [SerializeField, Min(0f)] private float stickerShakeFrequency = 24f;
+    private Vector2 stickerBasePosition;
 
     private Tween impact;
     private Sequence stickerAnimation;
@@ -147,12 +157,28 @@ public sealed class ButtonRectTransformSnap : MonoBehaviour
         stickerLabel.color = stickerTextColor;
         stickerLabel.enabled = !string.IsNullOrWhiteSpace(stickerText);
         stickerGroup.alpha = 0f;
-        sticker.localScale = Vector3.one * 0.55f;
+        stickerBasePosition = sticker.anchoredPosition;
+        sticker.localScale = Vector3.one * stickerEntryScale;
+        sticker.localRotation = Quaternion.Euler(0f, 0f, stickerAngle + stickerEntryRotation);
         stickerAnimation = Sequence.Create(useUnscaledTime: true)
-            .Chain(Tween.Scale(sticker, Vector3.one, Mathf.Max(0.001f, stickerPopDuration), Ease.OutBack))
-            .Group(Tween.Alpha(stickerGroup, 1f, Mathf.Max(0.001f, stickerPopDuration)))
+            .Chain(Tween.Alpha(stickerGroup, 1f, Mathf.Max(0.001f, stickerPopDuration)))
+            .Chain(Tween.Scale(sticker, Vector3.one * 0.95f, Mathf.Max(0.001f, stickerSlamDuration), Ease.InQuad))
+            .Group(Tween.LocalRotation(sticker, Quaternion.Euler(0f, 0f, stickerAngle), Mathf.Max(0.001f, stickerSlamDuration)))
+            .Chain(Tween.Scale(sticker, Vector3.one, Mathf.Max(0.001f, stickerReboundDuration), Ease.OutQuad));
+        if (stickerShakeDuration > 0f)
+            stickerAnimation = stickerAnimation.Chain(Tween.Custom(0f, 1f, stickerShakeDuration, progress =>
+            {
+                float phase = progress * stickerShakeDuration * stickerShakeFrequency * Mathf.PI * 2f;
+                float falloff = (1f - progress) * (1f - progress);
+                sticker.anchoredPosition = stickerBasePosition + new Vector2(
+                    Mathf.Cos(phase) * stickerShakePosition.x, Mathf.Sin(phase * 1.3f) * stickerShakePosition.y) * falloff;
+                sticker.localRotation = Quaternion.Euler(0f, 0f,
+                    stickerAngle + Mathf.Cos(phase) * stickerShakeRotation * falloff);
+            }, ease: Ease.Linear, useUnscaledTime: true));
+        stickerAnimation = stickerAnimation
             .ChainDelay(Mathf.Max(0f, stickerHoldDuration))
-            .Chain(Tween.Alpha(stickerGroup, 0f, Mathf.Max(0.001f, stickerExitDuration)));
+            .Chain(Tween.Scale(sticker, Vector3.one * 0.8f, Mathf.Max(0.001f, stickerExitDuration), Ease.InQuad))
+            .Group(Tween.Alpha(stickerGroup, 0f, Mathf.Max(0.001f, stickerExitDuration)));
     }
 
     private void RestoreInitialPose()
