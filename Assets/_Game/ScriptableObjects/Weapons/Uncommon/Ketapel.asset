@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Ketapel
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 1
-  usageDuration: 30
+  unlimitedAmmo: 0
+  maxAmmo: 50
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: HMM!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 80
+  damageType: {fileID: 0}
   fireRate: 1.5
   enableRecoil: 1
   upwardKick: 6

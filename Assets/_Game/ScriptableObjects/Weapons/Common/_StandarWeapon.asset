@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: _StandarWeapon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 0
-  usageDuration: 30
+  unlimitedAmmo: 1
+  maxAmmo: 30
   sprite: {fileID: -1994921223, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   visualPrefab: {fileID: 0}
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}

@@ -19,12 +19,24 @@ public sealed class WeaponDataTests
         Assert.That(weapon.ShotInterval, Is.EqualTo(interval).Within(0.0001f));
     }
 
-    [Test]
-    public void UsageDuration_ClampsNegativeValues()
+    [TestCase(120, 120)]
+    [TestCase(0, 1)]
+    [TestCase(-5, 1)]
+    public void MaxAmmo_ClampsToAtLeastOneShot(int value, int expected)
     {
         var serialized = new SerializedObject(weapon);
-        serialized.FindProperty("usageDuration").floatValue = -1;
+        serialized.FindProperty("maxAmmo").intValue = value;
         serialized.ApplyModifiedPropertiesWithoutUndo();
-        Assert.That(weapon.UsageDuration, Is.Zero);
+        Assert.That(weapon.MaxAmmo, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void UnlimitedAmmo_DefaultsToLimited()
+    {
+        Assert.That(weapon.UnlimitedAmmo, Is.False);
+        var serialized = new SerializedObject(weapon);
+        serialized.FindProperty("unlimitedAmmo").boolValue = true;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+        Assert.That(weapon.UnlimitedAmmo, Is.True);
     }
 }

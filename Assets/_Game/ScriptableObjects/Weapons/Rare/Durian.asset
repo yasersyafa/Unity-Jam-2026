@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Durian
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 2
-  usageDuration: 25
+  unlimitedAmmo: 0
+  maxAmmo: 50
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: EWW!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 130
+  damageType: {fileID: 11400000, guid: 9cf1e1ea4bd34b09a05dd5cc44a18fdb, type: 2}
   fireRate: 1
   enableRecoil: 0
   upwardKick: 0

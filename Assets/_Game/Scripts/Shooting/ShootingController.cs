@@ -26,11 +26,19 @@ public sealed class ShootingController : MonoBehaviour
     private bool hasAim;
     private bool shootingAllowed = true;
     private int resumeFrame;
+    private int ammo;
+    private bool ammoInitialized; // OnEnable refills only the initial weapon, not on every re-enable
 
     public event Action ShotFired;
     public event Action<WeaponData> WeaponEquipped;
+    /// <summary>Raised after a shot spends ammo and when a weapon refills it.</summary>
+    public event Action AmmoChanged;
 
     public WeaponData CurrentWeapon => weapon;
+    /// <summary>Remaining shots for the current weapon; ignore when the weapon has unlimited ammo.</summary>
+    public int Ammo => ammo;
+    /// <summary>False once a limited weapon runs dry: the player can still aim and take damage but not attack.</summary>
+    public bool HasAmmo => weapon == null || weapon.UnlimitedAmmo || ammo > 0;
     public double NextShotTime => nextShot;
     public float ShotInterval => weapon != null ? weapon.ShotInterval : 0f;
     public bool IsSemiAutomatic => weapon != null && weapon.FiringMode == WeaponData.FireMode.SemiAutomatic;
@@ -78,6 +86,7 @@ public sealed class ShootingController : MonoBehaviour
         fire = attack.action.Clone();
         fire.Enable();
         feedback.SetWeapon(weapon);
+        if (!ammoInitialized) Refill();
         previousCursorVisible = Cursor.visible;
         ownsCursor = true;
         cursorMode = false;
@@ -92,7 +101,7 @@ public sealed class ShootingController : MonoBehaviour
         bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
         if (feedback != null) feedback.SetContinuousFire(shootingAllowed && !cursorMode
             && Mouse.current != null && Application.isFocused && Time.timeScale > 0f
-            && !escape && !overUI && fire != null && weapon != null
+            && !escape && !overUI && fire != null && weapon != null && HasAmmo
             && weapon.FiringMode == WeaponData.FireMode.Automatic && fire.IsPressed());
         if (!shootingAllowed || Time.frameCount == resumeFrame) { UpdateCursorVisibility(); return; }
         if (Mouse.current == null) return;
@@ -125,19 +134,19 @@ public sealed class ShootingController : MonoBehaviour
             : fire.WasPressedThisFrame();
         if (UnityEngine.EventSystems.EventSystem.current != null
             && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
-        if (!wantsToFire || Time.timeAsDouble < nextShot)
+        if (!wantsToFire || !HasAmmo || Time.timeAsDouble < nextShot)
             return;
         nextShot = Time.timeAsDouble + weapon.ShotInterval;
+        if (!weapon.UnlimitedAmmo)
+        {
+            ammo--;
+            AmmoChanged?.Invoke();
+        }
         ShotFired?.Invoke();
         // Camera shake is removed before Update; hit selection precedes this shot's recoil.
-        Ray ray = gameplayCamera.ScreenPointToRay(aim);
-        RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, hitMask);
-        if (hit.collider != null)
-        {
-            IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
-            target?.TakeDamage(weapon.Damage);
-        }
-        feedback.PlayShot(hit.collider != null);
+        // The weapon's damage type decides which targets this shot reaches (single, piercing, explosion, cone...).
+        bool hit = weapon.DamageType.Apply(new ShotContext(gameplayCamera, aim, weapon.Damage, hitMask));
+        feedback.PlayShot(hit);
     }
 
     public void EquipWeapon(WeaponData data)
@@ -145,7 +154,15 @@ public sealed class ShootingController : MonoBehaviour
         if (data == null) return;
         weapon = data;
         if (feedback != null) feedback.SetWeapon(data);
+        Refill();
         WeaponEquipped?.Invoke(data);
+    }
+
+    private void Refill()
+    {
+        ammoInitialized = true;
+        ammo = weapon != null ? weapon.MaxAmmo : 0;
+        AmmoChanged?.Invoke();
     }
 
     private void UpdateCursorVisibility()

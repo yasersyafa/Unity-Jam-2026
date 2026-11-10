@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: M4A1
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 3
-  usageDuration: 20
+  unlimitedAmmo: 0
+  maxAmmo: 150
   sprite: {fileID: 21300000, guid: 2b15fb6e2c7f8487197eed6eb7906e82, type: 3}
   visualPrefab: {fileID: 6953167369110591464, guid: ae2655a0cbb08433a873618be7ecfaaf, type: 3}
+  stickerSprite: {fileID: 498814163, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: GARR!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 0
   damage: 35
+  damageType: {fileID: 0}
   fireRate: 10
   enableRecoil: 1
   upwardKick: 18

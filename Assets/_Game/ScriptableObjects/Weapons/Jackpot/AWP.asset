@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: AWP
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 4
-  usageDuration: 8
+  unlimitedAmmo: 0
+  maxAmmo: 25
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 498814163, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: VHOMB!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 2500
+  damageType: {fileID: 11400000, guid: 4d87edafde164366a0a79a3511bef4e2, type: 2}
   fireRate: 1.5
   enableRecoil: 1
   upwardKick: 65

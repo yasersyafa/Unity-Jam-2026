@@ -1,11 +1,14 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(-200)]
 public sealed class SlotGameplayFlow : MonoBehaviour
 {
+    private const string UnlimitedLabel = "Unlimited"; // plain text: the HUD fonts may not include an infinity glyph
+
     [SerializeField] private SlotMachineView machine;
     [SerializeField] private SlotWeaponRewards rewards;
     [SerializeField] private ShootingController shooting;
@@ -15,9 +18,11 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     [Tooltip("Disable when a GameStateManager decides when the first slot opens.")]
     [SerializeField] private bool openOnStart = true;
     [SerializeField] private TextMeshProUGUI status;
-    [Header("Weapon Duration UI")]
-    [SerializeField] private Slider weaponDurationSlider;
-    [SerializeField] private TextMeshProUGUI weaponDurationText;
+    [Header("Weapon Ammo UI")]
+    [FormerlySerializedAs("weaponDurationSlider")]
+    [SerializeField] private Slider ammoSlider;
+    [FormerlySerializedAs("weaponDurationText")]
+    [SerializeField] private TextMeshProUGUI ammoText;
 
     private InputAction input;
     private float remaining;
@@ -25,48 +30,43 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     private bool open;
     private bool awarded;
     private bool closing;
-    private bool queuedSpin;
     private bool started;
-    private float currentWeaponDuration;
-    private float weaponRemainingDuration;
-    private bool weaponActive;
-    private TextMeshProUGUI lastStatusTarget, lastDurationTarget;
-    private WeaponData lastStatusWeapon, lastDurationWeapon;
+    private TextMeshProUGUI lastStatusTarget, lastAmmoTarget;
+    private WeaponData lastStatusWeapon, lastAmmoWeapon;
     private string lastMissingTiers;
     private SlotTier lastStatusTier;
-    private double lastStatusWeaponTime = double.NaN, lastStatusCooldown = double.NaN;
-    private double lastDurationTime = double.NaN, lastDurationMaximum = double.NaN;
-    private bool lastOpen, lastDead, lastCooldownActive;
+    private double lastStatusCooldown = double.NaN;
+    private int lastStatusAmmo = int.MinValue, lastAmmo = int.MinValue;
+    private bool lastOpen, lastDead, lastCooldownActive, lastOutOfAmmo;
 
     private static double DisplayTime(float seconds) => System.Math.Round(seconds, 1, System.MidpointRounding.ToEven);
 
     public float SlotCooldown => slotCooldown;
     public float RemainingCooldown => remaining;
-    public float CurrentWeaponDuration => currentWeaponDuration;
-    public float WeaponRemainingDuration => weaponRemainingDuration;
     public bool IsOpen => open;
     /// <summary>When false the player cannot open the slot with the interact input.</summary>
     public bool ManualOpenAllowed { get; set; } = true;
     /// <summary>Set before Start to stop the slot from opening automatically.</summary>
     public bool OpenOnStart { get => openOnStart; set => openOnStart = value; }
 
-    public void ConfigureDurationUI(Slider slider, TextMeshProUGUI text = null)
-    {
-        lastDurationTarget = null;
-        weaponDurationSlider = slider;
-        weaponDurationText = text;
-        UpdateWeaponDurationUI();
-    }
+    private WeaponData CurrentWeapon => shooting != null ? shooting.CurrentWeapon : rewards != null ? rewards.CurrentWeapon : null;
+    private bool HasLimitedAmmo => shooting != null && shooting.CurrentWeapon != null && !shooting.CurrentWeapon.UnlimitedAmmo;
+    /// <summary>True when the current weapon is out of ammo, so the player must open the slot to attack again.</summary>
+    public bool IsOutOfAmmo => shooting != null && !shooting.HasAmmo;
+    /// <summary>Remaining ammo as 0..1; 1 for unlimited weapons or when no weapon is equipped.</summary>
+    public float AmmoRatio => HasLimitedAmmo ? Mathf.Clamp01(shooting.Ammo / (float)shooting.CurrentWeapon.MaxAmmo) : 1f;
 
-    public float GetEffectiveWeaponDuration(WeaponData weapon)
+    public void ConfigureAmmoUI(Slider slider, TextMeshProUGUI text = null)
     {
-        float configuredDuration = weapon != null ? weapon.UsageDuration : slotCooldown;
-        return Mathf.Max(slotCooldown, configuredDuration);
+        lastAmmoTarget = null;
+        ammoSlider = slider;
+        ammoText = text;
+        UpdateAmmoUI();
     }
 
     private void OnEnable()
     {
-        lastStatusTarget = lastDurationTarget = null;
+        lastStatusTarget = lastAmmoTarget = null;
         input = interact.action.Clone();
         input.Enable();
         rewards.SetShootingController(shooting);
@@ -86,10 +86,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         awarded = true;
         machine.PresentReward(weapon);
         machine.SetSpinAllowed(false);
-        currentWeaponDuration = GetEffectiveWeaponDuration(weapon);
-        weaponRemainingDuration = currentWeaponDuration;
-        weaponActive = true;
-        UpdateWeaponDurationUI();
+        UpdateAmmoUI();
     }
 
     public void Open()
@@ -99,21 +96,10 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         open = true;
         awarded = false;
         closing = false;
-        queuedSpin = false;
         Time.timeScale = 0f;
         shooting.SetShootingAllowed(false);
         machine.SetPanelVisible(true);
         machine.SetSpinAllowed(string.IsNullOrEmpty(rewards.MissingTiers));
-    }
-
-    public void ForceRoll()
-    {
-        if (open || (player != null && player.IsDead)) return;
-        Open();
-        if (machine != null)
-        {
-            queuedSpin = true;
-        }
     }
 
     private void Update()
@@ -123,15 +109,10 @@ public sealed class SlotGameplayFlow : MonoBehaviour
             if (machine == null || !machine.isActiveAndEnabled || (player != null && player.IsDead))
             {
                 Time.timeScale = previousTimeScale;
-                open = queuedSpin = closing = false;
+                open = closing = false;
                 if (machine != null) machine.HidePanelImmediate();
                 if (shooting != null) shooting.SetShootingAllowed(player != null && !player.IsDead);
                 return;
-            }
-            if (queuedSpin && !machine.IsTransitioning)
-            {
-                queuedSpin = false;
-                machine.Spin();
             }
             if (awarded && !machine.IsPresenting && !closing)
             {
@@ -149,24 +130,14 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         else
         {
             remaining = Mathf.Max(0f, remaining - Time.deltaTime);
-
-            if (weaponActive)
-            {
-                weaponRemainingDuration = Mathf.Max(0f, weaponRemainingDuration - Time.deltaTime);
-                UpdateWeaponDurationUI();
-
-                if (!player.IsDead && weaponRemainingDuration <= 0f)
-                {
-                    ForceRoll();
-                }
-            }
-
+            // Running out of ammo never opens the slot by itself; the player has to choose to spin.
             if (ManualOpenAllowed && !player.IsDead && remaining <= 0f && input != null && input.WasPressedThisFrame())
             {
                 Open();
             }
         }
 
+        UpdateAmmoUI();
         UpdateStatusUI();
     }
 
@@ -178,40 +149,41 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         string missing = rewards.MissingTiers;
         bool dead = player != null && player.IsDead;
         bool cooldownActive = remaining > 0f;
-        double weaponTime = weapon != null ? DisplayTime(weaponRemainingDuration) : 0;
+        bool outOfAmmo = IsOutOfAmmo;
+        int ammo = HasLimitedAmmo ? shooting.Ammo : -1;
         double cooldown = !open && !dead && cooldownActive ? DisplayTime(remaining) : 0;
         if (lastStatusTarget == status && lastStatusWeapon == weapon && lastStatusTier == tier
             && lastMissingTiers == missing && lastOpen == open && lastDead == dead && lastCooldownActive == cooldownActive
-            && lastStatusWeaponTime == weaponTime && lastStatusCooldown == cooldown) return;
+            && lastOutOfAmmo == outOfAmmo && lastStatusAmmo == ammo && lastStatusCooldown == cooldown) return;
         lastStatusTarget = status; lastStatusWeapon = weapon; lastStatusTier = tier;
         lastMissingTiers = missing; lastOpen = open; lastDead = dead; lastCooldownActive = cooldownActive;
-        lastStatusWeaponTime = weaponTime; lastStatusCooldown = cooldown;
-        string weaponInfo = weapon != null ? $"{weapon.name} | {tier} | Durasi: {weaponRemainingDuration:0.0}s\n" : "";
-        status.text = weaponInfo
+        lastOutOfAmmo = outOfAmmo; lastStatusAmmo = ammo; lastStatusCooldown = cooldown;
+        string weaponInfo = weapon != null
+            ? $"{weapon.name} | {tier} | Ammo: {(ammo < 0 ? UnlimitedLabel : $"{ammo}/{weapon.MaxAmmo}")}\n" : "";
+        string empty = !open && !dead && outOfAmmo ? "Ammo habis! " : "";
+        status.text = weaponInfo + empty
             + (open ? (string.IsNullOrEmpty(missing) ? "Spin untuk lanjut" : "Isi weapon: " + missing)
             : dead ? "Player kalah" : cooldownActive ? $"Slot: {remaining:0.0}s" : "Interact: buka slot");
     }
 
-    private void UpdateWeaponDurationUI()
+    private void UpdateAmmoUI()
     {
-        if (weaponDurationSlider != null)
+        var weapon = CurrentWeapon;
+        bool limited = HasLimitedAmmo;
+        int ammo = limited ? shooting.Ammo : -1;
+        if (ammoSlider != null)
         {
-            weaponDurationSlider.minValue = 0f;
-            weaponDurationSlider.maxValue = currentWeaponDuration > 0f ? currentWeaponDuration : 1f;
-            weaponDurationSlider.value = weaponRemainingDuration;
+            ammoSlider.minValue = 0f;
+            ammoSlider.maxValue = limited ? weapon.MaxAmmo : 1f;
+            ammoSlider.value = limited ? ammo : 1f;
         }
 
-        if (weaponDurationText != null)
+        if (ammoText != null)
         {
-            var weapon = rewards != null ? rewards.CurrentWeapon : null;
-            double time = DisplayTime(weaponRemainingDuration);
-            double maximum = DisplayTime(currentWeaponDuration);
-            if (lastDurationTarget == weaponDurationText && lastDurationWeapon == weapon
-                && lastDurationTime == time && lastDurationMaximum == maximum) return;
-            lastDurationTarget = weaponDurationText; lastDurationWeapon = weapon;
-            lastDurationTime = time; lastDurationMaximum = maximum;
+            if (lastAmmoTarget == ammoText && lastAmmoWeapon == weapon && lastAmmo == ammo) return;
+            lastAmmoTarget = ammoText; lastAmmoWeapon = weapon; lastAmmo = ammo;
             string weaponName = weapon != null ? weapon.name : "Weapon";
-            weaponDurationText.text = $"{weaponName}: {weaponRemainingDuration:0.0}s / {currentWeaponDuration:0.0}s";
+            ammoText.text = limited ? $"{weaponName}: {ammo} / {weapon.MaxAmmo}" : $"{weaponName}: {UnlimitedLabel}";
         }
     }
 
@@ -226,6 +198,6 @@ public sealed class SlotGameplayFlow : MonoBehaviour
             if (machine != null) machine.HidePanelImmediate();
         }
         open = false;
-        queuedSpin = closing = false;
+        closing = false;
     }
 }

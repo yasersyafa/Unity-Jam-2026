@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Enemy))]
-public sealed class EnemyApproach : MonoBehaviour
+public sealed class EnemyApproach : MonoBehaviour, ISlowable
 {
     public const float SafeSpiralViewportHalfWidth = 0.43f;
     public const float SafeSpiralViewportHalfHeight = 0.35f;
@@ -27,6 +27,19 @@ public sealed class EnemyApproach : MonoBehaviour
         periodMultiplier = Mathf.Max(0.1f, period);
     }
     public bool IsFinished => enemy == null || enemy.IsDead || !isActiveAndEnabled || finished;
+
+    private float slowMultiplier = 1f;
+    private float slowRemaining;
+    /// <summary>Current speed scale applied to every timed behaviour (movement, entry, ranged fire).</summary>
+    public float SpeedMultiplier => slowRemaining > 0f ? slowMultiplier : 1f;
+
+    public void ApplySlow(float speedMultiplier, float duration)
+    {
+        float multiplier = Mathf.Clamp(speedMultiplier, 0.05f, 1f);
+        // Strongest slow wins while active; any hit refreshes the duration.
+        slowMultiplier = slowRemaining > 0f ? Mathf.Min(slowMultiplier, multiplier) : multiplier;
+        slowRemaining = Mathf.Max(slowRemaining, duration);
+    }
     public void Initialize(PlayerHealth player)
     {
         enemy = GetComponent<Enemy>();
@@ -120,16 +133,19 @@ public sealed class EnemyApproach : MonoBehaviour
     {
         if (Time.deltaTime <= 0f) return;
         if (!initialized || IsFinished || target == null || target.IsDead) return;
+        // Every behaviour below runs off elapsed time, so scaling the step slows all of it at once.
+        float step = Time.deltaTime * SpeedMultiplier;
+        slowRemaining = Mathf.Max(0f, slowRemaining - Time.deltaTime);
         if (entering)
         {
-            entryElapsed += Time.deltaTime;
+            entryElapsed += step;
             float progress = Mathf.Clamp01(entryElapsed / enemy.Data.EntryDuration);
             float u = 1f - Mathf.Pow(1f - progress, 3f);
             transform.position = (1f - u) * (1f - u) * entryStart + 2f * (1f - u) * u * control + u * u * destination;
             if (progress >= 1f) entering = false;
             return;
         }
-        elapsed += Time.deltaTime;
+        elapsed += step;
         if (enemy.Data.Movement == EnemyData.Behavior.Ranged)
         {
             if (elapsed >= nextShot)

@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Rocket_Launcher
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 4
-  usageDuration: 8
+  unlimitedAmmo: 0
+  maxAmmo: 20
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 498814163, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: AHH!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 1000
+  damageType: {fileID: 11400000, guid: 9e61932f71464eff9357f032038e6a24, type: 2}
   fireRate: 1.5
   enableRecoil: 1
   upwardKick: 45

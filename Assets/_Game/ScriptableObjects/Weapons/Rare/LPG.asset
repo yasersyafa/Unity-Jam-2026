@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: LPG
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 2
-  usageDuration: 25
+  unlimitedAmmo: 0
+  maxAmmo: 60
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: -7374239419574202304, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: BLOK!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 125
+  damageType: {fileID: 11400000, guid: 174c8e30466044de98718539dd8305f3, type: 2}
   fireRate: 1.3
   enableRecoil: 0
   upwardKick: 0

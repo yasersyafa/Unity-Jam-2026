@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Flamethrower
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 3
-  usageDuration: 20
+  unlimitedAmmo: 0
+  maxAmmo: 200
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: FLAME!!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 0
   damage: 10
+  damageType: {fileID: 11400000, guid: 5ee47e32d092487e85ba1c67b93a68bf, type: 2}
   fireRate: 20
   enableRecoil: 1
   upwardKick: 6

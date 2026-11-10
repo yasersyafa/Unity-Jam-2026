@@ -49,8 +49,8 @@ public static class ComicUiAuthoring
             var label = ChildText(rewardRoot, "Label", new Vector2(0.5f, 0.2f), new Vector2(360, 65), 24);
             Assign(reward, "profile", slotProfile); Assign(reward, "visual", rewardRoot); Assign(reward, "group", rewardGroup);
             Assign(reward, "icon", icon); Assign(reward, "label", label); Assign(machine, "rewardPresentation", reward);
-            Slider duration = Read<Slider>(flow, "weaponDurationSlider");
-            var durationFeedback = Get<WeaponDurationFeedback>(duration.gameObject);
+            Slider duration = Read<Slider>(flow, "ammoSlider");
+            var durationFeedback = Get<WeaponAmmoFeedback>(duration.gameObject);
             Assign(durationFeedback, "flow", flow); Assign(durationFeedback, "player", player); Assign(durationFeedback, "profile", hudProfile);
             Assign(durationFeedback, "accent", Accent(duration.transform, "CriticalDurationAccent"));
             Transform canvas = duration.GetComponentInParent<Canvas>().transform;

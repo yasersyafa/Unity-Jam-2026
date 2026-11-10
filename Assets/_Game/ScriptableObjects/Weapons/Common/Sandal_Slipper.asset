@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Sandal_Slipper
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 0
-  usageDuration: 30
+  unlimitedAmmo: 1
+  maxAmmo: 30
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 498814163, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: KIWW!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 15
+  damageType: {fileID: 0}
   fireRate: 4.5
   enableRecoil: 1
   upwardKick: 6

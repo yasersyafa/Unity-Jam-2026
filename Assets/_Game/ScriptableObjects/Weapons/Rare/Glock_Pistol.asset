@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Glock_Pistol
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 2
-  usageDuration: 25
+  unlimitedAmmo: 0
+  maxAmmo: 90
   sprite: {fileID: 0}
   visualPrefab: {fileID: 0}
+  stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerText: HMPH!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1
   damage: 60
+  damageType: {fileID: 0}
   fireRate: 4.5
   enableRecoil: 1
   upwardKick: 18

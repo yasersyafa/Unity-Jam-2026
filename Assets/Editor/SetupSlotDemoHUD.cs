@@ -320,14 +320,14 @@ public static class SetupSlotDemoHUD
 
         // 5. Connect to SlotGameplayFlow
         var flowSo = new SerializedObject(gameplayFlow);
-        var sliderProp = flowSo.FindProperty("weaponDurationSlider");
-        var textProp = flowSo.FindProperty("weaponDurationText");
+        var sliderProp = flowSo.FindProperty("ammoSlider");
+        var textProp = flowSo.FindProperty("ammoText");
         if (sliderProp != null) sliderProp.objectReferenceValue = durationSlider;
         if (textProp != null) textProp.objectReferenceValue = durationTmp;
         flowSo.ApplyModifiedProperties();
 
-        // 6. Connect WeaponDurationFeedback & WaveBannerPresentation if in scene
-        foreach (var wdf in Object.FindObjectsByType<WeaponDurationFeedback>())
+        // 6. Connect WeaponAmmoFeedback & WaveBannerPresentation if in scene
+        foreach (var wdf in Object.FindObjectsByType<WeaponAmmoFeedback>())
         {
             var so = new SerializedObject(wdf);
             var fProp = so.FindProperty("flow");
