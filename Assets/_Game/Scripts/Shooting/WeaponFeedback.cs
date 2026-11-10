@@ -22,6 +22,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     [SerializeField] private CombatHudAnimationProfile animationProfile;
     [Tooltip("Dedicated parent of the weapon image. Recoil remains on the image child.")]
     [SerializeField] private RectTransform equipRoot;
+    [SerializeField] private WeaponStickerPresentation sticker;
 
     [Header("Aim & Sway Presentation")]
     [Tooltip("Base position offset for the weapon (negative X moves weapon left).")]
@@ -93,6 +94,7 @@ public sealed class WeaponFeedback : MonoBehaviour
             visualInstance = null;
         }
         weapon = data;
+        if (sticker != null) sticker.SetWeapon(data);
         weaponImage.sprite = data.Sprite;
         weaponImage.enabled = data.VisualPrefab == null;
         if (data.VisualPrefab != null)
@@ -104,6 +106,7 @@ public sealed class WeaponFeedback : MonoBehaviour
             visualRect.offsetMin = visualRect.offsetMax = Vector2.zero;
             visualInstance.Initialize(data.Sprite);
         }
+        if (sticker != null) sticker.transform.SetAsLastSibling();
         PlayEquip();
     }
 
@@ -168,11 +171,13 @@ public sealed class WeaponFeedback : MonoBehaviour
     public void SetContinuousFire(bool value)
     {
         if (visualInstance != null) visualInstance.SetContinuousFire(value);
+        if (sticker != null) sticker.SetContinuousFire(value);
     }
 
     public void PlayShot(bool hit)
     {
         if (visualInstance != null) visualInstance.PlayShot();
+        if (sticker != null) sticker.PlayShot();
         if (weapon != null && weapon.EnableRecoil && combatCamera != null) combatCamera.Play(cameraKick, 0.08f);
         if (weapon != null && weapon.EnableRecoil)
         {
@@ -203,6 +208,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     {
         InitializeFeedback();
         if (visualInstance != null) visualInstance.ResetEffects();
+        if (sticker != null) sticker.Cancel();
         equipTween.Stop();
         if (equipRoot != null) { equipRoot.anchoredPosition = equipPosition; equipRoot.localScale = equipScale; }
         weaponOrigin = rawOrigin + weaponOffset;

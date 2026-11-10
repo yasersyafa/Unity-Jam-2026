@@ -3316,6 +3316,7 @@ MonoBehaviour:
   cameraKick: 0.035
   animationProfile: {fileID: 11400000, guid: a1c51b36f0f0a44569ab9417e6df635f, type: 2}
   equipRoot: {fileID: 2474399735224031789}
+  sticker: {fileID: 4990551331970666628}
   weaponOffset: {x: -50, y: 0}
   maxSwayX: 42.5
   maxSwayY: 18
@@ -13689,6 +13690,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &4990551331970666628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1519256450337728424, guid: 4accc62d850054256a93c194f08a3331, type: 3}
+  m_PrefabInstance: {fileID: 5788396900116805420}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662f9a3b3d6906744b5936f1b1bdac1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::WeaponStickerPresentation
 --- !u!1001 &8538900726358472409
 PrefabInstance:
   m_ObjectHideFlags: 0

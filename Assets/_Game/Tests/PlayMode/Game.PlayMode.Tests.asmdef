@@ -3,7 +3,8 @@
     "references": [
         "Game.Runtime",
         "Unity.TextMeshPro",
-        "Unity.ugui"
+        "Unity.ugui",
+        "PrimeTween.Runtime"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -22,6 +22,11 @@ public sealed class WeaponData : ScriptableObject
     [Tooltip("Optional UI visual prefab with its own muzzle and effects. Empty uses the legacy sprite.")]
     [SerializeField] private WeaponVisual visualPrefab;
     public WeaponVisual VisualPrefab => visualPrefab;
+    [Header("Comic Sticker")]
+    [SerializeField] private Sprite stickerSprite;
+    [SerializeField, TextArea] private string stickerText;
+    public Sprite StickerSprite => stickerSprite;
+    public string StickerText => stickerText;
     [Header("Audio")]
     [SerializeField] private AudioCue shotSound;
     public AudioCue ShotSound => shotSound;
