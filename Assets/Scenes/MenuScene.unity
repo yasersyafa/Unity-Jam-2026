@@ -149,8 +149,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1725009933}
-  - {fileID: 1611796436}
   - {fileID: 683927877}
+  - {fileID: 1611796436}
   m_Father: {fileID: 1482993877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -171,12 +171,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
   m_Padding:
-    m_Left: 0
+    m_Left: 75
     m_Right: 0
-    m_Top: 0
+    m_Top: 200
     m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 0
+  m_ChildAlignment: 3
+  m_Spacing: -35
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -301,7 +301,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 820, y: 240}
+  m_SizeDelta: {x: 410, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &683927878
 MonoBehaviour:
@@ -385,6 +385,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &683927890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 683927876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3f4779b863fe9d4282d80f61baed3fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComicButton
+  image: {fileID: 683927878}
+  normalSprite: {fileID: 21300000, guid: d4fa22bfdeabd59449b08f6e7c0b188b, type: 3}
+  hoverSprite: {fileID: 21300000, guid: bc6d6a947d28b434fa387e156bcc505f, type: 3}
+  hoverScale: 1.08
+  hoverTilt: -4
+  punchDuration: 0.18
+  pressedScale: 0.92
+  pressDuration: 0.06
+  pulseAmount: 0.03
+  beatsPerMinute: 120
 --- !u!1 &772724614
 GameObject:
   m_ObjectHideFlags: 0
@@ -1088,7 +1110,7 @@ GameObject:
   - component: {fileID: 1482993875}
   - component: {fileID: 1482993874}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: CanvasMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1216,7 +1238,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 820, y: 240}
+  m_SizeDelta: {x: 410, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1611796437
 MonoBehaviour:
@@ -1300,6 +1322,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1611796450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611796435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3f4779b863fe9d4282d80f61baed3fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComicButton
+  image: {fileID: 1611796437}
+  normalSprite: {fileID: 21300000, guid: d4fa22bfdeabd59449b08f6e7c0b188b, type: 3}
+  hoverSprite: {fileID: 21300000, guid: bc6d6a947d28b434fa387e156bcc505f, type: 3}
+  hoverScale: 1.08
+  hoverTilt: -4
+  punchDuration: 0.18
+  pressedScale: 0.92
+  pressDuration: 0.06
+  pulseAmount: 0.03
+  beatsPerMinute: 120
 --- !u!1 &1632018521
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,7 +1519,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 820, y: 240}
+  m_SizeDelta: {x: 410, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1725009934
 MonoBehaviour:
@@ -1572,50 +1616,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComicButton
   image: {fileID: 1725009934}
-  normalSprite: {fileID: 21300000, guid: d4fa22bfdeabd59449b08f6e7c0b188b, type: 3}
-  hoverSprite: {fileID: 21300000, guid: bc6d6a947d28b434fa387e156bcc505f, type: 3}
-  hoverScale: 1.08
-  hoverTilt: -4
-  punchDuration: 0.18
-  pressedScale: 0.92
-  pressDuration: 0.06
-  pulseAmount: 0.03
-  beatsPerMinute: 120
---- !u!114 &683927890
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 683927876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3f4779b863fe9d4282d80f61baed3fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicButton
-  image: {fileID: 683927878}
-  normalSprite: {fileID: 21300000, guid: d4fa22bfdeabd59449b08f6e7c0b188b, type: 3}
-  hoverSprite: {fileID: 21300000, guid: bc6d6a947d28b434fa387e156bcc505f, type: 3}
-  hoverScale: 1.08
-  hoverTilt: -4
-  punchDuration: 0.18
-  pressedScale: 0.92
-  pressDuration: 0.06
-  pulseAmount: 0.03
-  beatsPerMinute: 120
---- !u!114 &1611796450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1611796435}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3f4779b863fe9d4282d80f61baed3fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComicButton
-  image: {fileID: 1611796437}
   normalSprite: {fileID: 21300000, guid: d4fa22bfdeabd59449b08f6e7c0b188b, type: 3}
   hoverSprite: {fileID: 21300000, guid: bc6d6a947d28b434fa387e156bcc505f, type: 3}
   hoverScale: 1.08
