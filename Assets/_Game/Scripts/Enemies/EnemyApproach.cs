@@ -165,7 +165,8 @@ public sealed class EnemyApproach : MonoBehaviour
                     periodMultiplier,
                     enemy.Data.SpiralVerticalScale);
             }
-            else if (enemy.Data.Movement != EnemyData.Behavior.Charged)
+            else if (enemy.Data.Movement != EnemyData.Behavior.Charged
+                && enemy.Data.Movement != EnemyData.Behavior.ApproachOnly)
             {
                 float angle = elapsed * Mathf.PI * 2f / (enemy.Data.SwayPeriod * periodMultiplier) + phase;
                 float ramp = Mathf.Clamp01(elapsed / 0.2f);

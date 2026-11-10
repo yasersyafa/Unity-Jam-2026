@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Game/Enemy Data")]
 public sealed class EnemyData : ScriptableObject
 {
-    public enum Behavior { Normal, Ranged, Tank, Charged }
+    public enum Behavior { Normal = 0, Ranged = 1, Tank = 2, Charged = 3, ApproachOnly = 4 }
     [SerializeField] private Behavior behavior;
     [SerializeField] private EnemyProjectile projectilePrefab;
     [SerializeField, Min(0.1f)] private float shotInterval = 3f;
