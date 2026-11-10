@@ -12,6 +12,8 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     [SerializeField] private PlayerHealth player;
     [SerializeField] private InputActionReference interact;
     [SerializeField, Min(0f)] private float slotCooldown = 8f;
+    [Tooltip("Disable when a GameStateManager decides when the first slot opens.")]
+    [SerializeField] private bool openOnStart = true;
     [SerializeField] private TextMeshProUGUI status;
     [Header("Weapon Duration UI")]
     [SerializeField] private Slider weaponDurationSlider;
@@ -43,6 +45,10 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     public float CurrentWeaponDuration => currentWeaponDuration;
     public float WeaponRemainingDuration => weaponRemainingDuration;
     public bool IsOpen => open;
+    /// <summary>When false the player cannot open the slot with the interact input.</summary>
+    public bool ManualOpenAllowed { get; set; } = true;
+    /// <summary>Set before Start to stop the slot from opening automatically.</summary>
+    public bool OpenOnStart { get => openOnStart; set => openOnStart = value; }
 
     public void ConfigureDurationUI(Slider slider, TextMeshProUGUI text = null)
     {
@@ -65,14 +71,14 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         input.Enable();
         rewards.SetShootingController(shooting);
         rewards.WeaponAwarded += Awarded;
-        if (started) Open();
+        if (started && openOnStart) Open();
     }
 
     private void Start()
     {
         // Health initializes in Awake; this flow runs before other components in OnEnable.
         started = true;
-        Open();
+        if (openOnStart) Open();
     }
 
     private void Awarded(WeaponData weapon)
@@ -155,7 +161,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
                 }
             }
 
-            if (!player.IsDead && remaining <= 0f && input != null && input.WasPressedThisFrame())
+            if (ManualOpenAllowed && !player.IsDead && remaining <= 0f && input != null && input.WasPressedThisFrame())
             {
                 Open();
             }

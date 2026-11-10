@@ -38,9 +38,15 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private Vector2 slotJitter = new Vector2(0.015f, 0.015f);
     [Tooltip("When enabled, enemies in a group spawn in randomized slot order instead of fixed sequential order.")]
     [SerializeField] private bool randomizeSpawnOrder = true;
+    [Tooltip("Disable when a GameStateManager starts the waves through Begin().")]
+    [SerializeField] private bool startOnEnable = true;
 
     public event System.Action<int> WaveStarted;
     public event System.Action BossReady;
+    public event System.Action<BossEncounter> BossSpawned;
+    private bool runningWaves;
+    /// <summary>Set before OnEnable to wait for an explicit <see cref="Begin"/>.</summary>
+    public bool StartOnEnable { get => startOnEnable; set => startOnEnable = value; }
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
     private readonly List<int> spawnOrder = new List<int>();
 
@@ -58,7 +64,15 @@ public sealed class EnemySpawner : MonoBehaviour
         }
     }
 
-    private void OnEnable() { StartCoroutine(Run()); }
+    private void OnEnable() { if (startOnEnable) Begin(); }
+
+    /// <summary>Starts the wave sequence once; ignored while it is already running.</summary>
+    public void Begin()
+    {
+        if (!isActiveAndEnabled || runningWaves) return;
+        runningWaves = true;
+        StartCoroutine(Run());
+    }
 
     public static int EvaluateMaxAliveEnemies(int waveIndex, int baseMaxAlive = 3, int overrideMaxAlive = 0)
     {
@@ -282,6 +296,7 @@ public sealed class EnemySpawner : MonoBehaviour
         activeBoss.BeginEncounter(bossConfig, gameplayCamera, enemyParent, player,
             transform.root.GetComponentInChildren<ShootingController>(),
             transform.root.GetComponentInChildren<SlotGameplayFlow>());
+        BossSpawned?.Invoke(activeBoss);
     }
 
     private Vector3 PointOnPlane(Plane plane, Vector2 viewport)
@@ -298,5 +313,5 @@ public sealed class EnemySpawner : MonoBehaviour
         foreach (var projectile in GetComponentsInChildren<EnemyProjectile>())
         { projectile.gameObject.SetActive(false); Destroy(projectile.gameObject); }
     }
-    private void OnDisable() { StopAllCoroutines(); Cleanup(); }
+    private void OnDisable() { StopAllCoroutines(); runningWaves = false; Cleanup(); }
 }

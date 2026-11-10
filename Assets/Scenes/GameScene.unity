@@ -258,6 +258,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8980685921151321523, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -400,6 +404,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e909d88c717f4289b1225161641cdd14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootingController
+--- !u!1 &900000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 900000002}
+  - component: {fileID: 900000003}
+  m_Layer: 0
+  m_Name: GameStateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &900000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &900000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7ce7a2ec753453cb3f4312a39710f04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::GameStateManager
+  slots: {fileID: 1691777524}
+  spawner: {fileID: 0}
+  player: {fileID: 0}
+  shooting: {fileID: 0}
+  introDelay: 0.4
 --- !u!114 &900000101 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
@@ -528,6 +581,7 @@ MonoBehaviour:
   player: {fileID: 856696554}
   interact: {fileID: -5548793354506133487, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   slotCooldown: 8
+  openOnStart: 1
   status: {fileID: 856696542}
   weaponDurationSlider: {fileID: 2046924988}
   weaponDurationText: {fileID: 2066725538}
@@ -639,3 +693,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 856696541}
   - {fileID: 1980862530}
+  - {fileID: 900000002}

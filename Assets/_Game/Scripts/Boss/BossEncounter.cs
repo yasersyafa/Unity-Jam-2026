@@ -24,6 +24,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     private bool running;
     private GameObject hud;
     private UnityEngine.UI.Image fill;
+    public event System.Action Defeated;
 
     public void BeginEncounter(BossConfig data, Camera camera, Transform plane, PlayerHealth target, ShootingController gun, SlotGameplayFlow slotFlow)
     {
@@ -108,6 +109,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
         var button = Panel("Restart", panel.transform, new Vector2(0.2f, 0.1f), new Vector2(0.8f, 0.4f), new Color(0.2f, 0.4f, 0.6f));
         button.AddComponent<UnityEngine.UI.Button>().onClick.AddListener(() => { Time.timeScale = 1f; SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); });
         Label("Restart", button.transform, Vector2.zero, Vector2.one);
+        Defeated?.Invoke();
     }
     private void CreateHud()
     {
