@@ -10,6 +10,11 @@ public sealed class EnemyFeedback : MonoBehaviour
     [SerializeField] private Transform vfxAnchor;
     [SerializeField, Min(0.01f)] private float hitVfxLifetime = 2f;
     [SerializeField, Min(0.01f)] private float deathVfxLifetime = 2f;
+    [Header("Death Impact")]
+    [Tooltip("Near-freeze of game time when the robot explodes (unscaled seconds).")]
+    [SerializeField, Min(0f)] private float deathHitStop = 0.06f;
+    [SerializeField, Min(0f)] private float deathShakeStrength = 0.1f;
+    [SerializeField, Min(0f)] private float deathShakeDuration = 0.22f;
     private Vector3 scale;
     private Quaternion rotation;
     private Color color;
@@ -49,22 +54,32 @@ public sealed class EnemyFeedback : MonoBehaviour
         if (dead || visual == null || !isActiveAndEnabled) return 0f;
         dead = true;
         ResetVisual();
-        Spawn(deathVfxPrefab, deathVfxLifetime);
-        animation = Tween.Custom(0f, 1f, 0.35f, t =>
+        // Death VFX faces away from the camera so debris always flies "backwards" into the scene.
+        Camera view = Camera.main;
+        Spawn(deathVfxPrefab, deathVfxLifetime, view != null ? Quaternion.LookRotation(view.transform.forward) : (Quaternion?)null);
+        HitStop.Play(deathHitStop);
+        if (view != null && deathShakeStrength > 0f)
         {
-            float size = t < 0.25f ? Mathf.Lerp(1f, 1.2f, t / 0.25f) : Mathf.Lerp(1.2f, 0f, (t - 0.25f) / 0.75f);
+            if (!view.TryGetComponent(out CombatCameraFeedback shake)) shake = view.gameObject.AddComponent<CombatCameraFeedback>();
+            shake.Play(deathShakeStrength, deathShakeDuration);
+        }
+        // The VFX carries the explosion; the sprite only takes an electric tint and pops out.
+        // SpriteRenderer color multiplies the sprite, so a cyan tint reads as a short-circuit flash.
+        animation = Tween.Custom(0f, 1f, DeathDuration, t =>
+        {
+            float size = t < 0.4f ? Mathf.Lerp(1f, 1.15f, t / 0.4f) : Mathf.Lerp(1.15f, 0f, (t - 0.4f) / 0.6f);
             visual.transform.localScale = scale * size;
-            Color faded = color;
-            faded.a *= 1f - t;
-            visual.color = faded;
+            visual.color = Color.Lerp(ElectricTint, color, t);
         });
-        return 0.35f;
+        return DeathDuration;
     }
-    private void Spawn(GameObject prefab, float lifetime)
+    private const float DeathDuration = 0.12f;
+    private static readonly Color ElectricTint = new(0.45f, 0.95f, 1f, 1f);
+    private void Spawn(GameObject prefab, float lifetime, Quaternion? rotation = null)
     {
         if (prefab == null) return;
         Transform anchor = vfxAnchor != null ? vfxAnchor : transform;
-        Destroy(Instantiate(prefab, anchor.position, anchor.rotation), Mathf.Max(0.01f, lifetime));
+        VfxPool.Spawn(prefab, anchor.position, rotation ?? anchor.rotation, lifetime);
     }
     private void ResetVisual()
     {

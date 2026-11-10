@@ -205,10 +205,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFeedback
   visual: {fileID: 4599867642869431497}
   hitVfxPrefab: {fileID: 2170007468478245182, guid: 2724fe97daeaa484386019b4c247688c, type: 3}
-  deathVfxPrefab: {fileID: 2170007468478245182, guid: f1bc72e79a9174d2bbc260a781ba7170, type: 3}
+  deathVfxPrefab: {fileID: 9199836944444744846, guid: 06cec27f10c950e4b99b190269dcc0fc, type: 3}
   vfxAnchor: {fileID: 324796935960514321}
   hitVfxLifetime: 1
   deathVfxLifetime: 2
+  deathHitStop: 0.06
+  deathShakeStrength: 0.1
+  deathShakeDuration: 0.22
 --- !u!114 &4879427133820728688
 MonoBehaviour:
   m_ObjectHideFlags: 0

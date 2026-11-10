@@ -95,7 +95,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     public void Open()
     {
         if (open || (player != null && player.IsDead)) return;
-        previousTimeScale = Time.timeScale;
+        previousTimeScale = HitStop.UnfrozenTimeScale;
         open = true;
         awarded = false;
         closing = false;
