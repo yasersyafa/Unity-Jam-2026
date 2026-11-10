@@ -5524,6 +5524,19 @@ MonoBehaviour:
   clickedPosition: {x: 648.8, y: 137, z: 0}
   clickedRotation: {x: 0, y: 180, z: -180}
   returnDelay: 0.2
+  shakeDuration: 0.15
+  shakePosition: {x: 6, y: 4}
+  shakeRotation: 4
+  shakeFrequency: 24
+  stickerText: CRACK!
+  stickerTextColor: {r: 1, g: 1, b: 1, a: 1}
+  stickerSprite: {fileID: -7374239419574202304, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerOffset: {x: 0, y: 70}
+  stickerSize: {x: 360, y: 180}
+  stickerAngle: -10
+  stickerPopDuration: 0.08
+  stickerHoldDuration: 0.12
+  stickerExitDuration: 0.1
 --- !u!114 &2582071077424640011
 MonoBehaviour:
   m_ObjectHideFlags: 0
