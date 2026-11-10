@@ -747,7 +747,7 @@ MonoBehaviour:
   - {fileID: 5879466522827563547}
   - {fileID: 57022022102445296}
   - {fileID: 6092883591577791242}
-  panelPresentation: {fileID: 0}
+  panelPresentation: {fileID: 900000101}
   rewardPresentation: {fileID: 0}
 --- !u!1 &847541170
 GameObject:
@@ -2311,3 +2311,14 @@ SceneRoots:
   - {fileID: 1687286593}
   - {fileID: 1430159309}
   - {fileID: 1532177849}
+--- !u!114 &900000101 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 1273862078}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8283960897767492507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070c5031f31c434eb547dc4707be4bd2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SlotPanelPresentation

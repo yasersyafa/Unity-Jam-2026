@@ -24,6 +24,10 @@ public sealed class EnemyWave : ScriptableObject
     [Tooltip("Chance that up to 2 enemies spawn simultaneously (never more than 2)")]
     [Range(0f, 1f)] public float pairedSpawnChance = 0.3f;
 
+    [Header("Alive Cap Override")]
+    [Tooltip("Optional max alive enemy override for this wave (0 = use EnemySpawner progression: 3 at Wave 1, +1 at Wave 5/9/10).")]
+    [Min(0)] public int maxAliveEnemies = 0;
+
     [Min(0f)] public float delay = 1f;
     [Min(0f)] public float swayAmplitudeMultiplier = 1f;
     [Min(0.1f)] public float swayPeriodMultiplier = 1f;

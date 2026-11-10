@@ -400,6 +400,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e909d88c717f4289b1225161641cdd14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootingController
+--- !u!114 &900000101 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 856696541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856696552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070c5031f31c434eb547dc4707be4bd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotPanelPresentation
 --- !u!1 &1384764983
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +459,7 @@ MonoBehaviour:
   - {fileID: 856696550}
   - {fileID: 856696548}
   - {fileID: 856696546}
-  panelPresentation: {fileID: 0}
+  panelPresentation: {fileID: 900000101}
   rewardPresentation: {fileID: 0}
 --- !u!4 &1384764985
 Transform:

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wave01
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
   groups:
-  - formation: {fileID: 11400000, guid: 0622885c782e547a09cd5063a0813481, type: 2}
+  - formation: {fileID: 11400000, guid: 3a879942bdb24695a0069034d05c51af, type: 2}
     enemies:
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}

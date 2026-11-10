@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Wave02
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWave
   groups:
-  - formation: {fileID: 11400000, guid: 72e09546345845eba3f7be54e7ac5dda, type: 2}
+  - formation: {fileID: 11400000, guid: b2d3608f10ff44d18ad7037d90026d81, type: 2}
     enemies:
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
-    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
+    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
     - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
     - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
-    - {fileID: 4879427133820728688, guid: 3981b608f12645859e39d8784d5f64a5, type: 3}
+    - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
     - {fileID: 4879427133820728688, guid: c24c393c3218457dbe243b6168951e2d, type: 3}
   - formation: {fileID: 11400000, guid: 104e265deef6436c914b28b7375378c1, type: 2}
     enemies:
