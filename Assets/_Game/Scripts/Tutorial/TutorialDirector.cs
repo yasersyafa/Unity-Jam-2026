@@ -28,7 +28,10 @@ public sealed class TutorialDirector : MonoBehaviour
     [SerializeField] private Camera gameplayCamera;
     [Tooltip("Enemy for the survive lesson; the first enemy of the first wave when empty.")]
     [SerializeField] private EnemyApproach scriptedEnemy;
+    [Tooltip("Viewport position the survive-lesson enemy flies to.")]
     [SerializeField] private Vector2 scriptedEnemySlot = new(0.5f, 0.62f);
+    [Tooltip("Target positions per step, in viewport coordinates. Previewed as gizmos when this object is selected.")]
+    [SerializeField] private TutorialLayout layout = new();
     [Tooltip("Target diameter as a fraction of screen height.")]
     [SerializeField, Range(0.02f, 0.3f)] private float targetSize = 0.1f;
     [Tooltip("Unscaled seconds without progress before the step hint appears.")]
@@ -64,6 +67,7 @@ public sealed class TutorialDirector : MonoBehaviour
     public ShootingController Shooting => shooting;
     public SlotGameplayFlow Slots => slots;
     public StyleMeter Style => style;
+    public TutorialLayout Layout => layout;
     public int WeaponsEquipped { get; private set; }
     public int HitCount { get; private set; }
     public int ActiveTargetCount
@@ -256,6 +260,34 @@ public sealed class TutorialDirector : MonoBehaviour
         var approach = spawner.SpawnScripted(scriptedEnemy != null ? scriptedEnemy : spawner.FirstWaveEnemy, scriptedEnemySlot);
         spawnedEnemy = approach != null ? approach.GetComponent<Enemy>() : null;
         return spawnedEnemy;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        var gizmoSpawner = spawner != null ? spawner : FindAnyObjectByType<EnemySpawner>();
+        if (gizmoSpawner == null || layout == null) return;
+        DrawPoints(gizmoSpawner, layout.AimMarkers, Vector2.zero, Color.cyan);
+        DrawPoints(gizmoSpawner, layout.StillTargets, Vector2.zero, Color.yellow);
+        DrawPoints(gizmoSpawner, layout.MovingTargets, layout.MovingSwing, new Color(1f, 0.5f, 0f));
+        DrawPoints(gizmoSpawner, layout.ComboLanes, layout.ComboSwing, Color.magenta);
+        DrawPoints(gizmoSpawner, new[] { scriptedEnemySlot }, Vector2.zero, Color.red);
+    }
+
+    /// <summary>Wire circle at each position sized like a real target, with a line across its swing.</summary>
+    private void DrawPoints(EnemySpawner source, Vector2[] points, Vector2 swing, Color color)
+    {
+        if (points == null) return;
+        Gizmos.color = color;
+        foreach (var point in points)
+        {
+            if (!source.TryViewportToPlane(point, out Vector3 center)) continue;
+            source.TryViewportToPlane(point + new Vector2(0f, targetSize * 0.5f), out Vector3 edge);
+            Gizmos.DrawWireSphere(center, Vector3.Distance(center, edge));
+            if (swing == Vector2.zero) continue;
+            source.TryViewportToPlane(point - swing, out Vector3 from);
+            source.TryViewportToPlane(point + swing, out Vector3 to);
+            Gizmos.DrawLine(from, to);
+        }
     }
 
     [ContextMenu("Reset Tutorial Progress")]

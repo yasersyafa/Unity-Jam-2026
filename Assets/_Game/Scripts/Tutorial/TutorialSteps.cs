@@ -4,18 +4,17 @@ using UnityEngine;
 /// <summary>Sweep the crosshair over floating markers. Shooting is allowed so the crosshair moves, but nothing to hit yet.</summary>
 public sealed class AimStep : TutorialStep
 {
-    private static readonly Vector2[] Points = { new(0.3f, 0.62f), new(0.7f, 0.66f), new(0.5f, 0.42f) };
     private readonly List<TutorialTarget> markers = new();
 
     public override string Title => "AIM!";
-    public override string Instruction => "Move the mouse and touch all 3 targets with your crosshair.";
+    public override string Instruction => "Move the mouse and touch every target with your crosshair.";
     public override string Hint => "Slide the crosshair right onto the bullseye!";
     public override bool TeasesMisses => false;
 
     public override void Enter()
     {
         markers.Clear();
-        foreach (var point in Points)
+        foreach (var point in Director.Layout.AimMarkers)
         {
             var marker = Director.SpawnTarget(point, shootable: false);
             if (marker != null) markers.Add(marker);
@@ -42,8 +41,6 @@ public sealed class AimStep : TutorialStep
 /// <summary>Shoot three still targets, then two swinging ones.</summary>
 public sealed class ShootStep : TutorialStep
 {
-    private static readonly Vector2[] Still = { new(0.32f, 0.58f), new(0.5f, 0.66f), new(0.68f, 0.58f) };
-    private static readonly Vector2[] Moving = { new(0.38f, 0.5f), new(0.62f, 0.68f) };
     private int round;
 
     public override string Title => "SHOOT!";
@@ -53,7 +50,7 @@ public sealed class ShootStep : TutorialStep
     public override void Enter()
     {
         round = 0;
-        foreach (var point in Still) Director.SpawnTarget(point, shootable: true);
+        foreach (var point in Director.Layout.StillTargets) Director.SpawnTarget(point, shootable: true);
     }
 
     public override bool Tick()
@@ -61,10 +58,12 @@ public sealed class ShootStep : TutorialStep
         // A limited starting weapon may run dry here; the slot lesson comes next anyway.
         if (Director.Shooting != null && !Director.Shooting.HasAmmo) return true;
         if (Director.ActiveTargetCount > 0) return false;
-        if (round > 0) return true;
+        var layout = Director.Layout;
+        if (round > 0 || layout.MovingTargets.Length == 0) return true;
         round++;
         Director.Coach("Too easy? Now they MOVE!");
-        foreach (var point in Moving) Director.SpawnTarget(point, shootable: true, new Vector2(0.12f, 0f), 2.4f);
+        foreach (var point in layout.MovingTargets)
+            Director.SpawnTarget(point, shootable: true, layout.MovingSwing, layout.MovingSwingSpeed);
         return false;
     }
 }
@@ -100,7 +99,6 @@ public sealed class StyleStep : TutorialStep
 {
     private const int TargetRank = 1; // B
     private const int FallbackHits = 8;
-    private static readonly Vector2[] Lanes = { new(0.3f, 0.55f), new(0.5f, 0.66f), new(0.7f, 0.55f), new(0.42f, 0.45f), new(0.58f, 0.45f) };
     private int lane;
     private int hitsAtStart;
     private int lastRank = -1;
@@ -121,10 +119,12 @@ public sealed class StyleStep : TutorialStep
 
     public override bool Tick()
     {
-        while (Director.ActiveTargetCount < 2)
+        var layout = Director.Layout;
+        // Bounded so a failed spawn or an empty lane list can never spin forever.
+        for (int i = Director.ActiveTargetCount; i < layout.ComboActiveTargets && layout.ComboLanes.Length > 0; i++)
         {
-            Director.SpawnTarget(Lanes[lane], shootable: true, new Vector2(0.05f, 0.02f), 1.8f);
-            lane = (lane + 1) % Lanes.Length;
+            Director.SpawnTarget(layout.ComboLanes[lane % layout.ComboLanes.Length], shootable: true, layout.ComboSwing, layout.ComboSwingSpeed);
+            lane = (lane + 1) % layout.ComboLanes.Length;
         }
         if (Director.Shooting != null && !Director.Shooting.HasAmmo && !warnedAmmo)
         {
