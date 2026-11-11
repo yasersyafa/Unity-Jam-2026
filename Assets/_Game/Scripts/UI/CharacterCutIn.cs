@@ -52,10 +52,10 @@ public sealed class CharacterCutIn : MonoBehaviour
     }
     private void Render()
     {
-        float t = elapsed / duration * 0.9f;
-        float enter = Mathf.Clamp01((t - 0.04f) / 0.12f);
-        float exit = Mathf.Clamp01((t - 0.66f) / 0.24f);
-        float ease = 1f + 2.70158f * Mathf.Pow(enter - 1f, 3f) + 1.70158f * Mathf.Pow(enter - 1f, 2f);
+        const float transitionFraction = 0.2f;
+        float t = Mathf.Clamp01(elapsed / Mathf.Max(0.1f, duration));
+        float enter = Mathf.SmoothStep(0f, 1f, t / transitionFraction);
+        float exit = Mathf.SmoothStep(0f, 1f, (t - (1f - transitionFraction)) / transitionFraction);
         var parent = (RectTransform)transform;
         Rect safe = Screen.safeArea;
         float sx = parent.rect.width / Mathf.Max(1, Screen.width);
@@ -65,21 +65,18 @@ public sealed class CharacterCutIn : MonoBehaviour
         animatedRoot.pivot = new Vector2(leftSide ? 0f : 1f, 0.5f);
         animatedRoot.sizeDelta = new Vector2(parent.rect.width * 0.42f, parent.rect.height * 0.32f);
         float direction = leftSide ? -1f : 1f;
-        animatedRoot.anchoredPosition = offset + new Vector2(-direction * (edge * sx + parent.rect.width * 0.04f) + direction * (1f - ease + exit * exit) * parent.rect.width * 0.6f, Mathf.Max(0f, safe.yMin * sy - parent.rect.height * 0.2f));
+        animatedRoot.anchoredPosition = offset + new Vector2(-direction * (edge * sx + parent.rect.width * 0.04f) + direction * (1f - enter + exit) * parent.rect.width * 0.6f, Mathf.Max(0f, safe.yMin * sy - parent.rect.height * 0.2f));
         animatedRoot.localScale = Vector3.one * scale;
-        float p = Mathf.Clamp01((t - 0.08f) / 0.14f);
         portrait.rectTransform.anchorMin = new Vector2(leftSide ? 0f : 0.55f, 0f);
         portrait.rectTransform.anchorMax = new Vector2(leftSide ? 0.45f : 1f, 1f);
-        float size = Mathf.Lerp(1.1f, 1f, p);
-        portrait.rectTransform.localScale = new Vector3(flipPortrait ? -size : size, size, 1f);
-        portrait.rectTransform.anchoredPosition = new Vector2(direction * (1f-p) * 60f - direction * Mathf.Clamp01((t-0.24f)/0.42f) * animatedRoot.rect.width * 0.01f, 0f);
+        portrait.rectTransform.localScale = new Vector3(flipPortrait ? -1f : 1f, 1f, 1f);
+        portrait.rectTransform.anchoredPosition = Vector2.zero;
         quote.rectTransform.anchorMin = new Vector2(leftSide ? 0.45f : 0.04f, 0.12f);
         quote.rectTransform.anchorMax = new Vector2(leftSide ? 0.96f : 0.55f, 0.88f);
-        float reveal = Mathf.Clamp01((t - 0.14f) / 0.1f);
-        quote.alpha = reveal * (1f - exit);
-        quote.rectTransform.localScale = Vector3.one * Mathf.Lerp(1.15f, 1f, reveal);
-        visibility.alpha = Mathf.Clamp01(t / 0.04f) * (1f-exit);
-        if (!impacted && t >= 0.14f)
+        quote.alpha = 1f;
+        quote.rectTransform.localScale = Vector3.one;
+        visibility.alpha = enter * (1f - exit);
+        if (!impacted && t >= transitionFraction)
         {
             impacted = true;
             if (audioSource != null && impact != null) audioSource.PlayOneShot(impact);
