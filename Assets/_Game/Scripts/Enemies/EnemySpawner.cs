@@ -221,17 +221,9 @@ public sealed class EnemySpawner : MonoBehaviour
                             Random.Range(-1f, 1f),
                             Random.Range(-1f, 1f)
                         );
-                        Vector3 start = PointOnPlane(plane, entry);
-                        float bendDirection = ComputeBendDirection(entry, slot);
-                        float spinDirection = Random.value < 0.5f ? 1f : -1f;
                         float phase = groupPhaseOffset + enemyIndex * 2.399963f;
-
-                        var enemy = Instantiate(group.enemies[enemyIndex], start, enemyParent.rotation, enemyParent);
-                        if (!enemy.TryGetComponent<EnemyHealthBar>(out _)) enemy.gameObject.AddComponent<EnemyHealthBar>();
-                        enemy.SetProjectileParent(transform);
-                        enemy.ConfigureDifficulty(wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
-                        enemy.Initialize(player, ray.GetPoint(distance), bendDirection, phase, right, up, viewportCenter, spinDirection);
-                        spawned.Add(enemy);
+                        Spawn(group.enemies[enemyIndex], plane, entry, slot, ray.GetPoint(distance), right, up, viewportCenter,
+                            phase, wave.swayAmplitudeMultiplier, wave.swayPeriodMultiplier);
                     }
 
                     i += batchSize;
@@ -297,6 +289,54 @@ public sealed class EnemySpawner : MonoBehaviour
             transform.root.GetComponentInChildren<ShootingController>(),
             transform.root.GetComponentInChildren<SlotGameplayFlow>());
         BossSpawned?.Invoke(activeBoss);
+    }
+
+    private EnemyApproach Spawn(EnemyApproach prefab, Plane plane, Vector2 entry, Vector2 slot, Vector3 destination,
+        Vector3 right, Vector3 up, Vector3 viewportCenter, float phase, float swayAmplitude, float swayPeriod)
+    {
+        Vector3 start = PointOnPlane(plane, entry);
+        float bendDirection = ComputeBendDirection(entry, slot);
+        float spinDirection = Random.value < 0.5f ? 1f : -1f;
+        var enemy = Instantiate(prefab, start, enemyParent.rotation, enemyParent);
+        if (!enemy.TryGetComponent<EnemyHealthBar>(out _)) enemy.gameObject.AddComponent<EnemyHealthBar>();
+        enemy.SetProjectileParent(transform);
+        enemy.ConfigureDifficulty(swayAmplitude, swayPeriod);
+        enemy.Initialize(player, destination, bendDirection, phase, right, up, viewportCenter, spinDirection);
+        spawned.Add(enemy);
+        return enemy;
+    }
+
+    /// <summary>First enemy of the first wave; the default enemy for scripted encounters such as the tutorial.</summary>
+    public EnemyApproach FirstWaveEnemy =>
+        waves != null && waves.Length > 0 && waves[0] != null && waves[0].groups != null && waves[0].groups.Length > 0
+        && waves[0].groups[0] != null && waves[0].groups[0].enemies != null && waves[0].groups[0].enemies.Length > 0
+            ? waves[0].groups[0].enemies[0] : null;
+
+    /// <summary>Projects a viewport point onto the enemy plane.</summary>
+    public bool TryViewportToPlane(Vector2 viewport, out Vector3 point)
+    {
+        point = default;
+        if (gameplayCamera == null || enemyParent == null) return false;
+        var plane = new Plane(enemyParent.forward, enemyParent.position);
+        Ray ray = gameplayCamera.ViewportPointToRay(new Vector3(viewport.x, viewport.y, 0f));
+        if (!plane.Raycast(ray, out float distance)) return false;
+        point = ray.GetPoint(distance);
+        return true;
+    }
+
+    public Transform EnemyParent => enemyParent;
+
+    /// <summary>Spawns one enemy outside the wave sequence; it flies in from the arena centre to <paramref name="slot"/>.</summary>
+    public EnemyApproach SpawnScripted(EnemyApproach prefab, Vector2 slot)
+    {
+        if (prefab == null || player == null || !TryViewportToPlane(slot, out Vector3 destination)) return null;
+        var plane = new Plane(enemyParent.forward, enemyParent.position);
+        Vector3 origin = PointOnPlane(plane, Vector2.zero);
+        Vector3 right = PointOnPlane(plane, Vector2.right) - origin;
+        Vector3 up = PointOnPlane(plane, Vector2.up) - origin;
+        Vector2 entry = EvaluateCenterEntryViewport(entryCenter, entryRandomOffset, Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+        return Spawn(prefab, plane, entry, slot, destination, right, up, origin + right * 0.5f + up * 0.5f,
+            Random.Range(0f, Mathf.PI * 2f), 1f, 1f);
     }
 
     private Vector3 PointOnPlane(Plane plane, Vector2 viewport)
