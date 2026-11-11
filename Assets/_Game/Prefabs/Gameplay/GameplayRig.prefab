@@ -4347,7 +4347,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &812021544728691982
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5496,12 +5496,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ButtonRectTransformSnap, Game.Runtime
-        m_MethodName: 
+        m_TargetAssemblyTypeName: SlotMachineView, Game.Runtime
+        m_MethodName: Spin
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -7846,7 +7846,7 @@ RectTransform:
   m_Father: {fileID: 1928079520468504928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -8470,7 +8470,7 @@ MonoBehaviour:
   shooting: {fileID: 8444138883603943588}
   cutIn: {fileID: 2947115087984036221}
   portrait: {fileID: 21300000, guid: 79c1b54bbf1dc475e8c2a19c48ce0f4b, type: 3}
-  quote: Coba yang ini!
+  quote: Let's Go!!
   accent: {r: 1, g: 0.85, b: 0.05, a: 1}
 --- !u!1 &5816488172163958030
 GameObject:
@@ -11592,6 +11592,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: SlotMachineView, Game.Runtime
+        m_MethodName: Skip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5751044488133648914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13004,7 +13016,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &648538405356693126
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13355,6 +13367,10 @@ PrefabInstance:
     - target: {fileID: 3911991858456054512, guid: 4accc62d850054256a93c194f08a3331, type: 3}
       propertyPath: m_Name
       value: WeaponEquipVisual
+      objectReference: {fileID: 0}
+    - target: {fileID: 4176683251528097198, guid: 4accc62d850054256a93c194f08a3331, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 8215217992581410049, guid: 4accc62d850054256a93c194f08a3331, type: 3}
       propertyPath: m_Pivot.x

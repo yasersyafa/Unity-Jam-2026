@@ -194,10 +194,6 @@ PrefabInstance:
       propertyPath: flow
       value: 
       objectReference: {fileID: 1691777524}
-    - target: {fileID: 1892430282711190380, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1384764984}
     - target: {fileID: 2666825304865575248, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -247,14 +243,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1384764984}
@@ -262,22 +250,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: 1384764984}
-    - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: Skip
-      objectReference: {fileID: 0}
-    - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: SlotMachineView, Game.Runtime
-      objectReference: {fileID: 0}
-    - target: {fileID: 7277927276061023331, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 8069208435863607781, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -290,22 +262,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: 1384764984}
-    - target: {fileID: 8463995154172176452, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: Spin
-      objectReference: {fileID: 0}
-    - target: {fileID: 8463995154172176452, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: SlotMachineView, Game.Runtime
-      objectReference: {fileID: 0}
-    - target: {fileID: 8463995154172176452, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 8980685921151321523, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
