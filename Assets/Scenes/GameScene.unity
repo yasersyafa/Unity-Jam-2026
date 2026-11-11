@@ -182,14 +182,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1308232092119426333, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308232092119426333, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1366600870156285590, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
       propertyPath: flow
       value: 
@@ -457,6 +449,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::StyleMeter
   shooting: {fileID: 856696555}
   player: {fileID: 856696554}
+  ranks:
+  - label: C
+    text: COME ON!
+    hitsToFill: 1
+    decayPerSecond: 0.3
+  - label: B
+    text: BRO WHAT?
+    hitsToFill: 4
+    decayPerSecond: 0.5
+  - label: A
+    text: ALL U GOT?
+    hitsToFill: 5
+    decayPerSecond: 0.8
+  - label: S
+    text: SMALL COMBO!
+    hitsToFill: 10
+    decayPerSecond: 1.2
+  - label: SS
+    text: SOME SHOOTING!!
+    hitsToFill: 15
+    decayPerSecond: 1.8
+  - label: SSS
+    text: SURE SO SATISFYING!!!
+    hitsToFill: 15
+    decayPerSecond: 2.5
+  decayDelay: 1.5
+  missPenalty: 0.35
+  damageRankDrop: 2
 --- !u!114 &900000101 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
