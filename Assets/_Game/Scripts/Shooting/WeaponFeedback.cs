@@ -116,6 +116,10 @@ public sealed class WeaponFeedback : MonoBehaviour
         {
             var effects = new GameObject("Weapon Shot Effects", typeof(RectTransform));
             effects.transform.SetParent(canvas.transform, false);
+            // Draw right above the weapon HUD, not as the last child, so later overlays (slot machine) stay on top.
+            Transform hudRoot = weaponImage.transform;
+            while (hudRoot.parent != null && hudRoot.parent != canvas.transform) hudRoot = hudRoot.parent;
+            if (hudRoot.parent == canvas.transform) effects.transform.SetSiblingIndex(hudRoot.GetSiblingIndex() + 1);
             var rect = (RectTransform)effects.transform;
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
