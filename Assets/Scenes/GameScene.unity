@@ -506,6 +506,29 @@ MonoBehaviour:
   gameplayCamera: {fileID: 856696545}
   scriptedEnemy: {fileID: 0}
   scriptedEnemySlot: {x: 0.5, y: 0.62}
+  layout:
+    aimMarkers:
+    - {x: 0.3, y: 0.31}
+    - {x: 0.7, y: 0.33}
+    - {x: 0.5, y: 0.21}
+    stillTargets:
+    - {x: 0.32, y: 0.29}
+    - {x: 0.5, y: 0.33}
+    - {x: 0.68, y: 0.29}
+    movingTargets:
+    - {x: 0.38, y: 0.25}
+    - {x: 0.62, y: 0.34}
+    movingSwing: {x: 0.12, y: 0}
+    movingSwingSpeed: 2.4
+    comboLanes:
+    - {x: 0.3, y: 0.275}
+    - {x: 0.5, y: 0.33}
+    - {x: 0.7, y: 0.275}
+    - {x: 0.42, y: 0.225}
+    - {x: 0.58, y: 0.225}
+    comboSwing: {x: 0.05, y: 0.02}
+    comboSwingSpeed: 1.8
+    comboActiveTargets: 2
   targetSize: 0.1
   idleHintDelay: 4
   teaseAfterMisses: 3
