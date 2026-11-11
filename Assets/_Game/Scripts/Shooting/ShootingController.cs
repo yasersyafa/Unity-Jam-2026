@@ -43,6 +43,9 @@ public sealed class ShootingController : MonoBehaviour
     /// <summary>False once a limited weapon runs dry: the player can still aim and take damage but not attack.</summary>
     public bool HasAmmo => weapon == null || weapon.UnlimitedAmmo || ammo > 0;
     public double NextShotTime => nextShot;
+    /// <summary>Last crosshair position in screen pixels; valid once <see cref="HasAimPosition"/> is true.</summary>
+    public Vector2 AimScreen => lastAim;
+    public bool HasAimPosition => hasAim;
     public float ShotInterval => weapon != null ? weapon.ShotInterval : 0f;
     public bool IsSemiAutomatic => weapon != null && weapon.FiringMode == WeaponData.FireMode.SemiAutomatic;
 
@@ -89,7 +92,7 @@ public sealed class ShootingController : MonoBehaviour
         fire = attack.action.Clone();
         fire.Enable();
         feedback.SetWeapon(weapon);
-        if (!ammoInitialized) Refill();
+        if (!ammoInitialized) RefillAmmo();
         previousCursorVisible = Cursor.visible;
         ownsCursor = true;
         cursorMode = false;
@@ -187,11 +190,12 @@ public sealed class ShootingController : MonoBehaviour
         if (data == null) return;
         weapon = data;
         if (feedback != null) feedback.SetWeapon(data);
-        Refill();
+        RefillAmmo();
         WeaponEquipped?.Invoke(data);
     }
 
-    private void Refill()
+    /// <summary>Refills the current weapon to its full ammo.</summary>
+    public void RefillAmmo()
     {
         ammoInitialized = true;
         ammo = weapon != null ? weapon.MaxAmmo : 0;
