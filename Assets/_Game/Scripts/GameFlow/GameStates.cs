@@ -15,8 +15,27 @@ public sealed class IntroState : GameState
     {
         if (SceneTransition.IsTransitioning) return;
         elapsed += Time.unscaledDeltaTime;
-        if (elapsed >= Manager.IntroDelay) Manager.ChangeState<WeaponSelectState>();
+        if (elapsed < Manager.IntroDelay) return;
+        if (Manager.Tutorial != null && !TutorialDirector.Completed) Manager.ChangeState<TutorialState>();
+        else Manager.ChangeState<WeaponSelectState>();
     }
+}
+
+/// <summary>First-play tutorial. Its slot lesson hands out the first weapon, so it skips weapon select when finished.</summary>
+public sealed class TutorialState : GameState
+{
+    public override void Enter() => Manager.Tutorial.Begin(Manager);
+
+    public override void Tick()
+    {
+        var tutorial = Manager.Tutorial;
+        tutorial.Tick();
+        if (!tutorial.IsComplete) return;
+        if (tutorial.WeaponGranted) Manager.ChangeState<CombatState>();
+        else Manager.ChangeState<WeaponSelectState>();
+    }
+
+    public override void Exit() => Manager.Tutorial.Stop();
 }
 
 /// <summary>Opens the slot machine for the first weapon and waits for it to close.</summary>

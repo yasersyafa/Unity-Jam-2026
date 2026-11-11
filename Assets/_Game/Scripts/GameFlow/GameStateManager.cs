@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Owns the gameplay session phases: Intro → WeaponSelect → Combat → Boss → Victory, or GameOver
+/// Owns the gameplay session phases: Intro → (Tutorial on first play) → WeaponSelect → Combat → Boss → Victory, or GameOver
 /// whenever the player dies. To add a phase, create a <see cref="GameState"/> subclass and add it
 /// to <see cref="CreateStates"/>.
 /// </summary>
@@ -18,6 +18,8 @@ public sealed class GameStateManager : MonoBehaviour
     [SerializeField] private PlayerHealth player;
     [Tooltip("Optional; found in the scene when empty.")]
     [SerializeField] private ShootingController shooting;
+    [Tooltip("Optional; found in the scene when empty. Without one the tutorial is skipped.")]
+    [SerializeField] private TutorialDirector tutorial;
     [Tooltip("Pause after the scene transition finishes before the first slot opens (unscaled seconds).")]
     [SerializeField, Min(0f)] private float introDelay = 0.4f;
 
@@ -27,6 +29,7 @@ public sealed class GameStateManager : MonoBehaviour
     public SlotGameplayFlow Slots => slots;
     public EnemySpawner Spawner => spawner;
     public PlayerHealth Player => player;
+    public TutorialDirector Tutorial => tutorial;
     public float IntroDelay => introDelay;
     public GameState Current { get; private set; }
     /// <summary>Raised after every transition with (previous, next); previous is null for the first state.</summary>
@@ -35,6 +38,7 @@ public sealed class GameStateManager : MonoBehaviour
     private static IEnumerable<GameState> CreateStates()
     {
         yield return new IntroState();
+        yield return new TutorialState();
         yield return new WeaponSelectState();
         yield return new CombatState();
         yield return new BossState();
@@ -48,6 +52,7 @@ public sealed class GameStateManager : MonoBehaviour
         if (spawner == null) spawner = FindAnyObjectByType<EnemySpawner>();
         if (player == null) player = FindAnyObjectByType<PlayerHealth>();
         if (shooting == null) shooting = FindAnyObjectByType<ShootingController>();
+        if (tutorial == null) tutorial = FindAnyObjectByType<TutorialDirector>();
 
         // The manager decides when these start instead of their own lifecycle callbacks.
         if (slots != null) slots.OpenOnStart = false;

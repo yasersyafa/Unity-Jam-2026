@@ -292,6 +292,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!20 &856696545 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 5415312808033673996, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 856696541}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &856696546 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 563264228731605825, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
@@ -396,6 +401,8 @@ GameObject:
   - component: {fileID: 900000002}
   - component: {fileID: 900000003}
   - component: {fileID: 900000004}
+  - component: {fileID: 900000005}
+  - component: {fileID: 900000006}
   m_Layer: 0
   m_Name: GameStateManager
   m_TagString: Untagged
@@ -434,6 +441,7 @@ MonoBehaviour:
   spawner: {fileID: 1780824744}
   player: {fileID: 856696554}
   shooting: {fileID: 856696555}
+  tutorial: {fileID: 900000005}
   introDelay: 0.4
 --- !u!114 &900000004
 MonoBehaviour:
@@ -477,6 +485,50 @@ MonoBehaviour:
   decayDelay: 1.5
   missPenalty: 0.35
   damageRankDrop: 2
+--- !u!114 &900000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2824c45f953c4b52986426a5a472e279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::TutorialDirector
+  shooting: {fileID: 856696555}
+  slots: {fileID: 1691777524}
+  spawner: {fileID: 1780824744}
+  style: {fileID: 900000004}
+  player: {fileID: 856696554}
+  presenter: {fileID: 900000006}
+  gameplayCamera: {fileID: 856696545}
+  scriptedEnemy: {fileID: 0}
+  scriptedEnemySlot: {x: 0.5, y: 0.62}
+  targetSize: 0.1
+  idleHintDelay: 4
+  teaseAfterMisses: 3
+  skipHoldDuration: 1
+  teases:
+  - BRO WHAT? Aim first, then shoot!
+  - COME ON! Put the crosshair on the target!
+  - Bullets aren't free, you know...
+--- !u!114 &900000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff2cf1be273465894c87df0291aa18c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::TutorialPresenter
+  font: {fileID: 11400000, guid: e9cfdf41757b64a84a74061e3794fdfb, type: 2}
+  sortingOrder: 19
+  coachDuration: 2.8
 --- !u!114 &900000101 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
