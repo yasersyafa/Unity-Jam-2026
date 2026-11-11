@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,9 +9,14 @@ public sealed class ProjectileShotRunner : MonoBehaviour
 {
     private readonly List<ProjectileShot> active = new List<ProjectileShot>();
     private WeaponFeedback feedback;
+    private Action<bool> resolved;
     public int ActiveShotCount => active.Count;
 
-    public void Initialize(WeaponFeedback presentation) { feedback = presentation; }
+    public void Initialize(WeaponFeedback presentation, Action<bool> onResolved = null)
+    {
+        feedback = presentation;
+        resolved = onResolved;
+    }
 
     public ProjectileShot Launch(in ShotContext shot, in ShotVisualContext visual, DamageType damageType, float duration)
     {
@@ -29,6 +35,7 @@ public sealed class ProjectileShotRunner : MonoBehaviour
             if (!projectile.IsComplete) continue;
             active.RemoveAt(i);
             bool hit = projectile.ResolveDamage();
+            resolved?.Invoke(hit);
             if (hit && feedback != null && feedback.isActiveAndEnabled) feedback.PlayHitmarker();
         }
     }

@@ -403,6 +403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 900000002}
   - component: {fileID: 900000003}
+  - component: {fileID: 900000004}
   m_Layer: 0
   m_Name: GameStateManager
   m_TagString: Untagged
@@ -442,6 +443,20 @@ MonoBehaviour:
   player: {fileID: 856696554}
   shooting: {fileID: 856696555}
   introDelay: 0.4
+--- !u!114 &900000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca09761bbce44962a8672981588f08bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::StyleMeter
+  shooting: {fileID: 856696555}
+  player: {fileID: 856696554}
 --- !u!114 &900000101 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7614939927700324469, guid: 441f920d6fb084897a62f1d851482d83, type: 3}

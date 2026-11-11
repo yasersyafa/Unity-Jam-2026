@@ -34,6 +34,8 @@ public sealed class ShootingController : MonoBehaviour
     public event Action<WeaponData> WeaponEquipped;
     /// <summary>Raised after a shot spends ammo and when a weapon refills it.</summary>
     public event Action AmmoChanged;
+    /// <summary>Raised when a shot's damage resolves: true if it damaged a target. Projectiles report on impact.</summary>
+    public event Action<bool> ShotResolved;
 
     public WeaponData CurrentWeapon => weapon;
     /// <summary>Remaining shots for the current weapon; ignore when the weapon has unlimited ammo.</summary>
@@ -164,15 +166,21 @@ public sealed class ShootingController : MonoBehaviour
             if (projectiles == null)
             {
                 projectiles = GetComponent<ProjectileShotRunner>() ?? gameObject.AddComponent<ProjectileShotRunner>();
-                projectiles.Initialize(feedback);
+                projectiles.Initialize(feedback, ResolveShot);
             }
             projectile = projectiles.Launch(shot, visual, weapon.DamageType, feedback.GetProjectileTravelDuration(visual));
         }
-        else hit = weapon.DamageType.Apply(shot);
+        else
+        {
+            hit = weapon.DamageType.Apply(shot);
+            ResolveShot(hit);
+        }
         // A valid first click can leave cursor mode this frame; update the hold after accepting it.
         feedback.SetContinuousFire(HasAmmo && weapon.FiringMode == WeaponData.FireMode.Automatic && held);
         feedback.PlayShot(hit, visual, projectile);
     }
+
+    private void ResolveShot(bool hit) => ShotResolved?.Invoke(hit);
 
     public void EquipWeapon(WeaponData data)
     {
