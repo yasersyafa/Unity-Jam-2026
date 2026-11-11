@@ -5366,6 +5366,7 @@ GameObject:
   - component: {fileID: 8463995154172176452}
   - component: {fileID: 1171445669659743029}
   - component: {fileID: 2582071077424640011}
+  - component: {fileID: 5058865550913261341}
   m_Layer: 5
   m_Name: SpinToggle
   m_TagString: Untagged
@@ -5562,6 +5563,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioTrigger
   cue: {fileID: 11400000, guid: 4c7a62c6f17e243f486cd326b45c0a48, type: 2}
+--- !u!114 &5058865550913261341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455679528054430972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b928c1610fde4399b276f8dcd2fd2704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::UIHoverOutline
+  outlineMaterial: {fileID: 2100000, guid: 5a71b40fef6145c1bc5ed5a3b0e43d42, type: 2}
+  color: {r: 1, g: 0.86, b: 0.12, a: 1}
+  width: 4
+  padding: 8
+  fadeDuration: 0.1
+  pulseScale: 1.35
+  pulseDuration: 0.35
 --- !u!1 &3467495554168833953
 GameObject:
   m_ObjectHideFlags: 0
