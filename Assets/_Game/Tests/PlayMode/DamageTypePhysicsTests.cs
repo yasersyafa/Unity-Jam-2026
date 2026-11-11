@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public sealed class DamageTypePhysicsTests
 {
@@ -67,6 +69,43 @@ public sealed class DamageTypePhysicsTests
         Assert.That(aimed.Damage, Is.EqualTo(100f));
         Assert.That(other.Hits, Is.Zero);
         Assert.That(Shoot(Damage<SingleTargetDamage>(), new Vector2(0f, 4f)), Is.False);
+    }
+
+    [UnityTest]
+    public IEnumerator VisualProjectile_UsesPreDamageSnapshot_AndNeverDealsAdditionalDamage()
+    {
+        var target = Target(Vector2.zero);
+        Physics2D.SyncTransforms();
+        Vector2 aim = camera.WorldToScreenPoint(Vector3.zero);
+        var shot = new ShotContext(camera, aim, 100f, ~0);
+        ShotVisualContext visual = ShotVisualContext.Capture(shot);
+        Assert.That(visual.HasImpact, Is.True);
+        Assert.That(Vector2.Distance(visual.DestinationScreen, aim), Is.LessThan(0.1f));
+        Assert.That(target.Hits, Is.Zero, "Capturing presentation must not damage anything.");
+        Assert.That(Damage<SingleTargetDamage>().Apply(shot), Is.True);
+        Assert.That(target.Hits, Is.EqualTo(1), "Damage occurs immediately, before flight starts.");
+
+        var hud = Track(new GameObject("Shot HUD", typeof(RectTransform), typeof(Canvas)));
+        var canvas = hud.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        var effects = new GameObject("Shot effects", typeof(RectTransform));
+        effects.transform.SetParent(hud.transform, false);
+        var presentation = effects.AddComponent<WeaponShotPresentation>();
+        presentation.Initialize(canvas, (RectTransform)hud.transform);
+        var profile = Track(ScriptableObject.CreateInstance<WeaponShotVisualProfile>());
+        typeof(WeaponShotVisualProfile).GetField("mode", Private).SetValue(profile, WeaponShotVisualProfile.VisualMode.Projectile);
+        typeof(WeaponShotVisualProfile).GetField("speed", Private).SetValue(profile, 100000f);
+        presentation.SetWeapon(profile, null);
+        presentation.PlayShot(visual);
+        target.transform.position = Vector3.one * 50f;
+        yield return new WaitForSeconds(0.3f);
+        Assert.That(target.Hits, Is.EqualTo(1));
+        Assert.That(presentation.ActiveEffectCount, Is.Zero);
+
+        Object.DestroyImmediate(target.gameObject);
+        presentation.PlayShot(visual);
+        yield return new WaitForSeconds(0.3f);
+        Assert.That(presentation.ActiveEffectCount, Is.Zero, "A destroyed target must not invalidate the saved destination.");
     }
 
     [Test] public void Piercing_DamagesStackedTargetsUpToTheLimit()

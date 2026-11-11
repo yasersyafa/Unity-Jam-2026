@@ -50,6 +50,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     private Vector2 equipPosition;
     private Vector3 equipScale;
     private WeaponVisual visualInstance;
+    private WeaponShotPresentation shotPresentation;
     private WeaponData weapon;
     private Vector2 recoil;
     private Vector3 appliedShake;
@@ -106,6 +107,19 @@ public sealed class WeaponFeedback : MonoBehaviour
             visualRect.offsetMin = visualRect.offsetMax = Vector2.zero;
             visualInstance.Initialize(data.Sprite);
         }
+        if (shotPresentation == null && data.ShotVisualProfile != null)
+        {
+            var effects = new GameObject("Weapon Shot Effects", typeof(RectTransform));
+            effects.transform.SetParent(canvas.transform, false);
+            var rect = (RectTransform)effects.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            shotPresentation = effects.AddComponent<WeaponShotPresentation>();
+            shotPresentation.Initialize(canvas, weaponImage.rectTransform);
+        }
+        if (shotPresentation != null)
+            shotPresentation.SetWeapon(data.ShotVisualProfile, visualInstance != null ? visualInstance.MuzzleAnchor : null);
         if (sticker != null) sticker.transform.SetAsLastSibling();
         PlayEquip();
     }
@@ -137,6 +151,7 @@ public sealed class WeaponFeedback : MonoBehaviour
         aim.y = Mathf.Clamp(aim.y, 0f, Screen.height);
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform, aim, null, out Vector2 local);
         crosshair.anchoredPosition = local;
+        if (shotPresentation != null) shotPresentation.SetAim(aim);
 
         float dt = deltaTime > 0f ? deltaTime : Time.unscaledDeltaTime;
         if (dt <= 0f) dt = 0.016f;
@@ -170,6 +185,7 @@ public sealed class WeaponFeedback : MonoBehaviour
 
     public void SetContinuousFire(bool value)
     {
+        if (shotPresentation != null) shotPresentation.SetContinuousFire(value);
         if (visualInstance != null) visualInstance.SetContinuousFire(value);
         if (sticker != null) sticker.SetContinuousFire(value);
     }
@@ -185,6 +201,12 @@ public sealed class WeaponFeedback : MonoBehaviour
             weaponKick = 18f;
         }
         crosshair.GetComponent<UnityEngine.UI.Image>().color = hit ? Color.red : Color.white;
+    }
+
+    public void PlayShot(bool hit, in ShotVisualContext shot)
+    {
+        if (shotPresentation != null) shotPresentation.PlayShot(shot);
+        PlayShot(hit);
     }
 
     private void LateUpdate()
@@ -207,6 +229,7 @@ public sealed class WeaponFeedback : MonoBehaviour
     public void ResetFeedback()
     {
         InitializeFeedback();
+        if (shotPresentation != null) shotPresentation.ResetEffects();
         if (visualInstance != null) visualInstance.ResetEffects();
         if (sticker != null) sticker.Cancel();
         equipTween.Stop();
@@ -225,4 +248,8 @@ public sealed class WeaponFeedback : MonoBehaviour
     }
 
     private void OnDisable() { ResetFeedback(); }
+    private void OnDestroy()
+    {
+        if (shotPresentation != null) Destroy(shotPresentation.gameObject);
+    }
 }

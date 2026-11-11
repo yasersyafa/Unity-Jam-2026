@@ -16,7 +16,8 @@ MonoBehaviour:
   unlimitedAmmo: 1
   maxAmmo: 30
   sprite: {fileID: 0}
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 3705741052102311211, guid: a44b9bec38e6acc4c8deafa281a87d63, type: 3}
+  shotVisualProfile: {fileID: 11400000, guid: 9dac04be4f94dd04f9460aaea525b24d, type: 2}
   stickerSprite: {fileID: -7374239419574202304, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   stickerText: BHAPP
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}

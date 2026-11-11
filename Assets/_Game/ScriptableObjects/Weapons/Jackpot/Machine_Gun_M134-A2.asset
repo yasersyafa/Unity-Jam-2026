@@ -16,7 +16,8 @@ MonoBehaviour:
   unlimitedAmmo: 0
   maxAmmo: 200
   sprite: {fileID: 0}
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 858233861775740091, guid: 62433b802f1427f4895a57e1c7e398c0, type: 3}
+  shotVisualProfile: {fileID: 11400000, guid: 6b7dd39813d0c904f8eaf2ca5948d09d, type: 2}
   stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   stickerText: GOKS!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}

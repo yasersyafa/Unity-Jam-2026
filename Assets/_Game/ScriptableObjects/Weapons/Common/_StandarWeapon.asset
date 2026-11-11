@@ -16,10 +16,14 @@ MonoBehaviour:
   unlimitedAmmo: 1
   maxAmmo: 30
   sprite: {fileID: -1994921223, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 649993381538410435, guid: aaae8593b9ce94f4498dc6f08d667494, type: 3}
+  shotVisualProfile: {fileID: 11400000, guid: 50073f8b0308e064191f0bfc4412c660, type: 2}
+  stickerSprite: {fileID: 0}
+  stickerText:
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 0
   damage: 20
+  damageType: {fileID: 0}
   fireRate: 3.5
   enableRecoil: 1
   upwardKick: 6

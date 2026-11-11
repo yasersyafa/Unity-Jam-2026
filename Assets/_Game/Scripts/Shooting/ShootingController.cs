@@ -136,6 +136,11 @@ public sealed class ShootingController : MonoBehaviour
             && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (!wantsToFire || !HasAmmo || Time.timeAsDouble < nextShot)
             return;
+        FireShot(aim, fire.IsPressed());
+    }
+
+    private void FireShot(Vector2 aim, bool held)
+    {
         nextShot = Time.timeAsDouble + weapon.ShotInterval;
         if (!weapon.UnlimitedAmmo)
         {
@@ -145,8 +150,12 @@ public sealed class ShootingController : MonoBehaviour
         ShotFired?.Invoke();
         // Camera shake is removed before Update; hit selection precedes this shot's recoil.
         // The weapon's damage type decides which targets this shot reaches (single, piercing, explosion, cone...).
-        bool hit = weapon.DamageType.Apply(new ShotContext(gameplayCamera, aim, weapon.Damage, hitMask));
-        feedback.PlayShot(hit);
+        var shot = new ShotContext(gameplayCamera, aim, weapon.Damage, hitMask);
+        var visual = weapon.ShotVisualProfile != null ? ShotVisualContext.Capture(shot) : default;
+        bool hit = weapon.DamageType.Apply(shot);
+        // A valid first click can leave cursor mode this frame; update the hold after accepting it.
+        feedback.SetContinuousFire(HasAmmo && weapon.FiringMode == WeaponData.FireMode.Automatic && held);
+        feedback.PlayShot(hit, visual);
     }
 
     public void EquipWeapon(WeaponData data)

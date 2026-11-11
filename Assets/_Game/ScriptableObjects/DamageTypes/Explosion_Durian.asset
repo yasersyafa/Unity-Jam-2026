@@ -15,5 +15,5 @@ MonoBehaviour:
   effects: []
   radius: 1.5
   edgeDamage: 0.5
-  impactVfx: {fileID: 2170007468478245182, guid: f1bc72e79a9174d2bbc260a781ba7170, type: 3}
+  impactVfx: {fileID: 0}
   vfxLifetime: 2

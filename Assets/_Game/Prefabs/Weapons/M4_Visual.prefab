@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponVisual
   weaponImage: {fileID: 6370528822896168834}
+  muzzleAnchor: {fileID: 4270414675546142320}
   muzzleFlash: {fileID: 5543092110057043961}
   muzzleFrames:
   - {fileID: 8168772145030720850, guid: 43e2ed6d0863c42d4b57bdf20118afff, type: 3}
