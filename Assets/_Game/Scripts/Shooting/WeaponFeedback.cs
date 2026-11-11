@@ -47,6 +47,9 @@ public sealed class WeaponFeedback : MonoBehaviour
     [SerializeField, Min(0.1f)] private float aimRotationSpeed = 16f;
 
     private Tween equipTween;
+    private Tween hitmarkerTween;
+    private UnityEngine.UI.Image crosshairImage;
+    private Vector3 crosshairScale;
     private Vector2 equipPosition;
     private Vector3 equipScale;
     private WeaponVisual visualInstance;
@@ -82,6 +85,8 @@ public sealed class WeaponFeedback : MonoBehaviour
         rawOrigin = weaponImage.rectTransform.anchoredPosition;
         weaponOrigin = rawOrigin + weaponOffset;
         weaponRotation = weaponImage.rectTransform.localRotation;
+        crosshairImage = crosshair.GetComponent<UnityEngine.UI.Image>();
+        crosshairScale = crosshair.localScale;
         if (equipRoot != null) { equipPosition = equipRoot.anchoredPosition; equipScale = equipRoot.localScale; }
     }
 
@@ -200,12 +205,24 @@ public sealed class WeaponFeedback : MonoBehaviour
             recoil = Vector2.up * Mathf.Min(recoil.y + weapon.UpwardKick, weapon.MaximumRecoil);
             weaponKick = 18f;
         }
-        crosshair.GetComponent<UnityEngine.UI.Image>().color = hit ? Color.red : Color.white;
+        if (hit) PlayHitmarker();
     }
 
-    public void PlayShot(bool hit, in ShotVisualContext shot)
+    public void PlayHitmarker()
     {
-        if (shotPresentation != null) shotPresentation.PlayShot(shot);
+        hitmarkerTween.Stop();
+        hitmarkerTween = Tween.Custom(0f, 1f, 0.15f, t =>
+        {
+            crosshair.localScale = crosshairScale * (1f + 0.4f * (1f - t));
+            if (crosshairImage != null) crosshairImage.color = Color.Lerp(Color.red, Color.white, t);
+        }, ease: Ease.OutQuad, useUnscaledTime: true);
+    }
+
+    public float GetProjectileTravelDuration(in ShotVisualContext shot) => shotPresentation.GetProjectileTravelDuration(shot);
+
+    public void PlayShot(bool hit, in ShotVisualContext shot, ProjectileShot projectile = null)
+    {
+        if (shotPresentation != null) shotPresentation.PlayShot(shot, projectile);
         PlayShot(hit);
     }
 
@@ -229,11 +246,14 @@ public sealed class WeaponFeedback : MonoBehaviour
     public void ResetFeedback()
     {
         InitializeFeedback();
-        if (shotPresentation != null) shotPresentation.ResetEffects();
+        if (shotPresentation != null) shotPresentation.SetContinuousFire(false);
         if (visualInstance != null) visualInstance.ResetEffects();
         if (sticker != null) sticker.Cancel();
         equipTween.Stop();
         if (equipRoot != null) { equipRoot.anchoredPosition = equipPosition; equipRoot.localScale = equipScale; }
+        hitmarkerTween.Stop();
+        if (crosshair != null) crosshair.localScale = crosshairScale;
+        if (crosshairImage != null) crosshairImage.color = Color.white;
         weaponOrigin = rawOrigin + weaponOffset;
         if (weaponImage != null)
         {

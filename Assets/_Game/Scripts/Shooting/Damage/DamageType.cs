@@ -35,6 +35,18 @@ public abstract class DamageType : ScriptableObject
         return Resolve(shot);
     }
 
+    /// <summary>Resolves an arriving projectile against its original lock, without querying the cursor again.</summary>
+    public bool ApplyImpact(in ShotContext shot, Collider2D target, Vector2 position)
+    {
+        struck.Clear();
+        return ResolveImpact(shot, target, position);
+    }
+
+    protected virtual bool ResolveImpact(in ShotContext shot, Collider2D target, Vector2 position)
+    {
+        return Hit(target, shot.Damage);
+    }
+
     protected abstract bool Resolve(in ShotContext shot);
 
     /// <summary>

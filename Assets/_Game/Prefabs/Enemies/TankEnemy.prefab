@@ -58,7 +58,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: abdf338858eb189438416ff1264bcb31, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -207,11 +207,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFeedback
   visual: {fileID: 6901680141351719047}
-  hitVfxPrefab: {fileID: 2170007468478245182, guid: 2724fe97daeaa484386019b4c247688c, type: 3}
-  deathVfxPrefab: {fileID: 9199836944444744846, guid: 06cec27f10c950e4b99b190269dcc0fc, type: 3}
+  flashExtras:
+  - {fileID: 3361675944380199134}
+  - {fileID: 3750080346791848293}
+  hitVfxPrefab: {fileID: 7757698422733111123, guid: 09f6463cd65211c438e4eb03d180aa47, type: 3}
+  deathVfxPrefab: {fileID: 4216290761246903132, guid: f5576ab5393042645b0fc04367dff728, type: 3}
+  boomPrefab: {fileID: 2551635480071081751, guid: 7a75323dad856b142bfea6edf608de93, type: 3}
   vfxAnchor: {fileID: 324796935960514321}
-  hitVfxLifetime: 1
-  deathVfxLifetime: 2
+  hitVfxLifetime: 0.29166666
+  deathVfxLifetime: 0.33333334
+  boomLifetime: 0.87
+  hitVfxScale: 2
+  deathVfxScale: 2
+  boomScale: 1
+  hitStop: 0.025
+  hitStopCooldown: 0.12
+  hitShakeStrength: 0.035
+  hitShakeDuration: 0.1
   deathHitStop: 0.06
   deathShakeStrength: 0.1
   deathShakeDuration: 0.22
@@ -265,6 +277,27 @@ MonoBehaviour:
   shot: {fileID: 0}
   damaged: {fileID: 11400000, guid: b45ba94ff6d67469db0dfdf91a623728, type: 2}
   died: {fileID: 11400000, guid: 9bc0ab34d8fac4d28b1a44b3fe879910, type: 2}
+--- !u!114 &7303867041814432704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564886878076266967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfb569519b554664850566c41ba85e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Runtime::EnemyFlightVisual
+  leftWing: {fileID: 1183903502767430740}
+  rightWing: {fileID: 6773887360576516788}
+  flapAngle: 25
+  flapDuration: 0.16
+  flapEase: 4
+  body: {fileID: 6901680141351719047}
+  spriteFacesRight: 1
+  flipSpeedThreshold: 0.4
+  minFlipInterval: 0.2
 --- !u!1 &3688989279792909730
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +356,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: abdf338858eb189438416ff1264bcb31, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -415,7 +448,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: abdf338858eb189438416ff1264bcb31, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -489,24 +522,3 @@ DefaultAsset:
   m_Name: TankEnemy
   m_Message: The prefab has corrupted file IDs. This prefab will be unusable
   m_IsWarning: 1
---- !u!114 &7303867041814432704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3564886878076266967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfb569519b554664850566c41ba85e1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game.Runtime::EnemyFlightVisual
-  leftWing: {fileID: 1183903502767430740}
-  rightWing: {fileID: 6773887360576516788}
-  flapAngle: 25
-  flapDuration: 0.16
-  flapEase: 4
-  body: {fileID: 6901680141351719047}
-  spriteFacesRight: 1
-  flipSpeedThreshold: 0.4
-  minFlipInterval: 0.2

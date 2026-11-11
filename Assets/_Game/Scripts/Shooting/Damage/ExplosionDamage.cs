@@ -25,8 +25,12 @@ public sealed class ExplosionDamage : DamageType
     protected override bool Resolve(in ShotContext shot)
     {
         if (!DamageQuery.First(shot, out RaycastHit2D direct)) return false;
-        Vector2 center = direct.point;
-        bool damaged = Hit(direct.collider, shot.Damage);
+        return ResolveImpact(shot, direct.collider, direct.point);
+    }
+
+    protected override bool ResolveImpact(in ShotContext shot, Collider2D target, Vector2 center)
+    {
+        bool damaged = Hit(target, shot.Damage);
         foreach (var collider in DamageQuery.Circle(center, radius, shot.HitMask))
         {
             float distance = Vector2.Distance(center, collider.ClosestPoint(center));

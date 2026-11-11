@@ -47,6 +47,9 @@ TagManager:
   - name: Enemy
     uniqueID: 4206511175
     locked: 0
+  - name: VFX
+    uniqueID: 858457857
+    locked: 0
   m_RenderingLayers:
   - Default
   - Light Layer 1

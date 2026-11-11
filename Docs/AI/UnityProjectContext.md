@@ -27,11 +27,15 @@ changes. Root: `D:/Gamedev/Unity/Unity-Jam-2026`.
   plus GameOver; it coordinates slots, spawning and shooting permission.
 - `ShootingController` owns cloned input, cooldown and ammo. `DamageType`
   subclasses resolve single, piercing, explosion and cone attacks; hit effects
-  include slow. Damage is immediate and independent of presentation.
+  include slow. Hitscan/Stream damage is immediate. Projectile mode captures a
+  target at launch and uses `ProjectileShotRunner` to deliver its captured damage
+  and hit effects only at arrival; area queries use the impact world position.
 - `WeaponData` stores balance, audio, sprite/prefab and shot visual configuration.
   `WeaponFeedback` owns recoil, equip and presentation instances. `WeaponVisual`
   owns the held weapon/muzzle flash; `WeaponShotPresentation` owns pooled Canvas
-  projectile, stream and impact effects. See `Docs/Design/WeaponVisuals.md`.
+  effects and observes the gameplay flight state. Weapon swaps/input resets keep
+  launched projectiles; runner disable/scene unload cancels them. Visual pool
+  capacity cannot drop gameplay damage. See `Docs/Design/WeaponVisuals.md`.
 - `SlotWeaponRewards` selects existing WeaponData references by tier. Do not
   create a parallel catalog or mutate weapon assets at runtime.
 - World ParticleSystem effects use `VfxPool`; Canvas shot effects use an

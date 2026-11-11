@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77fafcc6bd2ee94ebe9ac341b986e7a, type: 3}
+  m_Name: EnemyDeathParticle
+  m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimationObject
+  SpriteAnimations:
+  - Name: DeathParticle
+    FPS: 24
+    Frames:
+    - {fileID: 7003975502510558183, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: 530521845, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: -1147438149, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: -1590952365, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: 1994058580, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: -175875179, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: 1676084594, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    - {fileID: 974722868, guid: 63f07ac5e91cc2442b3810adbd9851e6, type: 3}
+    SpriteAnimationType: 1

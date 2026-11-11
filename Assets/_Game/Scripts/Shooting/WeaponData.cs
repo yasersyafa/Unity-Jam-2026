@@ -27,7 +27,7 @@ public sealed class WeaponData : ScriptableObject
     [Tooltip("Optional UI visual prefab with its own muzzle and effects. Empty uses the legacy sprite.")]
     [SerializeField] private WeaponVisual visualPrefab;
     public WeaponVisual VisualPrefab => visualPrefab;
-    [Tooltip("Optional projectile, stream and impact presentation. Does not change damage timing.")]
+    [Tooltip("Projectile mode locks the hit target and delivers damage on arrival. Hitscan and Stream resolve damage immediately.")]
     [SerializeField] private WeaponShotVisualProfile shotVisualProfile;
     public WeaponShotVisualProfile ShotVisualProfile => shotVisualProfile;
     [Header("Comic Sticker")]

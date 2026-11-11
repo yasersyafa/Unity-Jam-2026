@@ -9,7 +9,8 @@ public static class VfxPool
     private static readonly Dictionary<GameObject, ObjectPool<PooledVfx>> pools = new();
     private static Transform root;
 
-    public static void Spawn(GameObject prefab, Vector3 position, Quaternion rotation, float lifetime)
+    /// <param name="scale">Uniform scale of the spawned root, so callers can resize an effect without a new prefab.</param>
+    public static void Spawn(GameObject prefab, Vector3 position, Quaternion rotation, float lifetime, float scale = 1f)
     {
         if (prefab == null) return;
         EnsureRoot();
@@ -25,6 +26,7 @@ public static class VfxPool
         }
         var vfx = pool.Get();
         vfx.transform.SetPositionAndRotation(position, rotation);
+        vfx.transform.localScale = prefab.transform.localScale * scale;
         vfx.Play(pool, Mathf.Max(0.01f, lifetime));
     }
 

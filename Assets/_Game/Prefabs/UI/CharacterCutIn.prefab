@@ -349,7 +349,7 @@ MonoBehaviour:
   portrait: {fileID: 915391622902622098}
   accent: {fileID: 458870524806823120}
   quote: {fileID: 4718494063522333678}
-  duration: 0.9
+  duration: 0.5
   leftSide: 0
   flipPortrait: 0
   offset: {x: 0, y: 0}
@@ -616,7 +616,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2

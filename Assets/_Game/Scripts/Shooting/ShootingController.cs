@@ -28,6 +28,7 @@ public sealed class ShootingController : MonoBehaviour
     private int resumeFrame;
     private int ammo;
     private bool ammoInitialized; // OnEnable refills only the initial weapon, not on every re-enable
+    private ProjectileShotRunner projectiles;
 
     public event Action ShotFired;
     public event Action<WeaponData> WeaponEquipped;
@@ -151,11 +152,26 @@ public sealed class ShootingController : MonoBehaviour
         // Camera shake is removed before Update; hit selection precedes this shot's recoil.
         // The weapon's damage type decides which targets this shot reaches (single, piercing, explosion, cone...).
         var shot = new ShotContext(gameplayCamera, aim, weapon.Damage, hitMask);
-        var visual = weapon.ShotVisualProfile != null ? ShotVisualContext.Capture(shot) : default;
-        bool hit = weapon.DamageType.Apply(shot);
+        bool isProjectile = weapon.ShotVisualProfile != null
+            && weapon.ShotVisualProfile.Mode == WeaponShotVisualProfile.VisualMode.Projectile;
+        var visual = weapon.ShotVisualProfile != null
+            ? ShotVisualContext.Capture(shot, isProjectile)
+            : default;
+        ProjectileShot projectile = null;
+        bool hit = false;
+        if (isProjectile)
+        {
+            if (projectiles == null)
+            {
+                projectiles = GetComponent<ProjectileShotRunner>() ?? gameObject.AddComponent<ProjectileShotRunner>();
+                projectiles.Initialize(feedback);
+            }
+            projectile = projectiles.Launch(shot, visual, weapon.DamageType, feedback.GetProjectileTravelDuration(visual));
+        }
+        else hit = weapon.DamageType.Apply(shot);
         // A valid first click can leave cursor mode this frame; update the hold after accepting it.
         feedback.SetContinuousFire(HasAmmo && weapon.FiringMode == WeaponData.FireMode.Automatic && held);
-        feedback.PlayShot(hit, visual);
+        feedback.PlayShot(hit, visual, projectile);
     }
 
     public void EquipWeapon(WeaponData data)

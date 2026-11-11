@@ -4,7 +4,7 @@ using UnityEngine.Pool;
 
 /// <summary>Owns Canvas-space shot effects. It never applies damage or mutates weapon assets.</summary>
 [DisallowMultipleComponent]
-[DefaultExecutionOrder(100)] // Position streams after WeaponFeedback applies this frame's recoil and sway.
+[DefaultExecutionOrder(100)] // Project targets and muzzles after this frame's recoil, sway and camera shake.
 public sealed class WeaponShotPresentation : MonoBehaviour
 {
     private const int MaximumEffects = 128;
@@ -15,6 +15,8 @@ public sealed class WeaponShotPresentation : MonoBehaviour
         public WeaponEffectGraphic Body;
         public WeaponEffectGraphic Trail;
         public WeaponShotVisualProfile Profile;
+        public ProjectileShot Flight;
+        public bool OwnsFlight;
         public Vector2 Start;
         public Vector2 End;
         public float Elapsed;
@@ -45,13 +47,13 @@ public sealed class WeaponShotPresentation : MonoBehaviour
         fallbackMuzzle = fallback;
         effectRoot = (RectTransform)transform;
         pool = new ObjectPool<Effect>(Create, e => e.Root.gameObject.SetActive(true),
-            e => e.Root.gameObject.SetActive(false), e => Destroy(e.Root.gameObject),
+            e => { e.Flight = null; e.Root.gameObject.SetActive(false); }, e => Destroy(e.Root.gameObject),
             collectionCheck: true, defaultCapacity: 16, maxSize: MaximumEffects);
     }
 
     public void SetWeapon(WeaponShotVisualProfile configuration, RectTransform nozzle)
     {
-        ResetEffects();
+        SetContinuousFire(false);
         profile = configuration;
         muzzle = nozzle;
     }
@@ -68,14 +70,19 @@ public sealed class WeaponShotPresentation : MonoBehaviour
         }
     }
 
-    public void PlayShot(in ShotVisualContext shot)
+    public float GetProjectileTravelDuration(in ShotVisualContext shot)
+    {
+        return Mathf.Max(0.01f, Vector2.Distance(MuzzlePosition(), ToLocal(shot.DestinationScreen)) / profile.Speed);
+    }
+
+    public void PlayShot(in ShotVisualContext shot, ProjectileShot projectile = null)
     {
         if (profile == null || !isActiveAndEnabled) return;
         Vector2 end = ToLocal(shot.DestinationScreen);
         switch (profile.Mode)
         {
             case WeaponShotVisualProfile.VisualMode.Projectile:
-                Launch(MuzzlePosition(), end, shot.HasImpact); break;
+                Launch(MuzzlePosition(), shot, projectile); break;
             case WeaponShotVisualProfile.VisualMode.Stream:
                 if (stream == null && held)
                 {
@@ -122,17 +129,20 @@ public sealed class WeaponShotPresentation : MonoBehaviour
         return effect;
     }
 
-    private void Launch(Vector2 start, Vector2 end, bool impact)
+    private void Launch(Vector2 start, in ShotVisualContext shot, ProjectileShot projectile)
     {
         Effect effect = Rent();
         if (effect == null) return;
+        Vector2 end = ToLocal(shot.DestinationScreen);
         effect.Profile = profile;
+        effect.OwnsFlight = projectile == null;
+        effect.Flight = projectile ?? new ProjectileShot(shot, GetProjectileTravelDuration(shot));
         effect.Start = start;
         effect.End = end;
-        effect.Duration = Mathf.Max(0.01f, Vector2.Distance(start, end) / profile.Speed);
+        effect.Duration = effect.Flight.Duration;
         effect.Angle = profile.OrientToTravel ? Angle(end - start) : 0f;
         effect.Projectile = true;
-        effect.Impact = impact;
+        effect.Impact = shot.HasImpact;
         effect.Root.anchoredPosition = start;
         effect.Body.Configure(profile.Silhouette, profile.Sprite, profile.Color);
         effect.Body.rectTransform.sizeDelta = profile.Size;
@@ -179,16 +189,48 @@ public sealed class WeaponShotPresentation : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
+        if (Time.timeScale <= 0f) return;
         for (int i = active.Count - 1; i >= 0; i--)
         {
             Effect effect = active[i];
-            effect.Elapsed += Time.deltaTime;
-            float progress = Mathf.Clamp01(effect.Elapsed / effect.Duration);
+            Vector2 previousPosition = effect.Root.anchoredPosition;
+            float progress;
+            if (effect.Projectile)
+            {
+                if (effect.OwnsFlight) effect.Flight.Advance(Time.deltaTime);
+                if (effect.Flight.IsCanceled)
+                {
+                    active.RemoveAt(i);
+                    pool.Release(effect);
+                    continue;
+                }
+                effect.Elapsed = effect.Flight.Elapsed;
+                effect.End = ToLocal(effect.Flight.DestinationScreen);
+                progress = effect.Flight.Progress;
+            }
+            else
+            {
+                effect.Elapsed += Time.deltaTime;
+                progress = Mathf.Clamp01(effect.Elapsed / effect.Duration);
+            }
             effect.Root.anchoredPosition = Vector2.Lerp(effect.Start, effect.End, progress);
             if (effect.Projectile)
+            {
+                Vector2 movement = effect.Root.anchoredPosition - previousPosition;
+                if (movement.sqrMagnitude > 0.0001f)
+                {
+                    float angle = Angle(movement);
+                    if (effect.Profile.OrientToTravel) effect.Angle = angle;
+                    if (effect.Trail.enabled)
+                    {
+                        effect.Trail.rectTransform.anchoredPosition = -movement.normalized * effect.Profile.TrailLength * 0.5f;
+                        effect.Trail.rectTransform.localRotation = Quaternion.Euler(0f, 0f, angle);
+                    }
+                }
                 effect.Body.rectTransform.localRotation = Quaternion.Euler(0f, 0f, effect.Angle + effect.Profile.Spin * effect.Elapsed);
+            }
             else
             {
                 Color tint = effect.Fragment ? effect.Profile.Color : effect.Profile.ImpactColor;
@@ -204,10 +246,6 @@ public sealed class WeaponShotPresentation : MonoBehaviour
             pool.Release(effect);
             if (impact) Impact(configuration, end);
         }
-    }
-
-    private void LateUpdate()
-    {
         if (stream == null) return;
         Vector2 start = MuzzlePosition();
         Vector2 direction = ToLocal(aimScreen) - start;

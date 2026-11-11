@@ -72,7 +72,7 @@ public sealed class DamageTypePhysicsTests
     }
 
     [UnityTest]
-    public IEnumerator VisualProjectile_UsesPreDamageSnapshot_AndNeverDealsAdditionalDamage()
+    public IEnumerator VisualOnlyPreview_RetainsDestination_AndNeverReappliesDamage()
     {
         var target = Target(Vector2.zero);
         Physics2D.SyncTransforms();
@@ -83,7 +83,7 @@ public sealed class DamageTypePhysicsTests
         Assert.That(Vector2.Distance(visual.DestinationScreen, aim), Is.LessThan(0.1f));
         Assert.That(target.Hits, Is.Zero, "Capturing presentation must not damage anything.");
         Assert.That(Damage<SingleTargetDamage>().Apply(shot), Is.True);
-        Assert.That(target.Hits, Is.EqualTo(1), "Damage occurs immediately, before flight starts.");
+        Assert.That(target.Hits, Is.EqualTo(1), "Explicit hitscan damage is independent of a visual-only preview.");
 
         var hud = Track(new GameObject("Shot HUD", typeof(RectTransform), typeof(Canvas)));
         var canvas = hud.GetComponent<Canvas>();
@@ -116,6 +116,57 @@ public sealed class DamageTypePhysicsTests
         Shoot(Damage<PiercingDamage>(("maxTargets", 2)), Vector2.zero);
         Assert.That(front.Hits + middle.Hits + back.Hits, Is.EqualTo(2));
         Assert.That(front.Hits, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void ProjectileLock_UsesHitboxCenterAndTracksMovement_WhileHitscanKeepsAimPoint()
+    {
+        var target = Target(Vector2.zero, size: 2f);
+        var collider = target.GetComponent<BoxCollider2D>();
+        collider.offset = new Vector2(0.25f, 0.1f);
+        Physics2D.SyncTransforms();
+        Vector2 aim = camera.WorldToScreenPoint(new Vector3(0.8f, 0.6f, 0f));
+        var shot = new ShotContext(camera, aim, 100f, ~0);
+        ShotVisualContext projectile = ShotVisualContext.Capture(shot, trackTarget: true);
+        Vector2 center = camera.WorldToScreenPoint(collider.bounds.center);
+        Assert.That(projectile.HasImpact, Is.True);
+        Assert.That(Vector2.Distance(projectile.DestinationScreen, center), Is.LessThan(0.1f));
+        Assert.That(Vector2.Distance(projectile.DestinationScreen, aim), Is.GreaterThan(1f));
+        Assert.That(Vector2.Distance(ShotVisualContext.Capture(shot).DestinationScreen, aim), Is.LessThan(0.1f));
+        target.transform.position = new Vector2(2f, 1f);
+        Physics2D.SyncTransforms();
+        Assert.That(projectile.TryGetTargetScreenPosition(out Vector2 moved), Is.True);
+        Assert.That(Vector2.Distance(moved, camera.WorldToScreenPoint(collider.bounds.center)), Is.LessThan(0.1f));
+        Assert.That(target.Hits, Is.Zero);
+        collider.enabled = false;
+        Assert.That(projectile.TryGetTargetScreenPosition(out _), Is.False);
+        Object.DestroyImmediate(target.gameObject);
+        Assert.That(projectile.TryGetTargetScreenPosition(out _), Is.False);
+    }
+
+    [Test]
+    public void ProjectileMiss_KeepsCursorDestination_AndDoesNotLockToOtherEnemies()
+    {
+        Target(Vector2.zero);
+        Physics2D.SyncTransforms();
+        Vector2 aim = camera.WorldToScreenPoint(new Vector3(3f, 4f, 0f));
+        var visual = ShotVisualContext.Capture(new ShotContext(camera, aim, 100f, ~0), trackTarget: true);
+        Assert.That(visual.HasImpact, Is.False);
+        Assert.That(visual.DestinationScreen, Is.EqualTo(aim));
+        Assert.That(visual.TryGetTargetScreenPosition(out _), Is.False);
+    }
+
+    [Test]
+    public void ProjectileWallHit_UsesImpactPoint_WithoutTargetLock()
+    {
+        var wall = Track(new GameObject("Wall", typeof(BoxCollider2D)));
+        wall.GetComponent<BoxCollider2D>().size = new Vector2(2f, 2f);
+        Physics2D.SyncTransforms();
+        Vector2 aim = camera.WorldToScreenPoint(new Vector3(0.7f, 0.3f, 0f));
+        var visual = ShotVisualContext.Capture(new ShotContext(camera, aim, 100f, ~0), trackTarget: true);
+        Assert.That(visual.HasImpact, Is.True);
+        Assert.That(Vector2.Distance(visual.DestinationScreen, aim), Is.LessThan(0.1f));
+        Assert.That(visual.TryGetTargetScreenPosition(out _), Is.False);
     }
 
     [Test] public void Explosion_DamagesWithinRadiusWithFalloffAndOnlyOnHit()

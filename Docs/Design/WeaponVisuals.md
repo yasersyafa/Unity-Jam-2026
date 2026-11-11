@@ -6,12 +6,22 @@ All 15 CSV weapons are configured. `WeaponData > Shot Visual Profile` references
 assets in `Assets/_Game/ScriptableObjects/WeaponVisuals/`. `_StandarWeapon` uses
 the stone defaults; the older `Jackpot` asset uses hitscan defaults.
 
-Damage, ammo, fire rate, recoil, slow and target selection still resolve instantly
-through the existing shooting/damage system. A projectile is presentation only:
-its destination is captured before damage, so it can finish after a target dies.
-Arrival never applies another hit. A miss travels to the saved aim and disappears
-without an impact. Hitscan impact is shown at the first collider under the aim;
-piercing damage still reaches its existing target set.
+Projectile-mode weapons lock the first hit at launch and deliver damage **only on
+arrival**. Ammo, cooldown, shot sound, muzzle flash and recoil occur at launch;
+damage, slow, explosion damage and hitmarker occur at impact. Hitscan and Stream
+weapons retain immediate damage through the existing damage types.
+
+On a damageable hit, the projectile follows the centre of that collider,
+independently of later cursor movement. If the target disappears or its hitbox
+is disabled during flight, it finishes at the last known position and never
+reacquires a respawned target. Single-target shots then deal no damage; explosions
+still affect enemies around the last known world position. Area targets and
+falloff are evaluated at arrival, not at launch.
+
+A miss travels to the saved cursor position and disappears without impact or
+damage, even if a new enemy later moves under that cursor. Non-damageable
+obstacles retain their fixed impact point. Hitscan impact remains at the first
+collider under the aim; piercing hitscan damage keeps its existing target set.
 
 | Weapons | Mode and defaults |
 | --- | --- |
@@ -28,10 +38,12 @@ piercing damage still reaches its existing target set.
 
 ### Adjusting in the Inspector
 
-- **Mode:** Hitscan, Projectile or Stream. This changes presentation only.
+- **Mode:** Projectile delivers damage on arrival; Hitscan and Stream resolve it
+  immediately. All weapons assigned Projectile mode use the arrival rule.
 - **Sprite / Shape / Color / Size:** replace the code-native silhouette with a
   sprite, or tune its shape and tint. Size uses reference Canvas pixels.
-- **Speed:** reference Canvas pixels per second. **Spin:** degrees per second.
+- **Speed:** reference Canvas pixels per second; initial distance / speed sets
+  travel time and therefore damage delay. **Spin:** degrees per second.
   **Orient To Travel** sets the launch angle; disable it to keep an object upright.
   Art should point along local +X before this rotation.
 - **Trail:** tint/alpha, length and width. Zero alpha or length disables it.
@@ -50,14 +62,21 @@ animated muzzle flash are retained.
 
 Streams begin only after an actual shot. Repeated shots keep one stream alive;
 release, empty ammo, UI hover, focus loss, pause and shooting suspension stop it.
-Reset, disable, replacement and scene unload clear active effects. Travel and
-effect lifetimes use scaled time. Each presentation has a maximum of 128 active
-effects (including fragments), and reuses released objects through a local pool.
-Visual overload drops additional effects without affecting damage.
+Weapon swaps and shooting resets stop the muzzle/stream but preserve launched
+projectiles and their original damage payload. Pause freezes flight and damage.
+Disabling/destroying the projectile runner or unloading its scene cancels pending
+damage. Hiding or exhausting the VFX pool never cancels gameplay shots.
+
+`ProjectileShotRunner`, attached to the shooting rig when first needed, owns
+flight and damage. `WeaponShotPresentation` observes that same flight state and
+owns only graphics. Explicit visual resets/disable clear graphics; normal weapon
+replacement retains flying graphics. Both use scaled time. Each presentation
+has a maximum of 128 active effects including fragments and reuses released
+objects through a local pool; additional gameplay projectiles still resolve.
 
 `Explosion_Durian`, `Explosion_LPG` and `Explosion_Rocket` have their legacy
 **Impact Vfx** references cleared: the shot profile now owns the arrival effect,
-avoiding an additional explosion at the instant damage is applied.
+avoiding an additional legacy explosion alongside the projectile impact graphic.
 
 **Tools > Weapon Visuals > Create Missing Visuals** recreates missing default
 profiles/prefabs and fills empty weapon references. It preserves existing profile
@@ -76,10 +95,13 @@ used by gameplay, so no separate scene wiring is needed.
 `WeaponVisualProfileTests` checks all 15 mappings, upright throws, bounds and
 legacy compatibility. `WeaponShotPresentationTests` covers lifecycle, stream
 gating, pool reuse/capacity, flight/impact, fragments and scaled-time pause.
-`DamageTypePhysicsTests` also verifies instant damage and a destination that
-survives target movement/destruction without a second damage application.
+`DamageTypePhysicsTests` verifies hitscan damage, target locking and visual-only
+previews that never apply damage. `ProjectileShotTests` verifies arrival damage,
+moving targets, area/slow effects, lost targets, pause, cancellation and damage
+independence from the visual pool limit.
 `WeaponShootingPresentationTests` exercises the accepted-shot controller path,
-including final-ammo stream cancellation, permission resets and legacy equips.
+including final-ammo stream cancellation, delayed lethal impacts and in-flight
+damage surviving weapon replacement and permission resets.
 Those tests inject accepted shots, independently of OS focus; physical mouse
 interaction remains a Game View check.
 

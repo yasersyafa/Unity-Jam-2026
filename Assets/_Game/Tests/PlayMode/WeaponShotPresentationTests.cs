@@ -12,6 +12,10 @@ public sealed class WeaponShotPresentationTests
     private WeaponShotVisualProfile profile;
     private RectTransform muzzle;
     private Canvas canvas;
+    private sealed class VisualTarget : MonoBehaviour, IDamageable
+    {
+        public void TakeDamage(float damage) { }
+    }
     private static void Set(object target, string field, object value) => target.GetType()
         .GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
 
@@ -45,6 +49,26 @@ public sealed class WeaponShotPresentationTests
 
     private ShotVisualContext Shot(bool impact) => new ShotVisualContext(
         RectTransformUtility.WorldToScreenPoint(null, muzzle.position) + new Vector2(200f, 100f), impact);
+
+    private ShotVisualContext TrackingShot(out Camera camera, out BoxCollider2D target)
+    {
+        var cameraObject = new GameObject("Target camera", typeof(Camera));
+        cameraObject.transform.SetParent(root.transform, false);
+        cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+        camera = cameraObject.GetComponent<Camera>();
+        camera.orthographic = true;
+        camera.orthographicSize = 5f;
+        var targetObject = new GameObject("Moving target", typeof(BoxCollider2D), typeof(VisualTarget));
+        targetObject.transform.SetParent(root.transform, false);
+        targetObject.transform.position = Vector3.zero;
+        target = targetObject.GetComponent<BoxCollider2D>();
+        target.size = Vector2.one * 2f;
+        muzzle.anchoredPosition = new Vector2(-200f, -150f);
+        Set(profile, "speed", 500f);
+        Physics2D.SyncTransforms();
+        Vector2 cursor = camera.WorldToScreenPoint(new Vector3(0.6f, 0.3f, 0f));
+        return ShotVisualContext.Capture(new ShotContext(camera, cursor, 100f, ~0), trackTarget: true);
+    }
 
     [UnityTest]
     public IEnumerator Hit_TravelsThenShowsImpact_AndReleasesEverything()
@@ -97,7 +121,7 @@ public sealed class WeaponShotPresentationTests
     }
 
     [UnityTest]
-    public IEnumerator ResetDisableAndReplacement_CancelAllEffects()
+    public IEnumerator ResetAndDisableCancelEffects_ReplacementPreservesFlights()
     {
         presentation.PlayShot(Shot(true));
         presentation.ResetEffects();
@@ -108,9 +132,11 @@ public sealed class WeaponShotPresentationTests
         presentation.enabled = true;
         presentation.PlayShot(Shot(true));
         presentation.SetWeapon(null, null);
-        Assert.That(presentation.ActiveEffectCount, Is.Zero);
+        Assert.That(presentation.ActiveEffectCount, Is.EqualTo(1));
         presentation.PlayShot(Shot(true));
         yield return null;
+        Assert.That(presentation.ActiveEffectCount, Is.EqualTo(1), "Replacing a weapon does not erase its in-flight projectile.");
+        presentation.ResetEffects();
         Assert.That(presentation.ActiveEffectCount, Is.Zero);
     }
 
@@ -182,5 +208,58 @@ public sealed class WeaponShotPresentationTests
             Assert.That(Vector2.Distance(screen, shot.DestinationScreen), Is.LessThan(0.1f));
             presentation.ResetEffects();
         }
+    }
+
+    [UnityTest]
+    public IEnumerator LockedProjectile_FollowsMovingTarget_AndIgnoresCursorChanges()
+    {
+        var shot = TrackingShot(out Camera camera, out BoxCollider2D target);
+        Set(profile, "trailColor", Color.white);
+        presentation.PlayShot(shot);
+        yield return null;
+        target.transform.position = new Vector3(1.5f, 1f, 0f);
+        camera.transform.position += new Vector3(0.5f, 0.25f, 0f);
+        Physics2D.SyncTransforms();
+        presentation.SetAim(new Vector2(Screen.width * 0.1f, Screen.height * 0.1f));
+        yield return new WaitForSeconds(0.55f);
+        var impact = presentation.GetComponentInChildren<WeaponEffectGraphic>();
+        Vector2 actual = RectTransformUtility.WorldToScreenPoint(null, impact.transform.parent.position);
+        Vector2 expected = camera.WorldToScreenPoint(target.bounds.center);
+        Assert.That(Vector2.Distance(actual, expected), Is.LessThan(0.1f));
+        Assert.That(Vector2.Distance(actual, shot.DestinationScreen), Is.GreaterThan(1f));
+        yield return new WaitForSeconds(0.35f);
+        Assert.That(presentation.ActiveEffectCount, Is.Zero);
+    }
+
+    [UnityTest]
+    public IEnumerator LostTarget_FinishesAtLastPosition_AndDoesNotFollowRespawn()
+    {
+        var shot = TrackingShot(out Camera camera, out BoxCollider2D target);
+        presentation.PlayShot(shot);
+        target.transform.position = new Vector3(1f, 0f, 0f);
+        Physics2D.SyncTransforms();
+        yield return new WaitForSeconds(0.05f);
+        Vector2 last = camera.WorldToScreenPoint(target.bounds.center);
+        target.enabled = false;
+        yield return new WaitForSeconds(0.05f);
+        target.transform.position = new Vector3(4f, 3f, 0f);
+        target.enabled = true;
+        Physics2D.SyncTransforms();
+        yield return new WaitForSeconds(0.5f);
+        var impact = presentation.GetComponentInChildren<WeaponEffectGraphic>();
+        Vector2 actual = RectTransformUtility.WorldToScreenPoint(null, impact.transform.parent.position);
+        Assert.That(Vector2.Distance(actual, last), Is.LessThan(0.1f));
+    }
+
+    [UnityTest]
+    public IEnumerator TargetDestroyedByInstantDamage_UsesCapturedCenter()
+    {
+        var shot = TrackingShot(out _, out BoxCollider2D target);
+        Object.DestroyImmediate(target.gameObject);
+        presentation.PlayShot(shot);
+        yield return new WaitForSeconds(0.55f);
+        var impact = presentation.GetComponentInChildren<WeaponEffectGraphic>();
+        Vector2 actual = RectTransformUtility.WorldToScreenPoint(null, impact.transform.parent.position);
+        Assert.That(Vector2.Distance(actual, shot.DestinationScreen), Is.LessThan(0.1f));
     }
 }
