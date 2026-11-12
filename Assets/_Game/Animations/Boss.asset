@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77fafcc6bd2ee94ebe9ac341b986e7a, type: 3}
+  m_Name: Boss
+  m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimationObject
+  SpriteAnimations:
+  - Name: Idle
+    FPS: 12
+    Frames:
+    - {fileID: -3104499383675027771, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    - {fileID: -1540093231, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    - {fileID: -1332935889, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    - {fileID: -1522506360, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    - {fileID: -1621515811, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    - {fileID: 1547263598, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    - {fileID: -994373047, guid: dc7423cc2bce74747b29377e24adc328, type: 3}
+    SpriteAnimationType: 0
