@@ -20,7 +20,7 @@ MonoBehaviour:
   shotVisualProfile: {fileID: 11400000, guid: 90f41571fe51d654bbf714ea62ba3304, type: 2}
   stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   stickerText: HMPH!
-  shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  shotSound: {fileID: 11400000, guid: cc973749391c4ff69cf23d2368a8c658, type: 2}
   firingMode: 1
   damage: 60
   damageType: {fileID: 0}

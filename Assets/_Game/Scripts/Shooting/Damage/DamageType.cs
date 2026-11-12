@@ -9,9 +9,15 @@ public abstract class DamageType : ScriptableObject
 {
     [Tooltip("Extra effects applied to every target this shot damages (e.g. slow).")]
     [SerializeField] private HitEffect[] effects = System.Array.Empty<HitEffect>();
+    [Tooltip("Skip general enemy-hit SFX when this damage type hits enemies.")]
+    [SerializeField] private bool suppressEnemyHitSound;
 
     private static readonly HashSet<IDamageable> struck = new();
     private static DamageType fallback;
+    private static DamageType active;
+
+    protected virtual bool SuppressHitSound => suppressEnemyHitSound;
+    public static bool SuppressEnemyHitSound => active != null && active.SuppressHitSound;
 
     /// <summary>Plain single target damage, used by weapons without a damage type asset.</summary>
     public static DamageType Default
@@ -31,15 +37,21 @@ public abstract class DamageType : ScriptableObject
     /// <summary>Resolves one shot. Returns true when at least one target was damaged.</summary>
     public bool Apply(in ShotContext shot)
     {
+        var previous = active;
+        active = this;
         struck.Clear();
-        return Resolve(shot);
+        try { return Resolve(shot); }
+        finally { active = previous; }
     }
 
     /// <summary>Resolves an arriving projectile against its original lock, without querying the cursor again.</summary>
     public bool ApplyImpact(in ShotContext shot, Collider2D target, Vector2 position)
     {
+        var previous = active;
+        active = this;
         struck.Clear();
-        return ResolveImpact(shot, target, position);
+        try { return ResolveImpact(shot, target, position); }
+        finally { active = previous; }
     }
 
     protected virtual bool ResolveImpact(in ShotContext shot, Collider2D target, Vector2 position)

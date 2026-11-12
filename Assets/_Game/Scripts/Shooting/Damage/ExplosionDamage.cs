@@ -14,6 +14,10 @@ public sealed class ExplosionDamage : DamageType
     [Tooltip("Optional VFX spawned at the impact point.")]
     [SerializeField] private GameObject impactVfx;
     [SerializeField, Min(0.01f)] private float vfxLifetime = 2f;
+    [Tooltip("SFX played once when this explosion damages at least one target.")]
+    [SerializeField] private AudioCue impactSound;
+
+    protected override bool SuppressHitSound => true;
 
     /// <summary>Damage multiplier at <paramref name="distance"/> from the blast centre; 0 outside the radius.</summary>
     public static float Falloff(float distance, float radius, float edgeDamage)
@@ -37,6 +41,7 @@ public sealed class ExplosionDamage : DamageType
             damaged |= Hit(collider, shot.Damage * Falloff(distance, radius, edgeDamage));
         }
         if (impactVfx != null) VfxPool.Spawn(impactVfx, center, Quaternion.identity, vfxLifetime);
+        if (damaged && impactSound != null && Application.isPlaying) AudioService.Ensure().Play(impactSound);
         return damaged;
     }
 }

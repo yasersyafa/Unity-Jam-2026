@@ -28,9 +28,11 @@ public sealed class ShootingController : MonoBehaviour
     private int resumeFrame;
     private int ammo;
     private bool ammoInitialized; // OnEnable refills only the initial weapon, not on every re-enable
+    private bool continuousFiring;
     private ProjectileShotRunner projectiles;
 
     public event Action ShotFired;
+    public event Action<bool> ContinuousFireChanged;
     public event Action<WeaponData> WeaponEquipped;
     /// <summary>Raised after a shot spends ammo and when a weapon refills it.</summary>
     public event Action AmmoChanged;
@@ -73,6 +75,7 @@ public sealed class ShootingController : MonoBehaviour
         shootingAllowed = allowed;
         cursorMode = true;
         resumeFrame = Time.frameCount;
+        SetContinuousFire(false);
         if (feedback != null)
         {
             feedback.ResetFeedback();
@@ -105,7 +108,7 @@ public sealed class ShootingController : MonoBehaviour
         bool overUI = UnityEngine.EventSystems.EventSystem.current != null
             && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
         bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
-        if (feedback != null) feedback.SetContinuousFire(shootingAllowed && !cursorMode
+        SetContinuousFire(shootingAllowed && !cursorMode
             && Mouse.current != null && Application.isFocused && Time.timeScale > 0f
             && !escape && !overUI && fire != null && weapon != null && HasAmmo
             && weapon.FiringMode == WeaponData.FireMode.Automatic && fire.IsPressed());
@@ -117,6 +120,7 @@ public sealed class ShootingController : MonoBehaviour
         {
             if (!cursorMode && hasAim && Application.isFocused) Mouse.current.WarpCursorPosition(lastAim);
             cursorMode = true;
+            SetContinuousFire(false);
             feedback.ResetFeedback();
             UpdateCursorVisibility();
             return;
@@ -179,8 +183,16 @@ public sealed class ShootingController : MonoBehaviour
             ResolveShot(hit);
         }
         // A valid first click can leave cursor mode this frame; update the hold after accepting it.
-        feedback.SetContinuousFire(HasAmmo && weapon.FiringMode == WeaponData.FireMode.Automatic && held);
+        SetContinuousFire(HasAmmo && weapon.FiringMode == WeaponData.FireMode.Automatic && held);
         feedback.PlayShot(hit, visual, projectile);
+    }
+
+    private void SetContinuousFire(bool value)
+    {
+        if (feedback != null) feedback.SetContinuousFire(value);
+        if (continuousFiring == value) return;
+        continuousFiring = value;
+        ContinuousFireChanged?.Invoke(value);
     }
 
     private void ResolveShot(bool hit) => ShotResolved?.Invoke(hit);
@@ -188,6 +200,7 @@ public sealed class ShootingController : MonoBehaviour
     public void EquipWeapon(WeaponData data)
     {
         if (data == null) return;
+        SetContinuousFire(false);
         weapon = data;
         if (feedback != null) feedback.SetWeapon(data);
         RefillAmmo();
@@ -223,6 +236,7 @@ public sealed class ShootingController : MonoBehaviour
         }
         fire?.Dispose();
         fire = null;
+        SetContinuousFire(false);
         if (feedback != null) feedback.ResetFeedback();
     }
 }

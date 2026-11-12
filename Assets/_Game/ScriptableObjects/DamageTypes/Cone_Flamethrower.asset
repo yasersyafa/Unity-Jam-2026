@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Cone_Flamethrower
   m_EditorClassIdentifier: 
   effects: []
+  suppressEnemyHitSound: 1
   range: 9
   halfAngle: 14
   edgeDamage: 1

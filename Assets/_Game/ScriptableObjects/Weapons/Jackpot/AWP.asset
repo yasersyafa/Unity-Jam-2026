@@ -20,7 +20,7 @@ MonoBehaviour:
   shotVisualProfile: {fileID: 11400000, guid: 64a097791a336a34282cecc66cbf943e, type: 2}
   stickerSprite: {fileID: 498814163, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   stickerText: VHOMB!
-  shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  shotSound: {fileID: 11400000, guid: f1e1e9158cb9455db133b656d7ce8f19, type: 2}
   firingMode: 1
   damage: 2500
   damageType: {fileID: 11400000, guid: 4d87edafde164366a0a79a3511bef4e2, type: 2}

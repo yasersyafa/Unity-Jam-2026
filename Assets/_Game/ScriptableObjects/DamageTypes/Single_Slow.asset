@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effects:
   - {fileID: 11400000, guid: 944d94a6a3dc4f89875f65b42611fe01, type: 2}
+  suppressEnemyHitSound: 1

@@ -20,7 +20,7 @@ MonoBehaviour:
   shotVisualProfile: {fileID: 11400000, guid: 6b7dd39813d0c904f8eaf2ca5948d09d, type: 2}
   stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
   stickerText: GOKS!
-  shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  shotSound: {fileID: 11400000, guid: 59771b46e4d946deacfa4ed4d42b2bbe, type: 2}
   firingMode: 0
   damage: 100
   damageType: {fileID: 0}
