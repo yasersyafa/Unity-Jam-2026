@@ -21,6 +21,15 @@ public sealed class WeaponData : ScriptableObject
     public bool UnlimitedAmmo => unlimitedAmmo;
     public int MaxAmmo => Mathf.Max(1, maxAmmo);
 
+    [Header("Reward Reveal")]
+    [SerializeField] private Sprite rewardSprite;
+    [Tooltip("Transparent title artwork including its outline. Hidden when unassigned.")]
+    [SerializeField] private Sprite rewardTitleSprite;
+    [SerializeField, HideInInspector] private string rewardDisplayName;
+    public Sprite RewardTitleSprite => rewardTitleSprite;
+    public Sprite RewardSprite => rewardSprite != null ? rewardSprite : sprite;
+    public string RewardDisplayName => string.IsNullOrWhiteSpace(rewardDisplayName) ? name.Replace('_', ' ').Trim() : rewardDisplayName;
+
     [Header("Presentation")]
     [Tooltip("Sprite shown in the first-person weapon overlay.")]
     [SerializeField] private Sprite sprite;

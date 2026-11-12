@@ -4183,6 +4183,11 @@ MonoBehaviour:
   icon: {fileID: 2522402429873321043}
   label: {fileID: 8974580489028875918}
   previewWeapon: {fileID: 0}
+  rewardBackground: {fileID: 21300000, guid: 5030dcb2d7b0d40659414681e3160b27, type: 3}
+  flashIn: 0.08
+  reveal: 0.22
+  hold: 0.8
+  flashOut: 0.2
 --- !u!225 &984811197868717240
 CanvasGroup:
   m_ObjectHideFlags: 0

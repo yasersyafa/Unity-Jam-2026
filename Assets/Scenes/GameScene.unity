@@ -612,7 +612,7 @@ MonoBehaviour:
   - {fileID: 856696548}
   - {fileID: 856696546}
   panelPresentation: {fileID: 900000101}
-  rewardPresentation: {fileID: 0}
+  rewardPresentation: {fileID: 1931014281}
 --- !u!4 &1384764985
 Transform:
   m_ObjectHideFlags: 0
@@ -752,6 +752,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1931014281 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5686102765434449285, guid: 441f920d6fb084897a62f1d851482d83, type: 3}
+  m_PrefabInstance: {fileID: 856696541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24d7b80dd98448a6804478d0f12b32d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotRewardPresentation
 --- !u!1 &1980862529
 GameObject:
   m_ObjectHideFlags: 0
