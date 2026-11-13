@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 1000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 21165877458212415}
@@ -157,8 +157,6 @@ MonoBehaviour:
   visual: {fileID: 1002}
   hitbox: {fileID: 1003}
   attackPrefab: {fileID: 1004, guid: 54ee8a17bb094ae3a80a3b96e8725446, type: 3}
-  spawnViewport: {x: 0.5, y: 0.78}
-  depthOffset: 0.5
   attackScaleMultipliers: {x: 0.4, y: 1.2}
 --- !u!114 &7753208910050003964
 MonoBehaviour:
