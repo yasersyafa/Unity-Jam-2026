@@ -254,7 +254,7 @@ public sealed class EnemySpawner : MonoBehaviour
                 {
                     onBossReady?.Invoke();
                     BossReady?.Invoke();
-                    SpawnBoss();
+
                 }
                 break;
             }
@@ -280,13 +280,16 @@ public sealed class EnemySpawner : MonoBehaviour
         }
         StopAllCoroutines();
         Cleanup();
-        SpawnBoss();
+        onBossReady?.Invoke();
+        BossReady?.Invoke();
     }
 
-    private void SpawnBoss()
+    public void SpawnBoss()
     {
-        if (bossConfig == null || bossConfig.BossPrefab == null || activeBoss != null) return;
-        activeBoss = Instantiate(bossConfig.BossPrefab, transform);
+        if (!isActiveAndEnabled || player == null || player.IsDead || bossConfig == null || bossConfig.BossPrefab == null || activeBoss != null) return;
+        // Preserve the prefab-authored world transform, independent of the spawner transform.
+        activeBoss = Instantiate(bossConfig.BossPrefab);
+        activeBoss.transform.SetParent(transform, worldPositionStays: true);
         activeBoss.BeginEncounter(bossConfig, gameplayCamera, enemyParent, player,
             transform.root.GetComponentInChildren<ShootingController>(),
             transform.root.GetComponentInChildren<SlotGameplayFlow>());

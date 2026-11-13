@@ -9,8 +9,6 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     [SerializeField] private SpriteRenderer visual;
     [SerializeField] private BoxCollider2D hitbox;
     [SerializeField] private BossAttackTarget attackPrefab;
-    [SerializeField] private Vector2 spawnViewport = new Vector2(0.5f, 0.78f);
-    [SerializeField] private float depthOffset = 0.5f;
     [SerializeField] private Vector2 attackScaleMultipliers = new Vector2(0.4f, 1.2f);
     private BossConfig config;
     private Camera cameraReference;
@@ -38,7 +36,6 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
             running = false;
             return;
         }
-        transform.position = Point(spawnViewport) + camera.transform.forward * depthOffset;
         attackPool = new GameplayPrefabPool(transform);
         attackPool.Prewarm(attackPrefab, 9);
         CreateHud();

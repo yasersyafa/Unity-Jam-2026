@@ -32,7 +32,7 @@ public sealed class WaveBannerPresentation : MonoBehaviour
         if (spawner != null)
         {
             spawner.WaveStarted += Wave;
-            spawner.BossReady += Boss;
+
         }
     }
 
@@ -41,7 +41,7 @@ public sealed class WaveBannerPresentation : MonoBehaviour
         if (spawner != null)
         {
             spawner.WaveStarted -= Wave;
-            spawner.BossReady -= Boss;
+
         }
         animation.Stop();
         pending = showing = null;

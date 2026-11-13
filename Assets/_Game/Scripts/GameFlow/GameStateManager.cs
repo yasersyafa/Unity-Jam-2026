@@ -25,6 +25,7 @@ public sealed class GameStateManager : MonoBehaviour
 
     private readonly Dictionary<Type, GameState> states = new();
     private BossEncounter boss;
+    public BossIntroPresentation BossIntro { get; private set; }
 
     public SlotGameplayFlow Slots => slots;
     public EnemySpawner Spawner => spawner;
@@ -41,6 +42,7 @@ public sealed class GameStateManager : MonoBehaviour
         yield return new TutorialState();
         yield return new WeaponSelectState();
         yield return new CombatState();
+        yield return new BossIntroState();
         yield return new BossState();
         yield return new VictoryState();
         yield return new GameOverState();
@@ -53,6 +55,8 @@ public sealed class GameStateManager : MonoBehaviour
         if (player == null) player = FindAnyObjectByType<PlayerHealth>();
         if (shooting == null) shooting = FindAnyObjectByType<ShootingController>();
         if (tutorial == null) tutorial = FindAnyObjectByType<TutorialDirector>();
+
+        BossIntro = Instantiate(Resources.Load<BossIntroPresentation>("BossIntroPresentation"), transform);
 
         // The manager decides when these start instead of their own lifecycle callbacks.
         if (slots != null) slots.OpenOnStart = false;
@@ -69,12 +73,15 @@ public sealed class GameStateManager : MonoBehaviour
     {
         if (player != null) player.Died += OnPlayerDied;
         if (spawner != null) spawner.BossSpawned += OnBossSpawned;
+        if (spawner != null) spawner.BossReady += OnBossReady;
     }
 
     private void OnDisable()
     {
         if (player != null) player.Died -= OnPlayerDied;
         if (spawner != null) spawner.BossSpawned -= OnBossSpawned;
+        if (spawner != null) spawner.BossReady -= OnBossReady;
+        if (BossIntro != null) BossIntro.CancelAndReset();
         if (boss != null) boss.Defeated -= OnBossDefeated;
     }
 
@@ -109,6 +116,11 @@ public sealed class GameStateManager : MonoBehaviour
     private void OnPlayerDied()
     {
         if (Current == null || !Current.IsTerminal) ChangeState<GameOverState>();
+    }
+
+    private void OnBossReady()
+    {
+        if (isActiveAndEnabled && (Current == null || !Current.IsTerminal)) ChangeState<BossIntroState>();
     }
 
     private void OnBossSpawned(BossEncounter encounter)

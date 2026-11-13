@@ -63,7 +63,28 @@ public sealed class CombatState : GameState
 }
 
 /// <summary>Boss fight; the manager moves to victory when the boss is defeated.</summary>
-public sealed class BossState : GameState { }
+public sealed class BossState : GameState
+{
+    public override void Enter() => Manager.SetPlayerControl(true, true);
+}
+
+public sealed class BossIntroState : GameState
+{
+    private bool started;
+    public override void Enter() { started = false; Manager.SetPlayerControl(false, false); }
+    public override void Tick()
+    {
+        Manager.SetPlayerControl(false, false);
+        if (started || (Manager.Slots != null && Manager.Slots.IsOpen)) return;
+        started = true;
+        Manager.BossIntro.Play(() =>
+        {
+            if (Manager.isActiveAndEnabled && Manager.Current == this)
+                Manager.Spawner.SpawnBoss();
+        });
+    }
+    public override void Exit() => Manager.BossIntro.CancelAndReset();
+}
 
 public sealed class VictoryState : GameState
 {
