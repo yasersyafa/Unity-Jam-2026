@@ -32,7 +32,7 @@ public static class WeaponTestAuthoring
         var source = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Gameplay/GameplayRig.prefab");
         // Copy the authored shooting rig, then remove gameplay owners before saving the test scene.
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(source); PrefabUtility.UnpackPrefabInstance(rig, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-        foreach (var type in new[] { typeof(EnemySpawner), typeof(PlayerDamageFeedback), typeof(PlayerHealthUI), typeof(PlayerHealth), typeof(WaveBannerPresentation), typeof(WeaponDurationFeedback), typeof(SlotPanelPresentation), typeof(SlotRewardPresentation) })
+        foreach (var type in new[] { typeof(EnemySpawner), typeof(PlayerDamageFeedback), typeof(PlayerHealthUI), typeof(PlayerHealth), typeof(WaveBannerPresentation), typeof(WeaponAmmoFeedback), typeof(SlotPanelPresentation), typeof(SlotRewardPresentation) })
             foreach (var component in rig.GetComponentsInChildren(type, true)) Object.DestroyImmediate(component);
         var shooting = rig.GetComponentInChildren<ShootingController>(true);
         var feedback = rig.GetComponentInChildren<WeaponFeedback>(true);

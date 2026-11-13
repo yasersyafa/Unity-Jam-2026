@@ -13,12 +13,20 @@ MonoBehaviour:
   m_Name: Machine_Gun_M134-A2
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 4
-  usageDuration: 8
+  unlimitedAmmo: 0
+  maxAmmo: 200
+  rewardSprite: {fileID: 0}
+  rewardTitleSprite: {fileID: 0}
+  rewardDisplayName: 
   sprite: {fileID: 0}
-  visualPrefab: {fileID: 0}
-  shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
+  visualPrefab: {fileID: 858233861775740091, guid: 62433b802f1427f4895a57e1c7e398c0, type: 3}
+  shotVisualProfile: {fileID: 11400000, guid: 6b7dd39813d0c904f8eaf2ca5948d09d, type: 2}
+  stickerSprite: {fileID: 21300000, guid: c7f0ca524ddf74a738560a3a79420ece, type: 3}
+  stickerText: GOKS!
+  shotSound: {fileID: 11400000, guid: 59771b46e4d946deacfa4ed4d42b2bbe, type: 2}
   firingMode: 0
   damage: 100
+  damageType: {fileID: 0}
   fireRate: 25
   enableRecoil: 1
   upwardKick: 65

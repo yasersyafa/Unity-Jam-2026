@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public sealed class WeaponVisual : MonoBehaviour
 {
     [SerializeField] private Image weaponImage;
+    [Tooltip("Explicit nozzle position used by projectile and stream presentation.")]
+    [SerializeField] private RectTransform muzzleAnchor;
+    public RectTransform MuzzleAnchor => muzzleAnchor;
     [Tooltip("Optional UI Image under a designer-positioned MuzzleAnchor.")]
     [SerializeField] private Image muzzleFlash;
     [Tooltip("Optional animation frames. Leave empty to flash the Image's existing sprite.")]

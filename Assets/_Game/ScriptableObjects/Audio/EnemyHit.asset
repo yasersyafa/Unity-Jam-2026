@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa4e684801b4923b41b805e81290db5, type: 3}
   m_Name: EnemyHit
   m_EditorClassIdentifier: Assembly-CSharp::AudioCue
-  clips: []
-  volume: 1
-  pitch: {x: 1, y: 1}
-  cooldown: 0
-  maximumVoices: 4
+  clips:
+  - {fileID: 8300000, guid: 0319521b58c55e4498f0ba296a9e8849, type: 3}
+  volume: 0.7
+  pitch: {x: 0.94, y: 1.06}
+  cooldown: 0.04
+  maximumVoices: 8
   ui: 0

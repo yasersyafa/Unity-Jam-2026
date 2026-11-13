@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77fafcc6bd2ee94ebe9ac341b986e7a, type: 3}
+  m_Name: EnemyHit
+  m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimationObject
+  SpriteAnimations:
+  - Name: HitParticle
+    FPS: 24
+    Frames:
+    - {fileID: -8587669555977753663, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    - {fileID: 1017228771, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    - {fileID: -239684479, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    - {fileID: 1615881761, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    - {fileID: -791025535, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    - {fileID: 384506486, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    - {fileID: -2017468631, guid: 015b126098a861a48add5e37bc532424, type: 3}
+    SpriteAnimationType: 1

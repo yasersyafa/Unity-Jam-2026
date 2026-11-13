@@ -38,9 +38,10 @@ public sealed class Enemy : MonoBehaviour, IDamageable
             return;
         }
         IsDead = true;
+        Damaged?.Invoke();
         hitbox.enabled = false;
         float delay = feedback != null ? feedback.PlayDeath() : 0f;
-        Destroy(gameObject, delay);
         Died?.Invoke();
+        Destroy(gameObject, delay);
     }
 }

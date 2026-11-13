@@ -2,8 +2,10 @@
     "name": "Game.PlayMode.Tests",
     "references": [
         "Game.Runtime",
+        "Unity.InputSystem",
         "Unity.TextMeshPro",
-        "Unity.ugui"
+        "Unity.ugui",
+        "PrimeTween.Runtime"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -1,4 +1,3 @@
-using TMPro;
 using PrimeTween;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,8 +6,9 @@ using UnityEngine.UI;
 public sealed class PlayerHealthUI : MonoBehaviour
 {
     [SerializeField] private PlayerHealth playerHealth;
-    [SerializeField] private Slider healthSlider;
-    [SerializeField] private TextMeshProUGUI healthText;
+    [SerializeField] private Image healthFill;
+    [SerializeField] private Color normalColor = new Color32(0xB3, 0xFC, 0x2D, 0xFF);
+    [SerializeField] private Color criticalColor = new Color32(0xFC, 0x30, 0x2D, 0xFF);
     [Header("Comic Presentation")]
     [SerializeField] private CombatHudAnimationProfile profile;
     [Tooltip("Use the same CombatFeedbackPreset as PlayerDamageFeedback to share its critical threshold.")]
@@ -23,7 +23,6 @@ public sealed class PlayerHealthUI : MonoBehaviour
     private Tween impactTween;
     private Tween criticalTween;
     private Vector2 position;
-    private Vector3 textScale;
     private Color accentColor;
     private float target;
     private bool initialized;
@@ -34,17 +33,14 @@ public sealed class PlayerHealthUI : MonoBehaviour
         if (playerHealth == null)
             playerHealth = GetComponentInParent<PlayerHealth>() ?? FindAnyObjectByType<PlayerHealth>();
         if (impactRoot != null) position = impactRoot.anchoredPosition;
-        if (healthText != null) textScale = healthText.transform.localScale;
         if (criticalAccent != null) accentColor = criticalAccent.color;
     }
-    public void Configure(PlayerHealth health, Slider slider, TextMeshProUGUI text = null)
+    public void Configure(PlayerHealth health, Image fill)
     {
         Unsubscribe();
         StopAnimations();
         playerHealth = health;
-        healthSlider = slider;
-        healthText = text;
-        if (healthText != null) textScale = healthText.transform.localScale;
+        healthFill = fill;
         initialized = false;
         if (isActiveAndEnabled) Subscribe();
         UpdateUI();
@@ -69,7 +65,6 @@ public sealed class PlayerHealthUI : MonoBehaviour
         fillTween.Stop(); trailTween.Stop(); impactTween.Stop(); criticalTween.Stop();
         critical = false;
         if (impactRoot != null) impactRoot.anchoredPosition = position;
-        if (healthText != null) healthText.transform.localScale = textScale;
         if (criticalAccent != null) criticalAccent.color = accentColor;
     }
     public void UpdateUI()
@@ -81,13 +76,14 @@ public sealed class PlayerHealthUI : MonoBehaviour
         target = current;
         fillTween.Stop(); trailTween.Stop();
         bool animate = initialized && profile != null && profile.AnimateHealth && isActiveAndEnabled;
-        if (healthSlider != null)
+        float ratio = Mathf.Clamp01(current / max);
+        float threshold = damagePreset != null ? damagePreset.criticalHealthRatio : profile != null ? profile.CriticalHealthRatio : 0.25f;
+        if (healthFill != null)
         {
-            healthSlider.minValue = 0f;
-            healthSlider.maxValue = max;
-            if (animate) fillTween = Tween.Custom(healthSlider.value, current, profile.FillDuration,
-                value => healthSlider.value = value, useUnscaledTime: true);
-            else healthSlider.value = current;
+            healthFill.color = ratio <= threshold ? criticalColor : normalColor;
+            if (animate) fillTween = Tween.Custom(healthFill.fillAmount, ratio, profile.FillDuration,
+                value => healthFill.fillAmount = value, useUnscaledTime: true);
+            else healthFill.fillAmount = ratio;
         }
         if (damageTrail != null)
         {
@@ -98,15 +94,12 @@ public sealed class PlayerHealthUI : MonoBehaviour
                     startDelay: profile.TrailDelay, useUnscaledTime: true);
             else damageTrail.fillAmount = current / max;
         }
-        if (healthText != null) healthText.text = $"HP {Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)}";
         if (animate && damaged) PlayImpact();
-        float threshold = damagePreset != null ? damagePreset.criticalHealthRatio : profile != null ? profile.CriticalHealthRatio : 0.25f;
         SetCritical(!playerHealth.IsDead && current / max <= threshold);
         if (playerHealth.IsDead)
         {
             impactTween.Stop();
             if (impactRoot != null) impactRoot.anchoredPosition = position;
-            if (healthText != null) healthText.transform.localScale = textScale;
         }
         initialized = true;
     }
@@ -116,7 +109,6 @@ public sealed class PlayerHealthUI : MonoBehaviour
         impactTween = Tween.Custom(0f, 1f, profile.HealthImpactDuration, t =>
         {
             if (impactRoot != null) impactRoot.anchoredPosition = position + Vector2.right * (Mathf.Sin(t * Mathf.PI * 6f) * (1f - t) * profile.HealthShakePixels);
-            if (healthText != null) healthText.transform.localScale = textScale * (1f + Mathf.Sin(t * Mathf.PI) * (profile.HealthTextScale - 1f));
         }, useUnscaledTime: true);
     }
     private void SetCritical(bool value)

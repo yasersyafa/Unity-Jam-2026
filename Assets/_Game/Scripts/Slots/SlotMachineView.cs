@@ -25,6 +25,7 @@ public sealed class SlotMachineView : MonoBehaviour
     [SerializeField] private SlotPanelPresentation panelPresentation;
     [SerializeField] private SlotRewardPresentation rewardPresentation;
     public bool IsTransitioning => panelPresentation != null && panelPresentation.IsPlaying;
+    private Coroutine pendingReward;
     private bool initialized;
     private bool visibilityRequested;
     private bool spinAllowed = true;
@@ -33,7 +34,7 @@ public sealed class SlotMachineView : MonoBehaviour
     {
         get
         {
-            if (IsSpinning || (rewardPresentation != null && rewardPresentation.IsPlaying)) return true;
+            if (pendingReward != null || IsSpinning || (rewardPresentation != null && rewardPresentation.IsPlaying)) return true;
             if (stopFeedback != null) foreach (var feedback in stopFeedback)
                 if (feedback != null && feedback.IsPlaying) return true;
             return false;
@@ -61,6 +62,8 @@ public sealed class SlotMachineView : MonoBehaviour
 
     public void HidePanelImmediate()
     {
+        if (pendingReward != null) StopCoroutine(pendingReward);
+        pendingReward = null;
         IsSpinning = false;
         if (initialized) foreach (var reel in reels) if (reel != null) reel.CancelSpin();
         panelVisible = false;
@@ -75,8 +78,26 @@ public sealed class SlotMachineView : MonoBehaviour
         if (rewardPresentation != null)
         {
             if (status != null) status.enabled = false;
-            rewardPresentation.Present(weapon);
+            if (pendingReward != null) StopCoroutine(pendingReward);
+            pendingReward = StartCoroutine(PresentAfterStop(weapon));
         }
+    }
+
+    private System.Collections.IEnumerator PresentAfterStop(WeaponData weapon)
+    {
+        // Always yield once so the coroutine handle is assigned before clearing it.
+        yield return null;
+        bool waiting;
+        do
+        {
+            waiting = false;
+            if (stopFeedback != null)
+                foreach (var feedback in stopFeedback)
+                    if (feedback != null && feedback.IsPlaying) waiting = true;
+            if (waiting) yield return null;
+        } while (waiting);
+        rewardPresentation.Present(weapon);
+        pendingReward = null;
     }
 
     private bool Initialize()
@@ -98,6 +119,7 @@ public sealed class SlotMachineView : MonoBehaviour
             reels[i].Stopped += stopFeedback[i].Play;
         }
         skipButton.interactable = false;
+        if (panelPresentation != null) panelPresentation.Prewarm();
         SetSpinAllowed(spinAllowed);
         initialized = true;
         return true;

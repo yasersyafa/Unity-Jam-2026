@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77fafcc6bd2ee94ebe9ac341b986e7a, type: 3}
+  m_Name: BossSpinner
+  m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimationObject
+  SpriteAnimations:
+  - Name: Spin
+    FPS: 12
+    Frames:
+    - {fileID: -3436246789684154685, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: -577840559, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 817256813, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 688916014, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: -202848470, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 1844636129, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 45678266, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: -127196405, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 1875132007, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 1257205295, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    - {fileID: 510722875, guid: fa92aa4bee3a9ed4b96f4d446665aa99, type: 3}
+    SpriteAnimationType: 0
+  - Name: Idle
+    FPS: 12
+    Frames:
+    - {fileID: 21300000, guid: 4163d4ec906ade045954181ea304d28b, type: 3}
+    SpriteAnimationType: 1

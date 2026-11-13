@@ -21,6 +21,17 @@ public sealed class CombatHudAnimationProfile : ScriptableObject
     [SerializeField] private bool animateEquip = true;
     [SerializeField, Min(0.01f)] private float equipDuration = 0.18f;
     [SerializeField, Min(0f)] private float equipOffset = 30f;
+    [Header("Weapon Sticker")]
+    [SerializeField, Min(0.01f)] private float stickerPopDuration = 0.1f;
+    [SerializeField, Min(0f)] private float stickerHoldDuration = 0.12f;
+    [SerializeField, Min(0.01f)] private float stickerExitDuration = 0.1f;
+    [SerializeField, Min(0f)] private float stickerShakePixels = 3f;
+    [SerializeField, Min(1f)] private float stickerShakeFrequency = 24f;
+    public float StickerPopDuration => Mathf.Max(0.01f, stickerPopDuration);
+    public float StickerHoldDuration => Mathf.Max(0f, stickerHoldDuration);
+    public float StickerExitDuration => Mathf.Max(0.01f, stickerExitDuration);
+    public float StickerShakePixels => Mathf.Max(0f, stickerShakePixels);
+    public float StickerShakeFrequency => Mathf.Max(1f, stickerShakeFrequency);
     [Header("Wave Banner")]
     [SerializeField] private bool animateBanner = true;
     [SerializeField, Min(0.01f)] private float bannerEnter = 0.18f;

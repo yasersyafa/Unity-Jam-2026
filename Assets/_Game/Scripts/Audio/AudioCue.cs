@@ -12,4 +12,8 @@ public sealed class AudioCue : ScriptableObject
     [Min(1)] public int maximumVoices = 4;
     [Tooltip("Route through UI instead of SFX mixer group.")]
     public bool ui;
+    [Tooltip("Loop continuously while held (e.g. flamethrower) instead of triggering per shot.")]
+    public bool loop;
+    [Tooltip("Seconds into clip where subsequent loops restart after initial playback.")]
+    [Min(0)] public float loopStartSeconds;
 }

@@ -16,7 +16,7 @@ MonoBehaviour:
   fillDuration: 0.12
   trailDelay: 0.15
   trailDuration: 0.35
-  trailColor: {r: 1, g: 0.75, b: 0.2, a: 1}
+  trailColor: {r: 1, g: 1, b: 1, a: 1}
   healthShakePixels: 5
   healthImpactDuration: 0.16
   healthTextScale: 1.08
@@ -27,6 +27,11 @@ MonoBehaviour:
   animateEquip: 1
   equipDuration: 0.18
   equipOffset: 30
+  stickerPopDuration: 0.1
+  stickerHoldDuration: 0.12
+  stickerExitDuration: 0.1
+  stickerShakePixels: 3
+  stickerShakeFrequency: 24
   animateBanner: 1
   bannerEnter: 0.18
   bannerHold: 0.6
