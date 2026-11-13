@@ -62,7 +62,7 @@ public sealed class ProjectileShot
         if (resolved || !IsComplete || IsCanceled) return false;
         resolved = true;
         if (!HasImpact || damageType == null) return false;
-        Collider2D target = hitCollider != null && hitCollider.isActiveAndEnabled ? hitCollider : null;
+        Collider2D target = visual.IsTargetCurrent && hitCollider != null && hitCollider.isActiveAndEnabled ? hitCollider : null;
         return damageType.ApplyImpact(shot, target, impactWorldPosition);
     }
 

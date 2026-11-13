@@ -69,6 +69,27 @@ public sealed class ProjectileShotTests
     }
 
     [UnityTest]
+    public IEnumerator ReusedTarget_DoesNotReceiveDamageFromPreviousGeneration()
+    {
+        var template = Enemy(new Vector2(20f, 20f));
+        template.gameObject.SetActive(false);
+        var pool = new GameplayPrefabPool(root.transform);
+        try
+        {
+            var first = pool.Acquire(template, root.transform, Vector3.zero, Quaternion.identity);
+            first.gameObject.SetActive(true);
+            var flight = Launch(Data<SingleTargetDamage>(), Vector2.zero);
+            first.GetComponent<GameplayLease>().Release();
+            var next = pool.Acquire(template, root.transform, Vector3.zero, Quaternion.identity);
+            next.gameObject.SetActive(true);
+            Assert.That(next, Is.SameAs(first));
+            yield return new WaitForSeconds(0.2f);
+            Assert.That(next.Hits, Is.Zero);
+            Assert.That(flight.IsComplete, Is.True);
+        }
+        finally { pool.Dispose(); }
+    }
+    [UnityTest]
     public IEnumerator MovingLock_DamagesOnlyOnArrival_WithoutRequeryingTheCursor()
     {
         var locked = Enemy(Vector2.zero);

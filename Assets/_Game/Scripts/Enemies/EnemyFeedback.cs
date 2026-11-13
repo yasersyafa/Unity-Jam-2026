@@ -57,6 +57,7 @@ public sealed class EnemyFeedback : MonoBehaviour
         color = visual.color;
         block = new MaterialPropertyBlock();
     }
+    private void OnEnable() { dead = false; wasHit = false; ResetVisual(); if (visual != null) Idle(); }
     private void Start() { if (visual != null && !dead && !animation.isAlive) Idle(); }
     private void Idle()
     {

@@ -22,6 +22,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     private readonly List<Vector2> offsets = new List<Vector2>();
     private float health;
     private bool running;
+    private GameplayPrefabPool attackPool;
     private GameObject hud;
     private UnityEngine.UI.Image fill;
     public event System.Action Defeated;
@@ -38,6 +39,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
             return;
         }
         transform.position = Point(spawnViewport) + camera.transform.forward * depthOffset;
+        attackPool = new GameplayPrefabPool(transform);
+        attackPool.Prewarm(attackPrefab, 9);
         CreateHud();
         player.Died += PlayerDied;
         StartCoroutine(AttackLoop());
@@ -71,7 +74,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     if (pattern == 2) offset /= Mathf.Abs(Mathf.Cos(angle)) + Mathf.Abs(Mathf.Sin(angle));
                 }
                 offsets.Add(offset);
-                var attack = Instantiate(attackPrefab, planeReference);
+                var attack = attackPool.Acquire(attackPrefab, planeReference, planeReference.position, planeReference.rotation);
+                attack.gameObject.SetActive(true);
                 targets.Add(attack);
             }
             float elapsed = 0f;
@@ -131,7 +135,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
         var rect = (RectTransform)obj.transform; rect.anchorMin = min; rect.anchorMax = max; rect.offsetMin = rect.offsetMax = Vector2.zero;
         var text = obj.GetComponent<TextMeshProUGUI>(); text.text = value; text.fontSize = 28f; text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
     }
-    private void CleanupTargets() { foreach (var target in targets) if (target != null) { target.gameObject.SetActive(false); Destroy(target.gameObject); } targets.Clear(); offsets.Clear(); }
+    private void CleanupTargets() { foreach (var target in targets) if (target != null) { target.gameObject.SetActive(false); GameplayLease.Despawn(target.gameObject); } targets.Clear(); offsets.Clear(); }
     private void PlayerDied() { running = false; StopAllCoroutines(); CleanupTargets(); if (hitbox != null) hitbox.enabled = false; }
-    private void OnDisable() { PlayerDied(); if (player != null) player.Died -= PlayerDied; if (hud != null) Destroy(hud); }
+    private void OnDisable() { PlayerDied(); attackPool?.Dispose(); attackPool = null; if (player != null) player.Died -= PlayerDied; if (hud != null) Destroy(hud); }
 }

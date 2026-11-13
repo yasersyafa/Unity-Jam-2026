@@ -5,6 +5,9 @@ public readonly struct ShotVisualContext
 {
     private readonly Collider2D target;
     private readonly Camera camera;
+    private readonly GameplayLease lease;
+    private readonly uint generation;
+    public bool IsTargetCurrent => lease == null || (lease.IsLeased && lease.Generation == generation);
     public Collider2D HitCollider { get; }
     public Vector2 ImpactWorldPosition { get; }
     public bool TracksTarget => target != null;
@@ -25,6 +28,8 @@ public readonly struct ShotVisualContext
         this.target = target;
         this.camera = camera;
         HitCollider = hitCollider;
+        lease = hitCollider != null ? hitCollider.GetComponentInParent<GameplayLease>() : null;
+        generation = lease != null ? lease.Generation : 0;
         ImpactWorldPosition = impactWorldPosition;
     }
 
@@ -32,7 +37,7 @@ public readonly struct ShotVisualContext
     public bool TryGetTargetScreenPosition(out Vector2 position)
     {
         position = default;
-        if (target == null || camera == null || !target.isActiveAndEnabled) return false;
+        if (!IsTargetCurrent || target == null || camera == null || !target.isActiveAndEnabled) return false;
         position = camera.WorldToScreenPoint(target.bounds.center);
         return true;
     }

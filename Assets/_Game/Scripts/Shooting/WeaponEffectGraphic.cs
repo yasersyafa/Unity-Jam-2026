@@ -19,6 +19,8 @@ public sealed class WeaponEffectGraphic : MaskableGraphic
         SetAllDirty();
     }
 
+    private static readonly System.Collections.Generic.Dictionary<WeaponShotVisualProfile.Shape, Vector2[]> outlines = new();
+
     protected override void OnPopulateMesh(VertexHelper mesh)
     {
         mesh.Clear();
@@ -45,6 +47,20 @@ public sealed class WeaponEffectGraphic : MaskableGraphic
         // Convex and star-shaped polygons share a centre fan. Local +X is forward.
         const int segments = 24;
         mesh.AddVert(rect.center, color, Vector2.zero);
+        if (!outlines.TryGetValue(shape, out var outline))
+        {
+            outline = BuildOutline(shape);
+            outlines.Add(shape, outline);
+        }
+        for (int i = 0; i < segments; i++)
+            mesh.AddVert(rect.center + Vector2.Scale(outline[i], rect.size * 0.5f), color, Vector2.zero);
+        for (int i = 0; i < segments; i++) mesh.AddTriangle(0, i + 1, (i + 1) % segments + 1);
+    }
+
+    private static Vector2[] BuildOutline(WeaponShotVisualProfile.Shape shape)
+    {
+        const int segments = 24;
+        var outline = new Vector2[segments];
         for (int i = 0; i < segments; i++)
         {
             float angle = i * Mathf.PI * 2f / segments;
@@ -69,9 +85,9 @@ public sealed class WeaponEffectGraphic : MaskableGraphic
                 point.y *= point.x > 0f ? 1f - point.x * 0.7f : 0.7f;
             if (shape == WeaponShotVisualProfile.Shape.Cylinder)
                 point.x = Mathf.Clamp(point.x * 1.5f, -1f, 1f);
-            mesh.AddVert(rect.center + Vector2.Scale(point, rect.size * 0.5f), color, Vector2.zero);
+            outline[i] = point;
         }
-        for (int i = 0; i < segments; i++) mesh.AddTriangle(0, i + 1, (i + 1) % segments + 1);
+        return outline;
     }
 
     private void Rectangle(VertexHelper mesh, Rect rect, Vector2 min, Vector2 max)

@@ -11,6 +11,24 @@ public sealed class SlotGenieMeshEffect : BaseMeshEffect
     private float amount;
     private float dockScale;
     private TMP_Text text;
+    private Vector3[][] originalText;
+    private readonly System.Collections.Generic.List<UIVertex> vertices = new(24);
+    private Matrix4x4 toPanel, fromPanel;
+    private Vector2 center, direction;
+    private float extent;
+    private static readonly Unity.Profiling.ProfilerMarker deformMarker = new("Game.Genie.Deform");
+
+    private void PrepareWarp()
+    {
+        if (panel == null) return;
+        toPanel = panel.worldToLocalMatrix * transform.localToWorldMatrix;
+        fromPanel = transform.worldToLocalMatrix * panel.localToWorldMatrix;
+        center = panel.rect.center;
+        direction = target - center;
+        if (direction.sqrMagnitude < 0.01f) direction = Vector2.down;
+        direction.Normalize();
+        extent = Mathf.Abs(direction.x) * panel.rect.width * 0.5f + Mathf.Abs(direction.y) * panel.rect.height * 0.5f;
+    }
 
     protected override void Awake()
     {
@@ -25,32 +43,37 @@ public sealed class SlotGenieMeshEffect : BaseMeshEffect
         target = destination;
         amount = Mathf.Clamp01(progress);
         dockScale = minimumScale;
-        if (text != null) text.ForceMeshUpdate();
+        if (text != null)
+        {
+            if (text.havePropertiesChanged || originalText == null) text.ForceMeshUpdate();
+            else
+            {
+                ApplyText(text.textInfo);
+                text.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
+            }
+        }
         else if (graphic != null) graphic.SetVerticesDirty();
     }
 
     private Vector3 Warp(Vector3 vertex)
     {
         if (panel == null || amount <= 0f) return vertex;
-        Vector3 point = panel.InverseTransformPoint(transform.TransformPoint(vertex));
-        Vector2 center = panel.rect.center;
-        Vector2 direction = target - center;
-        if (direction.sqrMagnitude < 0.01f) direction = Vector2.down;
-        direction.Normalize();
-        float extent = Mathf.Abs(direction.x) * panel.rect.width * 0.5f + Mathf.Abs(direction.y) * panel.rect.height * 0.5f;
+        Vector3 point = toPanel.MultiplyPoint3x4(vertex);
         float along = Vector2.Dot((Vector2)point - center, direction);
         float proximity = Mathf.InverseLerp(-extent, extent, along);
         // Edge nearest the dock leads; the far edge follows, creating the Genie neck.
         float pull = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((amount - (1f - proximity) * 0.38f) / 0.62f));
         Vector2 collapsed = target + ((Vector2)point - center) * dockScale;
         point = Vector3.Lerp(point, new Vector3(collapsed.x, collapsed.y, point.z), pull);
-        return transform.InverseTransformPoint(panel.TransformPoint(point));
+        return fromPanel.MultiplyPoint3x4(point);
     }
 
     public override void ModifyMesh(VertexHelper helper)
     {
         if (!IsActive() || amount <= 0f || text != null) return;
-        var vertices = new System.Collections.Generic.List<UIVertex>();
+        using var measurement = deformMarker.Auto();
+        PrepareWarp();
+        vertices.Clear();
         helper.GetUIVertexStream(vertices);
         helper.Clear();
         for (int i = 0; i + 2 < vertices.Count; i += 3)
@@ -85,9 +108,39 @@ public sealed class SlotGenieMeshEffect : BaseMeshEffect
 
     private void DeformText(TMP_TextInfo info)
     {
-        if (amount <= 0f) return;
-        foreach (var mesh in info.meshInfo)
-            for (int i = 0; i < mesh.vertexCount; i++) mesh.vertices[i] = Warp(mesh.vertices[i]);
+        // TMP supplies fresh, undeformed geometry on every regeneration.
+        if (originalText == null || originalText.Length != info.meshInfo.Length)
+            originalText = new Vector3[info.meshInfo.Length][];
+        for (int m = 0; m < info.meshInfo.Length; m++)
+        {
+            var mesh = info.meshInfo[m];
+            if (originalText[m] == null || originalText[m].Length < mesh.vertexCount)
+                originalText[m] = new Vector3[mesh.vertices.Length];
+            System.Array.Copy(mesh.vertices, originalText[m], mesh.vertexCount);
+        }
+        ApplyText(info);
+    }
+
+    private void ApplyText(TMP_TextInfo info)
+    {
+        using var measurement = deformMarker.Auto();
+        PrepareWarp();
+        for (int m = 0; m < info.meshInfo.Length; m++)
+        {
+            var mesh = info.meshInfo[m];
+            for (int i = 0; i < mesh.vertexCount; i++) mesh.vertices[i] = Warp(originalText[m][i]);
+        }
+    }
+
+    protected override void OnDisable()
+    {
+        amount = 0f;
+        if (text != null && originalText != null)
+        {
+            ApplyText(text.textInfo);
+            text.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
+        }
+        base.OnDisable();
     }
 
     protected override void OnDestroy()

@@ -45,6 +45,7 @@ public sealed class EnemySpawner : MonoBehaviour
     public event System.Action BossReady;
     public event System.Action<BossEncounter> BossSpawned;
     private bool runningWaves;
+    private GameplayPrefabPool gameplayPool;
     /// <summary>Set before OnEnable to wait for an explicit <see cref="Begin"/>.</summary>
     public bool StartOnEnable { get => startOnEnable; set => startOnEnable = value; }
     private readonly List<EnemyApproach> spawned = new List<EnemyApproach>();
@@ -54,7 +55,7 @@ public sealed class EnemySpawner : MonoBehaviour
     {
         get
         {
-            spawned.RemoveAll(e => e == null);
+            spawned.RemoveAll(e => e == null || !e.gameObject.activeSelf);
             int count = 0;
             for (int k = 0; k < spawned.Count; k++)
             {
@@ -70,6 +71,7 @@ public sealed class EnemySpawner : MonoBehaviour
     public void Begin()
     {
         if (!isActiveAndEnabled || runningWaves) return;
+        gameplayPool ??= new GameplayPrefabPool(transform);
         runningWaves = true;
         StartCoroutine(Run());
     }
@@ -167,7 +169,7 @@ public sealed class EnemySpawner : MonoBehaviour
         int index = 0;
         while (!player.IsDead)
         {
-            spawned.RemoveAll(e => e == null);
+            spawned.RemoveAll(e => e == null || !e.gameObject.activeSelf);
             var wave = waves[index];
             int maxAlive = EvaluateMaxAliveEnemies(index, baseMaxAliveEnemies, wave.maxAliveEnemies);
             WaveStarted?.Invoke(index + 1);
@@ -297,11 +299,14 @@ public sealed class EnemySpawner : MonoBehaviour
         Vector3 start = PointOnPlane(plane, entry);
         float bendDirection = ComputeBendDirection(entry, slot);
         float spinDirection = Random.value < 0.5f ? 1f : -1f;
-        var enemy = Instantiate(prefab, start, enemyParent.rotation, enemyParent);
+        gameplayPool ??= new GameplayPrefabPool(transform);
+        var enemy = gameplayPool.Acquire(prefab, enemyParent, start, enemyParent.rotation);
         if (!enemy.TryGetComponent<EnemyHealthBar>(out _)) enemy.gameObject.AddComponent<EnemyHealthBar>();
+        enemy.SetProjectilePool(gameplayPool);
         enemy.SetProjectileParent(transform);
         enemy.ConfigureDifficulty(swayAmplitude, swayPeriod);
         enemy.Initialize(player, destination, bendDirection, phase, right, up, viewportCenter, spinDirection);
+        enemy.gameObject.SetActive(true);
         spawned.Add(enemy);
         return enemy;
     }
@@ -348,10 +353,10 @@ public sealed class EnemySpawner : MonoBehaviour
     private void Cleanup()
     {
         foreach (var enemy in spawned)
-            if (enemy != null) { enemy.gameObject.SetActive(false); Destroy(enemy.gameObject); }
+            if (enemy != null) { enemy.gameObject.SetActive(false); GameplayLease.Despawn(enemy.gameObject); }
         spawned.Clear();
         foreach (var projectile in GetComponentsInChildren<EnemyProjectile>())
-        { projectile.gameObject.SetActive(false); Destroy(projectile.gameObject); }
+        { projectile.gameObject.SetActive(false); GameplayLease.Despawn(projectile.gameObject); }
     }
-    private void OnDisable() { StopAllCoroutines(); runningWaves = false; Cleanup(); }
+    private void OnDisable() { StopAllCoroutines(); runningWaves = false; Cleanup(); gameplayPool?.Dispose(); gameplayPool = null; }
 }

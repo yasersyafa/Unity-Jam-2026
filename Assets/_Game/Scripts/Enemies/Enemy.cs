@@ -27,6 +27,15 @@ public sealed class Enemy : MonoBehaviour, IDamageable
         CurrentHealth = data.HealthPoint;
     }
 
+    private void OnEnable()
+    {
+        if (data == null) return;
+        CurrentHealth = data.HealthPoint;
+        IsDead = false;
+        if (hitbox == null) hitbox = GetComponent<Collider2D>();
+        hitbox.enabled = true;
+    }
+
     public void TakeDamage(float damage)
     {
         if (!isActiveAndEnabled || IsDead || data == null || !(damage > 0f)) return;
@@ -42,6 +51,6 @@ public sealed class Enemy : MonoBehaviour, IDamageable
         hitbox.enabled = false;
         float delay = feedback != null ? feedback.PlayDeath() : 0f;
         Died?.Invoke();
-        Destroy(gameObject, delay);
+        GameplayLease.Despawn(gameObject, delay);
     }
 }

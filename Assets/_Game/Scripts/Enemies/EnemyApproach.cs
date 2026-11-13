@@ -19,6 +19,8 @@ public sealed class EnemyApproach : MonoBehaviour, ISlowable
     private bool finished;
     private float nextShot;
     private Transform projectileParent;
+    private GameplayPrefabPool projectilePool;
+    public void SetProjectilePool(GameplayPrefabPool pool) { projectilePool = pool; }
     public void SetProjectileParent(Transform parent) { projectileParent = parent; }
     private float amplitudeMultiplier = 1f, periodMultiplier = 1f;
     public void ConfigureDifficulty(float amplitude, float period)
@@ -46,6 +48,11 @@ public sealed class EnemyApproach : MonoBehaviour, ISlowable
         target = player;
         originalScale = transform.localScale;
         elapsed = 0f;
+        slowRemaining = 0f;
+        slowMultiplier = 1f;
+        entering = false;
+        hasViewportCenter = false;
+        viewportRight = viewportUp = Vector3.zero;
         nextShot = enemy.Data.ShotInterval;
         finished = false;
         initialized = enemy.Data != null;
@@ -151,8 +158,9 @@ public sealed class EnemyApproach : MonoBehaviour, ISlowable
             if (elapsed >= nextShot)
             {
                 nextShot = elapsed + enemy.Data.ShotInterval;
-                var projectile = Instantiate(enemy.Data.ProjectilePrefab, transform.position, transform.rotation, projectileParent);
+                var projectile = projectilePool != null ? projectilePool.Acquire(enemy.Data.ProjectilePrefab, projectileParent, transform.position, transform.rotation) : Instantiate(enemy.Data.ProjectilePrefab, transform.position, transform.rotation, projectileParent);
                 projectile.Initialize(target, enemy.Data.AttackPoint);
+                projectile.gameObject.SetActive(true);
             }
             return;
         }
@@ -193,6 +201,6 @@ public sealed class EnemyApproach : MonoBehaviour, ISlowable
         if (t < 1f) return;
         finished = true;
         target.TakeDamage(enemy.Data.AttackPoint);
-        Destroy(gameObject);
+        GameplayLease.Despawn(gameObject);
     }
 }

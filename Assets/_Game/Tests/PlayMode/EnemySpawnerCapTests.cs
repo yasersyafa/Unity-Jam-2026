@@ -105,7 +105,8 @@ public sealed class EnemySpawnerCapTests
 
         var initialEnemies = parentObj.GetComponentsInChildren<Enemy>();
         Assert.That(initialEnemies.Length, Is.EqualTo(3));
-        var initialSet = new HashSet<Enemy>(initialEnemies);
+        var initialGenerations = new Dictionary<Enemy, uint>();
+        foreach (var initialEnemy in initialEnemies) initialGenerations[initialEnemy] = initialEnemy.GetComponent<GameplayLease>().Generation;
 
         // Kill one alive enemy; 4th must spawn up to cap of 3
         initialEnemies[0].TakeDamage(999f);
@@ -116,7 +117,7 @@ public sealed class EnemySpawnerCapTests
         {
             foreach (var current in parentObj.GetComponentsInChildren<Enemy>())
             {
-                if (!current.IsDead && !initialSet.Contains(current))
+                if (!current.IsDead && (!initialGenerations.TryGetValue(current, out uint generation) || current.GetComponent<GameplayLease>().Generation != generation))
                 {
                     fourthSpawned = true;
                     break;

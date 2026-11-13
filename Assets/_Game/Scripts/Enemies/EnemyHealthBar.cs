@@ -28,6 +28,8 @@ public sealed class EnemyHealthBar : MonoBehaviour
     private float displayedHealth = float.NaN, displayedMaximum = float.NaN;
     private int displayedHealthNumber = -1, displayedMaximumNumber = -1;
 
+    private static TMP_FontAsset sharedFont;
+    private static readonly Unity.Profiling.ProfilerMarker buildMarker = new("Game.HealthBar.Build");
     private static Sprite centerPivotSprite;
     private static Sprite leftPivotSprite;
 
@@ -57,6 +59,7 @@ public sealed class EnemyHealthBar : MonoBehaviour
 
     private void BuildVisuals()
     {
+        using var measurement = buildMarker.Auto();
         EnsureSprites();
 
         var enemySr = GetComponentInChildren<SpriteRenderer>();
@@ -113,7 +116,8 @@ public sealed class EnemyHealthBar : MonoBehaviour
         tmpText.color = Color.white;
         tmpText.sortingLayerID = sortingLayer;
         tmpText.sortingOrder = baseOrder + 52;
-        var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+        if (sharedFont == null) sharedFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+        var font = sharedFont;
         if (font != null) tmpText.font = font;
     }
 

@@ -63,6 +63,8 @@ public sealed class EnemyFlightVisual : MonoBehaviour
 
     private void OnEnable()
     {
+        facingRight = spriteFacesRight;
+        if (body != null) body.flipX = false;
         enemy.Died += OnDied;
         SetWingsVisible(true);
         // Random offset so a wave of enemies does not flap in lockstep. The right wing mirrors the left.

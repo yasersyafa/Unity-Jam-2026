@@ -6,6 +6,6 @@ public sealed class BossAttackTarget : MonoBehaviour, IDamageable
     {
         if (!(damage > 0f) || !isActiveAndEnabled) return;
         gameObject.SetActive(false);
-        Destroy(gameObject);
+        GameplayLease.Despawn(gameObject);
     }
 }
