@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Runtime::WeaponEffectGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25, g: 0.75, b: 0.95, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -102,7 +102,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   shape: 2
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 186725a123c9749528fd19ed00d6eda4, type: 3}
 --- !u!1 &5144354562339033673
 GameObject:
   m_ObjectHideFlags: 0

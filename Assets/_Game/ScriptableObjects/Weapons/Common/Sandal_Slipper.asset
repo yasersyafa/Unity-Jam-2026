@@ -21,7 +21,7 @@ MonoBehaviour:
   sprite: {fileID: 0}
   visualPrefab: {fileID: 5993635254935968052, guid: 373f394c6014c794ead1f5affe5dce49, type: 3}
   shotVisualProfile: {fileID: 11400000, guid: e49bde0fc4aedf84897170b05e06713b, type: 2}
-  stickerSprite: {fileID: 498814163, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerSprite: {fileID: 21300000, guid: c7f0ca524ddf74a738560a3a79420ece, type: 3}
   stickerText: KIWW!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 1

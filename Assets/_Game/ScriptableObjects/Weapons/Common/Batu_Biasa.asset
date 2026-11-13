@@ -15,10 +15,13 @@ MonoBehaviour:
   tier: 0
   unlimitedAmmo: 1
   maxAmmo: 30
+  rewardSprite: {fileID: 0}
+  rewardTitleSprite: {fileID: 0}
+  rewardDisplayName: 
   sprite: {fileID: 0}
   visualPrefab: {fileID: 3180712594316452573, guid: edbb325b9eef19f4c9357cb08dd8690b, type: 3}
   shotVisualProfile: {fileID: 11400000, guid: f51886b98cc069b44981f68ab47fbc76, type: 2}
-  stickerSprite: {fileID: 1772710487, guid: 5b1a380e8c2564bf1abca24132443003, type: 3}
+  stickerSprite: {fileID: 21300000, guid: c7f0ca524ddf74a738560a3a79420ece, type: 3}
   stickerText: ZHANGGG!
   shotSound: {fileID: 11400000, guid: a02f4da6785e64e688144a30011478bc, type: 2}
   firingMode: 0
