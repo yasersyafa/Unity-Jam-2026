@@ -514,7 +514,7 @@ MonoBehaviour:
   m_text: Credits
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 06e062df3e6844a15ae1c4e44d0378f5, type: 2}
-  m_sharedMaterial: {fileID: -85092608357530860, guid: 06e062df3e6844a15ae1c4e44d0378f5, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: fb6ca5463a5dac141bdd0fcd2a6a7354, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -601,7 +601,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2451454600910480884, guid: eb012872ddf404c1c8a14bf950efb9e4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.9259259
+      value: 0.9262762
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451454600910480884, guid: eb012872ddf404c1c8a14bf950efb9e4, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.9262762
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451454600910480884, guid: eb012872ddf404c1c8a14bf950efb9e4, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.9262762
       objectReference: {fileID: 0}
     - target: {fileID: 3017783998385462352, guid: eb012872ddf404c1c8a14bf950efb9e4, type: 3}
       propertyPath: portals.Array.data[0].targetScale
@@ -756,7 +764,7 @@ MonoBehaviour:
   m_text: exit game
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 06e062df3e6844a15ae1c4e44d0378f5, type: 2}
-  m_sharedMaterial: {fileID: -85092608357530860, guid: 06e062df3e6844a15ae1c4e44d0378f5, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: fb6ca5463a5dac141bdd0fcd2a6a7354, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -893,7 +901,7 @@ MonoBehaviour:
   m_text: Start Run
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 06e062df3e6844a15ae1c4e44d0378f5, type: 2}
-  m_sharedMaterial: {fileID: -85092608357530860, guid: 06e062df3e6844a15ae1c4e44d0378f5, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: fb6ca5463a5dac141bdd0fcd2a6a7354, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Sandal_Slipper_Visual
   m_EditorClassIdentifier: Game.Runtime::WeaponShotVisualProfile
   mode: 1
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 186725a123c9749528fd19ed00d6eda4, type: 3}
   shape: 2
-  color: {r: 0.25, g: 0.75, b: 0.95, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}
   size: {x: 75, y: 34}
   speed: 1800
   spin: 420
