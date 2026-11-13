@@ -437,7 +437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
   clip: {fileID: 0}
-  volume: 1
+  volume: 0.2
   fadeSeconds: 1
 --- !u!4 &772724616
 Transform:
