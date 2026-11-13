@@ -88,14 +88,10 @@ public static class SetupSlotDemoHUD
         var healthFillImg = healthFillGo.GetComponent<Image>();
         healthFillImg.color = new Color(0.85f, 0.15f, 0.15f, 1f); // Vibrant red
 
-        var healthSlider = healthBarGo.AddComponent<Slider>();
-        healthSlider.transition = Selectable.Transition.None;
-        healthSlider.direction = Slider.Direction.LeftToRight;
-        healthSlider.targetGraphic = healthFillImg;
-        healthSlider.fillRect = healthFillRect;
-        healthSlider.minValue = 0f;
-        healthSlider.maxValue = playerHealth.MaximumHealth;
-        healthSlider.value = playerHealth.CurrentHealth;
+        healthFillImg.type = Image.Type.Filled;
+        healthFillImg.fillMethod = Image.FillMethod.Horizontal;
+        healthFillImg.fillOrigin = 0;
+        healthFillImg.fillAmount = 1f;
 
         // Health Text
         var healthTextGo = new GameObject("HealthText", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -115,8 +111,8 @@ public static class SetupSlotDemoHUD
         var healthUI = healthBarGo.AddComponent<PlayerHealthUI>();
         var healthSo = new SerializedObject(healthUI);
         healthSo.FindProperty("playerHealth").objectReferenceValue = playerHealth;
-        healthSo.FindProperty("healthSlider").objectReferenceValue = healthSlider;
-        healthSo.FindProperty("healthText").objectReferenceValue = healthTmp;
+        healthSo.FindProperty("healthFill").objectReferenceValue = healthFillImg;
+        healthTextGo.SetActive(false);
         healthSo.ApplyModifiedProperties();
 
         // 2. Build Weapon Duration Bar

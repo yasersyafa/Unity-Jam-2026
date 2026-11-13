@@ -77,16 +77,18 @@ public static class ComicUiAuthoring
                 if (button.name == "Spin" || button.name == "Skip") SetupButton(button);
             foreach (var health in root.GetComponentsInChildren<PlayerHealthUI>(true))
             {
-                var slider = Read<Slider>(health, "healthSlider");
-                Transform visual = slider.transform.Find("HealthVisual");
+                var fillImage = Read<Image>(health, "healthFill");
+                if (fillImage == null) continue;
+                Transform bar = health.transform;
+                Transform visual = bar.Find("HealthVisual");
                 if (visual == null)
                 {
-                    var children = slider.transform.Cast<Transform>().ToArray();
-                    visual = Rect("HealthVisual", slider.transform, new Vector2(0.5f, 0.5f), Vector2.zero);
+                    var children = bar.Cast<Transform>().ToArray();
+                    visual = Rect("HealthVisual", bar, new Vector2(0.5f, 0.5f), Vector2.zero);
                     Stretch((RectTransform)visual);
                     foreach (var child in children) child.SetParent(visual, false);
                 }
-                RectTransform fill = slider.fillRect;
+                RectTransform fill = fillImage.rectTransform;
                 var trail = ChildImage(fill.parent, "DamageTrail", new Vector2(0.5f, 0.5f), Vector2.zero);
                 Stretch(trail.rectTransform); trail.transform.SetAsFirstSibling();
                 Sprite sourceSprite = fill.GetComponent<Image>().sprite;
