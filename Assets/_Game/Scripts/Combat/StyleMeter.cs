@@ -93,6 +93,7 @@ public sealed class StyleMeter : MonoBehaviour
         if (hit) RegisterHit();
         else if (HasRank)
         {
+            HitCount = 0;
             Drain(missPenalty * Required(rankIndex));
             Log($"Miss | {Describe()}");
         }
