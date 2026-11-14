@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa4e684801b4923b41b805e81290db5, type: 3}
   m_Name: EnemyDeath
   m_EditorClassIdentifier: Assembly-CSharp::AudioCue
-  clips: []
-  volume: 1
-  pitch: {x: 1, y: 1}
-  cooldown: 0
-  maximumVoices: 4
+  clips:
+  - {fileID: 8300000, guid: 918f6289e5a1db44691e78e1e1d81ca4, type: 3}
+  volume: 0.8
+  pitch: {x: 0.95, y: 1.05}
+  cooldown: 0.03
+  maximumVoices: 8
   ui: 0
+  loop: 0
+  loopStartSeconds: 0

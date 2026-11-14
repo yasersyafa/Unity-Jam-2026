@@ -42,7 +42,7 @@ public static class AudioSetup
             var audio = Add<CombatAudio>(enemy.gameObject);
             Set(audio, "enemy", enemy);
             Set(audio, "damaged", Cue("EnemyHit"));
-            Set(audio, "died", Cue("EnemyDeath"));
+            Set(audio, "died", Cue(EnemyDeathCueName(enemy)));
         }
         foreach (var player in root.GetComponentsInChildren<PlayerHealth>(true))
         {
@@ -169,5 +169,70 @@ public static class AudioSetup
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+
+    [MenuItem("Game/Audio/Wire Enemy Death SFX")]
+    public static void WireEnemyDeathSfx()
+    {
+        var defaultClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Enemy/Normal and Charged enemy.wav");
+        var tankClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Enemy/Tank Enemy.wav");
+        var rangedClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Enemy/Ranged Enemy.wav");
+        if (defaultClip == null || tankClip == null || rangedClip == null)
+            throw new System.InvalidOperationException("Missing enemy death audio clips under Assets/_Game/Audio/SFX/Enemy/.");
+
+        ConfigureEnemyDeathCue("EnemyDeath", defaultClip);
+        ConfigureEnemyDeathCue("EnemyDeathTank", tankClip);
+        ConfigureEnemyDeathCue("EnemyDeathRanged", rangedClip);
+
+        foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Game/Prefabs/Enemies" }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                bool changed = false;
+                foreach (var enemy in root.GetComponentsInChildren<Enemy>(true))
+                {
+                    var combatAudio = Add<CombatAudio>(enemy.gameObject);
+                    Set(combatAudio, "enemy", enemy);
+                    Set(combatAudio, "damaged", Cue("EnemyHit"));
+                    Set(combatAudio, "died", Cue(EnemyDeathCueName(enemy)));
+                    changed = true;
+                }
+                if (changed) PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+    private static string EnemyDeathCueName(Enemy enemy)
+    {
+        if (enemy.Data == null) return "EnemyDeath";
+        switch (enemy.Data.Movement)
+        {
+            case EnemyData.Behavior.Tank: return "EnemyDeathTank";
+            case EnemyData.Behavior.Ranged: return "EnemyDeathRanged";
+            default: return "EnemyDeath";
+        }
+    }
+
+    private static AudioCue ConfigureEnemyDeathCue(string cueName, AudioClip clip)
+    {
+        var cue = Cue(cueName);
+        cue.clips = new[] { clip };
+        cue.volume = 0.8f;
+        cue.pitch = new Vector2(0.95f, 1.05f);
+        cue.cooldown = 0.03f;
+        cue.maximumVoices = 8;
+        cue.ui = false;
+        cue.loop = false;
+        EditorUtility.SetDirty(cue);
+        return cue;
     }
 }

@@ -4,6 +4,7 @@
         "Unity.InputSystem",
         "Unity.TextMeshPro",
         "Unity.ugui",
-        "PrimeTween.Runtime"
+        "PrimeTween.Runtime",
+        "GabrielBigardi.SpriteAnimator"
     ]
 }

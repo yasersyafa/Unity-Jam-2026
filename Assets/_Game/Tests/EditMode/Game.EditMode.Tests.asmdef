@@ -2,7 +2,8 @@
     "name": "Game.EditMode.Tests",
     "references": [
         "Game.Runtime",
-        "Game.Profiling.Editor"
+        "Game.Profiling.Editor",
+        "GabrielBigardi.SpriteAnimator"
     ],
     "includePlatforms": [
         "Editor"

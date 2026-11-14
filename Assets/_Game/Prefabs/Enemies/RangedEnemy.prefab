@@ -276,7 +276,7 @@ MonoBehaviour:
   player: {fileID: 0}
   shot: {fileID: 0}
   damaged: {fileID: 11400000, guid: b45ba94ff6d67469db0dfdf91a623728, type: 2}
-  died: {fileID: 11400000, guid: 9bc0ab34d8fac4d28b1a44b3fe879910, type: 2}
+  died: {fileID: 11400000, guid: e0f930609c409954b99b625cda919f08, type: 2}
 --- !u!114 &7758708945813353088
 MonoBehaviour:
   m_ObjectHideFlags: 0

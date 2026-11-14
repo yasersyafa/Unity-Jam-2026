@@ -157,7 +157,7 @@ MonoBehaviour:
   visual: {fileID: 1002}
   hitbox: {fileID: 1003}
   attackPrefab: {fileID: 1004, guid: 54ee8a17bb094ae3a80a3b96e8725446, type: 3}
-  attackScaleMultipliers: {x: 0.4, y: 1.2}
+  spinnerAnimator: {fileID: 5424970498823341006}
 --- !u!114 &7753208910050003964
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,11 +11,28 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 744bffcd6828425e8cf2d11c4c13d678, type: 3}
   m_Name: BossConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   bossPrefab: {fileID: 1004, guid: 8ae9adc5f1eb4f03a1c4304bb69d0ad9, type: 3}
-  health: 1500
+  health: 2500
   sprite: {fileID: 21300000, guid: 79c1b54bbf1dc475e8c2a19c48ce0f4b, type: 3}
-  initialDelay: 2
-  durations: {x: 4, y: 3}
-  delays: {x: 2, y: 1.5}
-  damages: {x: 10, y: 15}
+  delayBetweenAttacks: 2
+  chargedEnemyData: {fileID: 11400000, guid: 12949efbf58c411797df0ecc507def5a, type: 2}
+  normalEnemyData: {fileID: 11400000, guid: eb867fc261104322a7169549b4d5e6ed, type: 2}
+  redProjectileSprite: {fileID: -896290615092568370, guid: a7ff518c6d861244799bf82b1a91bf8b, type: 3}
+  blueProjectileSprite: {fileID: 173729152, guid: a7ff518c6d861244799bf82b1a91bf8b, type: 3}
+  baseProjectileDamage: 10
+  rouletteSpinDuration: 2
+  buffChance: 0.5
+  damageBonusPerProjectile: 5
+  redWaitBuffReduction: 0.2
+  blueSpeedBuffFraction: 0.2
+  redProjectileCount: 8
+  redOrbitDuration: 10
+  redOrbitRadius: {x: 0.24, y: 0.2}
+  redOrbitPeriod: 3
+  blueProjectileCount: 4
+  blueOrbitStartRadius: {x: 0.14, y: 0.12}
+  blueOrbitEndRadius: {x: 0.28, y: 0.23}
+  blueOrbitPeriod: 3.5
+  blueVisibleDuration: 1.5
+  blueInvisibleDuration: 1

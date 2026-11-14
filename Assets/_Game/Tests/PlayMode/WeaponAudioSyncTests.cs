@@ -304,7 +304,12 @@ public sealed class WeaponAudioSyncTests
         }
     }
 
-    private (GameObject enemyGo, Enemy enemy) SpawnTestEnemy(Vector3 position, float health, AudioCue hitCue, EnemyData sharedData)
+    private (GameObject enemyGo, Enemy enemy) SpawnTestEnemy(
+        Vector3 position,
+        float health,
+        AudioCue hitCue,
+        EnemyData sharedData,
+        AudioCue deathCue = null)
     {
         Set(sharedData, "healthPoint", health);
         var go = new GameObject("TestEnemy");
@@ -317,6 +322,7 @@ public sealed class WeaponAudioSyncTests
         var audio = go.AddComponent<CombatAudio>();
         Set(audio, "enemy", enemy);
         Set(audio, "damaged", hitCue);
+        Set(audio, "died", deathCue);
         go.SetActive(true);
         return (go, enemy);
     }
@@ -414,6 +420,49 @@ public sealed class WeaponAudioSyncTests
             Object.Destroy(enemyHitCue);
             Object.Destroy(explosionClip);
             Object.Destroy(enemyHitClip);
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator EnemyDeath_PlaysConfiguredDeathSfxCueOnSfxGroup()
+    {
+        var defaultDeathClip = AudioClip.Create("EnemyDeathDefaultTest", 44100, 1, 44100, false);
+        var tankDeathClip = AudioClip.Create("EnemyDeathTankTest", 44100, 1, 44100, false);
+        var defaultCue = ScriptableObject.CreateInstance<AudioCue>();
+        defaultCue.clips = new[] { defaultDeathClip };
+        defaultCue.cooldown = 0f;
+        defaultCue.maximumVoices = 8;
+
+        var tankCue = ScriptableObject.CreateInstance<AudioCue>();
+        tankCue.clips = new[] { tankDeathClip };
+        tankCue.cooldown = 0f;
+        tankCue.maximumVoices = 8;
+
+        var enemyData = ScriptableObject.CreateInstance<EnemyData>();
+        var tankData = ScriptableObject.CreateInstance<EnemyData>();
+        var (normalGo, normalEnemy) = SpawnTestEnemy(Vector3.zero, 50f, null, enemyData, defaultCue);
+        var (tankGo, tankEnemy) = SpawnTestEnemy(new Vector3(2f, 0f, 0f), 100f, null, tankData, tankCue);
+
+        try
+        {
+            yield return null;
+            normalEnemy.TakeDamage(50f);
+            tankEnemy.TakeDamage(100f);
+
+            var active = service.GetComponents<AudioSource>().Where(s => !s.loop && s.isPlaying).ToArray();
+            Assert.That(active.Any(s => s.clip == defaultDeathClip && s.outputAudioMixerGroup == service.sfxGroup), Is.True);
+            Assert.That(active.Any(s => s.clip == tankDeathClip && s.outputAudioMixerGroup == service.sfxGroup), Is.True);
+        }
+        finally
+        {
+            Object.Destroy(normalGo);
+            Object.Destroy(tankGo);
+            Object.Destroy(enemyData);
+            Object.Destroy(tankData);
+            Object.Destroy(defaultCue);
+            Object.Destroy(tankCue);
+            Object.Destroy(defaultDeathClip);
+            Object.Destroy(tankDeathClip);
         }
     }
 }
