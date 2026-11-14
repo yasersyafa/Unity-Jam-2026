@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: BossConfig
   m_EditorClassIdentifier: 
   bossPrefab: {fileID: 1004, guid: 8ae9adc5f1eb4f03a1c4304bb69d0ad9, type: 3}
-  health: 2500
+  health: 12500
   sprite: {fileID: 21300000, guid: 79c1b54bbf1dc475e8c2a19c48ce0f4b, type: 3}
   delayBetweenAttacks: 2
+  bossLaughSound: {fileID: 11400000, guid: 06d4f92a80eecbb41a98b53af72259b1, type: 2}
+  bossHitSound: {fileID: 11400000, guid: 26ad76178c62d4f46857f7be9a005e47, type: 2}
+  projectileHitSound: {fileID: 11400000, guid: 129aea1067ce931469210feb8f46f569, type: 2}
   chargedEnemyData: {fileID: 11400000, guid: 12949efbf58c411797df0ecc507def5a, type: 2}
   normalEnemyData: {fileID: 11400000, guid: eb867fc261104322a7169549b4d5e6ed, type: 2}
   redProjectileSprite: {fileID: -896290615092568370, guid: a7ff518c6d861244799bf82b1a91bf8b, type: 3}

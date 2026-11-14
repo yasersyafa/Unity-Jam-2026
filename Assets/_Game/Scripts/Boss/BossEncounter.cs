@@ -106,6 +106,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
             IsSpinningRoulette = true;
             SetVulnerable(false);
             PlaySpinnerAnimation("Spin");
+            if (config.BossLaughSound != null) AudioService.Ensure().Play(config.BossLaughSound);
             SetRouletteHud("ROULETTE SPIN... (KEBAL)", new Color(1f, 0.85f, 0.25f, 1f));
 
             float spinElapsed = 0f;
@@ -172,7 +173,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     roulette.ProjectileDamage,
                     cameraReference,
                     planeReference,
-                    player)
+                    player,
+                    config.ProjectileHitSound)
                 : new BossProjectileLaunchData(
                     BossProjectileKind.Blue,
                     config.BlueProjectileSprite,
@@ -190,7 +192,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     roulette.ProjectileDamage,
                     cameraReference,
                     planeReference,
-                    player);
+                    player,
+                    config.ProjectileHitSound);
 
             attack.Launch(launch);
             attack.gameObject.SetActive(true);
@@ -214,6 +217,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     {
         if (!running || !IsVulnerable || !(damage > 0f) || Time.timeScale <= 0f) return;
         health = Mathf.Max(0f, health - damage);
+        if (config.BossHitSound != null) AudioService.Ensure().Play(config.BossHitSound);
         if (fill != null) fill.rectTransform.anchorMax = new Vector2(health / config.Health, 1f);
         if (health > 0f) return;
 
@@ -229,17 +233,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
         if (shooting != null) shooting.SetShootingAllowed(false);
 
         if (hud != null)
-        {
-            var panel = Panel("Victory", hud.transform, new Vector2(0.25f, 0.3f), new Vector2(0.75f, 0.7f), new Color(0.05f, 0.05f, 0.1f, 0.98f));
-            Label("Menang!", panel.transform, new Vector2(0f, 0.5f), Vector2.one);
-            var button = Panel("Restart", panel.transform, new Vector2(0.2f, 0.1f), new Vector2(0.8f, 0.4f), new Color(0.2f, 0.4f, 0.6f));
-            button.AddComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
-            {
-                Time.timeScale = 1f;
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            });
-            Label("Restart", button.transform, Vector2.zero, Vector2.one);
-        }
+            hud.SetActive(false);
         Defeated?.Invoke();
     }
 
@@ -329,6 +323,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
         StopAllCoroutines();
         CleanupTargets();
         SetVulnerable(false);
+        if (hud != null) hud.SetActive(false);
     }
 
     private void OnDisable()

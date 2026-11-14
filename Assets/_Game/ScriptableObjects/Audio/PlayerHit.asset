@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa4e684801b4923b41b805e81290db5, type: 3}
   m_Name: PlayerHit
   m_EditorClassIdentifier: Assembly-CSharp::AudioCue
-  clips: []
-  volume: 1
-  pitch: {x: 1, y: 1}
-  cooldown: 0
+  clips:
+  - {fileID: 8300000, guid: 135f17453fe336d48a62bbf2dddb9f2d, type: 3}
+  - {fileID: 8300000, guid: 2c8a6abfa1cca1549b10b27f31e1da46, type: 3}
+  volume: 0.85
+  pitch: {x: 0.96, y: 1.04}
+  cooldown: 0.04
   maximumVoices: 4
   ui: 0
+  loop: 0
+  loopStartSeconds: 0

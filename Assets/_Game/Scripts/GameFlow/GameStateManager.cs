@@ -26,6 +26,7 @@ public sealed class GameStateManager : MonoBehaviour
     private readonly Dictionary<Type, GameState> states = new();
     private BossEncounter boss;
     public BossIntroPresentation BossIntro { get; private set; }
+    public EndScreenPresentation EndScreen { get; private set; }
 
     public SlotGameplayFlow Slots => slots;
     public EnemySpawner Spawner => spawner;
@@ -57,6 +58,9 @@ public sealed class GameStateManager : MonoBehaviour
         if (tutorial == null) tutorial = FindAnyObjectByType<TutorialDirector>();
 
         BossIntro = Instantiate(Resources.Load<BossIntroPresentation>("BossIntroPresentation"), transform);
+        var endScreenPrefab = Resources.Load<EndScreenPresentation>("EndScreenPresentation");
+        if (endScreenPrefab != null)
+            EndScreen = Instantiate(endScreenPrefab, transform);
 
         // The manager decides when these start instead of their own lifecycle callbacks.
         if (slots != null) slots.OpenOnStart = false;
@@ -82,6 +86,7 @@ public sealed class GameStateManager : MonoBehaviour
         if (spawner != null) spawner.BossSpawned -= OnBossSpawned;
         if (spawner != null) spawner.BossReady -= OnBossReady;
         if (BossIntro != null) BossIntro.CancelAndReset();
+        if (EndScreen != null) EndScreen.CancelAndReset();
         if (boss != null) boss.Defeated -= OnBossDefeated;
     }
 

@@ -43,9 +43,14 @@ public sealed class BossConfig : ScriptableObject
 {
     [Header("Boss Core")]
     [SerializeField] private BossEncounter bossPrefab;
-    [SerializeField, Min(1f)] private float health = 2500f;
+    [SerializeField, Min(1f)] private float health = 12500f;
     [SerializeField, HideInInspector] private Sprite sprite;
     [SerializeField, Min(0f)] private float delayBetweenAttacks = 2f;
+
+    [Header("Audio")]
+    [SerializeField] private AudioCue bossLaughSound;
+    [SerializeField] private AudioCue bossHitSound;
+    [SerializeField] private AudioCue projectileHitSound;
 
     [Header("Enemy Speed References")]
     [Tooltip("Reference to Charged enemy speed data (uses lunge duration when Red projectiles charge player).")]
@@ -85,6 +90,9 @@ public sealed class BossConfig : ScriptableObject
     public BossEncounter BossPrefab => bossPrefab;
     public float Health => Mathf.Max(1f, health);
     public float DelayBetweenAttacks => Mathf.Max(0f, delayBetweenAttacks);
+    public AudioCue BossLaughSound => bossLaughSound;
+    public AudioCue BossHitSound => bossHitSound;
+    public AudioCue ProjectileHitSound => projectileHitSound;
     public Sprite RedProjectileSprite => redProjectileSprite;
     public Sprite BlueProjectileSprite => blueProjectileSprite;
     public float BaseProjectileDamage => Mathf.Max(0f, baseProjectileDamage);

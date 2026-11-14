@@ -57,6 +57,7 @@ public sealed class AudioService : MonoBehaviour
     {
         var source = gameObject.AddComponent<AudioSource>();
         source.playOnAwake = false;
+        source.Stop();
         source.spatialBlend = 0;
         return source;
     }
@@ -91,7 +92,7 @@ public sealed class AudioService : MonoBehaviour
         if (times.TryGetValue(cue, out float time) && Time.unscaledTime - time < cue.cooldown) return;
         int count = 0, free = -1;
         for (int i = 0; i < voices.Length; i++)
-            if (voices[i].isPlaying) { if (cues[i] == cue) count++; }
+            if (voices[i].isPlaying && voices[i].clip != null) { if (cues[i] == cue) count++; }
             else free = i;
         if (free < 0 || count >= cue.maximumVoices) return;
         if (!TryPickClip(cue, out var clip)) return;

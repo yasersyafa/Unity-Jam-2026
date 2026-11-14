@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -53,7 +54,7 @@ public sealed class BossMechanicsPlayModeTests
         created.Add(normalData);
 
         var config = ScriptableObject.CreateInstance<BossConfig>();
-        SetField(config, "health", 2500f);
+        SetField(config, "health", 12500f);
         SetField(config, "rouletteSpinDuration", spinDuration);
         SetField(config, "redOrbitDuration", redOrbitDuration);
         SetField(config, "delayBetweenAttacks", delayBetween);
@@ -75,6 +76,8 @@ public sealed class BossMechanicsPlayModeTests
     [UnityTearDown]
     public IEnumerator TearDown()
     {
+        if (AudioService.Instance != null)
+            Object.Destroy(AudioService.Instance.gameObject);
         foreach (var item in created)
             if (item != null) Object.Destroy(item);
         created.Clear();
@@ -94,10 +97,10 @@ public sealed class BossMechanicsPlayModeTests
         Assert.That(boss.IsSpinningRoulette, Is.True);
         Assert.That(boss.IsVulnerable, Is.False);
         Assert.That(hitbox.enabled, Is.False);
-        Assert.That(boss.CurrentHealth, Is.EqualTo(2500f));
+        Assert.That(boss.CurrentHealth, Is.EqualTo(12500f));
 
         boss.TakeDamage(500f);
-        Assert.That(boss.CurrentHealth, Is.EqualTo(2500f), "Boss must ignore damage while spinning roulette.");
+        Assert.That(boss.CurrentHealth, Is.EqualTo(12500f), "Boss must ignore damage while spinning roulette.");
 
         float timeout = Time.realtimeSinceStartup + 2f;
         while (boss.IsSpinningRoulette && Time.realtimeSinceStartup < timeout)
@@ -110,7 +113,7 @@ public sealed class BossMechanicsPlayModeTests
         Assert.That(hitbox.enabled, Is.True);
 
         boss.TakeDamage(500f);
-        Assert.That(boss.CurrentHealth, Is.EqualTo(2000f), "Boss must take damage once attack launches.");
+        Assert.That(boss.CurrentHealth, Is.EqualTo(12000f), "Boss must take damage once attack launches.");
     }
 
     [UnityTest]
@@ -262,5 +265,64 @@ public sealed class BossMechanicsPlayModeTests
         Assert.That(sawBlue, Is.True, "Boss second attack cycle must launch 4 Blue projectiles.");
         Assert.That(boss.LastRouletteResult.Effect, Is.EqualTo(BossRouletteEffect.DebuffSpeed));
         Assert.That(boss.IsVulnerable, Is.True);
+    }
+
+    [UnityTest]
+    public IEnumerator BossAndProjectileAudio_PlayLaughOnRoulette_BossHitWhenVulnerable_ProjectileHitWhenShootable()
+    {
+        var (boss, config, player, cam, plane, _) = CreateHarness(spinDuration: 0.12f, redOrbitDuration: 0.15f);
+        AudioClip laughClip = AudioClip.Create("TestBossLaugh", 44100, 1, 44100, false);
+        AudioClip bossHitClip = AudioClip.Create("TestBossHit", 44100, 1, 44100, false);
+        AudioClip projHitClip = AudioClip.Create("TestProjHit", 44100, 1, 44100, false);
+        created.Add(laughClip);
+        created.Add(bossHitClip);
+        created.Add(projHitClip);
+
+        AudioCue MakeCue(AudioClip clip)
+        {
+            var c = ScriptableObject.CreateInstance<AudioCue>();
+            c.clips = new[] { clip };
+            c.volume = 1f;
+            c.pitch = Vector2.one;
+            c.maximumVoices = 6;
+            created.Add(c);
+            return c;
+        }
+
+        SetField(config, "bossLaughSound", MakeCue(laughClip));
+        SetField(config, "bossHitSound", MakeCue(bossHitClip));
+        SetField(config, "projectileHitSound", MakeCue(projHitClip));
+
+        boss.SetRandomSource(() => 0.1f);
+        boss.BeginEncounter(config, cam, plane, player, null, null);
+
+        AudioService service = AudioService.Instance;
+        Assert.That(service, Is.Not.Null);
+        Assert.That(service.GetComponents<AudioSource>().Count(s => s.clip == laughClip), Is.EqualTo(1));
+
+        // Invulnerable while spinning roulette -> boss hit SFX must not trigger.
+        boss.TakeDamage(500f);
+        Assert.That(service.GetComponents<AudioSource>().Count(s => s.clip == bossHitClip), Is.EqualTo(0));
+
+        float timeout = Time.realtimeSinceStartup + 2f;
+        while (boss.ActiveTargets.Count == 0 && Time.realtimeSinceStartup < timeout)
+            yield return null;
+
+        // Vulnerable during attack -> boss hit SFX triggers.
+        boss.TakeDamage(500f);
+        Assert.That(service.GetComponents<AudioSource>().Count(s => s.isPlaying && s.clip == bossHitClip), Is.EqualTo(1));
+
+        // Shootable projectile -> projectile hit SFX triggers.
+        BossAttackTarget shootable = boss.ActiveTargets[0];
+        BossAttackTarget survivor = boss.ActiveTargets[1];
+        shootable.TakeDamage(10f);
+        Assert.That(service.GetComponents<AudioSource>().Count(s => s.isPlaying && s.clip == projHitClip), Is.EqualTo(1));
+
+        // Indestructible charging projectile -> projectile hit SFX must not trigger again.
+        timeout = Time.realtimeSinceStartup + 2f;
+        while (!survivor.IsInvulnerable && survivor.isActiveAndEnabled && Time.realtimeSinceStartup < timeout)
+            yield return null;
+        survivor.TakeDamage(500f);
+        Assert.That(service.GetComponents<AudioSource>().Count(s => s.isPlaying && s.clip == projHitClip), Is.EqualTo(1));
     }
 }

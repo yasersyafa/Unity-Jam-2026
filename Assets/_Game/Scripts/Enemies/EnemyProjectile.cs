@@ -3,6 +3,7 @@ using UnityEngine;
 public sealed class EnemyProjectile : MonoBehaviour, IDamageable
 {
     [SerializeField, Min(0.1f)] private float flightDuration = 6f;
+    [SerializeField] private AudioCue hitSound;
     private PlayerHealth player;
     private float damage, elapsed;
     private Vector3 baseScale;
@@ -29,6 +30,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IDamageable
     public void TakeDamage(float amount)
     {
         if (!(amount > 0f) || !isActiveAndEnabled) return;
+        if (hitSound != null) AudioService.Ensure().Play(hitSound);
         gameObject.SetActive(false);
         GameplayLease.Despawn(gameObject);
     }

@@ -89,11 +89,27 @@ public sealed class BossIntroState : GameState
 public sealed class VictoryState : GameState
 {
     public override bool IsTerminal => true;
-    public override void Enter() => Manager.SetPlayerControl(shooting: false, manualSlot: false);
+    public override void Enter()
+    {
+        Manager.SetPlayerControl(shooting: false, manualSlot: false);
+        if (Manager.EndScreen != null) Manager.EndScreen.ShowVictory();
+    }
+    public override void Exit()
+    {
+        if (Manager.EndScreen != null) Manager.EndScreen.CancelAndReset();
+    }
 }
 
 public sealed class GameOverState : GameState
 {
     public override bool IsTerminal => true;
-    public override void Enter() => Manager.SetPlayerControl(shooting: false, manualSlot: false);
+    public override void Enter()
+    {
+        Manager.SetPlayerControl(shooting: false, manualSlot: false);
+        if (Manager.EndScreen != null) Manager.EndScreen.ShowLose();
+    }
+    public override void Exit()
+    {
+        if (Manager.EndScreen != null) Manager.EndScreen.CancelAndReset();
+    }
 }
