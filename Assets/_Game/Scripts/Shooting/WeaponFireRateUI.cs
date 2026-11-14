@@ -37,7 +37,7 @@ public sealed class WeaponFireRateUI : MonoBehaviour
     private void Awake()
     {
         if (shootingController == null)
-            shootingController = GetComponentInParent<ShootingController>() ?? FindFirstObjectByType<ShootingController>();
+            shootingController = GetComponentInParent<ShootingController>() ?? FindAnyObjectByType<ShootingController>();
         if (canvasGroup == null)
             canvasGroup = GetComponent<CanvasGroup>();
     }
@@ -46,7 +46,7 @@ public sealed class WeaponFireRateUI : MonoBehaviour
     {
         if (shootingController == null)
         {
-            shootingController = FindFirstObjectByType<ShootingController>();
+            shootingController = FindAnyObjectByType<ShootingController>();
             if (shootingController == null)
             {
                 SetVisible(false);

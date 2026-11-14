@@ -692,15 +692,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlotWeaponRewards
   machine: {fileID: 1384764984}
   weapons:
-  - {fileID: 11400000, guid: fb5e25c5317e43a4a5c9e7535ae1d6fe, type: 2}
-  - {fileID: 11400000, guid: 26e923c6d3c44ba6a82eb8b40c57996d, type: 2}
+  - {fileID: 11400000, guid: 081538d758a4495aa3df541fa06b9154, type: 2}
   - {fileID: 11400000, guid: 3f4f44990570482b8eaa82c390ff9ccb, type: 2}
-  - {fileID: 11400000, guid: 48540faf620f4c9ea0502ca88759e05a, type: 2}
   - {fileID: 11400000, guid: 68d0e0566aa2479a930b7a4055938435, type: 2}
-  - {fileID: 11400000, guid: 93e62ac9d3fe4d63a2d4270388628090, type: 2}
   - {fileID: 11400000, guid: 8d28dac9bb1c4b7ab3c3d3895093274e, type: 2}
-  - {fileID: 11400000, guid: 0ce1d6b4be244034951a1b6d73f20c2c, type: 2}
-  - {fileID: 11400000, guid: 78638739538c4cb6b23d7b3b9ac67305, type: 2}
+  - {fileID: 11400000, guid: ded51efdcc904fe5a24c159d94b00033, type: 2}
+  - {fileID: 11400000, guid: 26e923c6d3c44ba6a82eb8b40c57996d, type: 2}
 --- !u!114 &1691777526
 MonoBehaviour:
   m_ObjectHideFlags: 0

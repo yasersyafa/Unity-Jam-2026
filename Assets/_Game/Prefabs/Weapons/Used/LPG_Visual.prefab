@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5935621479245864193
+--- !u!1 &4086054645983718082
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8269617839390937107}
-  - component: {fileID: 9210529354610888072}
-  - component: {fileID: 7557840332287161210}
+  - component: {fileID: 3036204213147396371}
+  - component: {fileID: 3076255573048641035}
+  - component: {fileID: 2405645650015456695}
   m_Layer: 0
   m_Name: WeaponSilhouette
   m_TagString: Untagged
@@ -18,57 +18,57 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &8269617839390937107
+--- !u!224 &3036204213147396371
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5935621479245864193}
+  m_GameObject: {fileID: 4086054645983718082}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4065787588992656209}
-  m_Father: {fileID: 1277878430514951430}
+  - {fileID: 1791889413829949556}
+  m_Father: {fileID: 2769137239160524774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 130}
+  m_AnchoredPosition: {x: 9.1846, y: -16.8383}
+  m_SizeDelta: {x: 118.3691, y: 163.6766}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &9210529354610888072
+--- !u!222 &3076255573048641035
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5935621479245864193}
+  m_GameObject: {fileID: 4086054645983718082}
   m_CullTransparentMesh: 1
---- !u!114 &7557840332287161210
+--- !u!114 &2405645650015456695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5935621479245864193}
+  m_GameObject: {fileID: 4086054645983718082}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fe6caea8069e1f47b28ccc098e2566c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Runtime::WeaponEffectGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6, g: 0.65, b: 0.72, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  shape: 0
-  sprite: {fileID: 0}
---- !u!1 &6835045661517147150
+  shape: 5
+  sprite: {fileID: 21300000, guid: fe11658147ec249379b8421f8afd70bf, type: 3}
+--- !u!1 &4197469889877156093
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,7 +76,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4065787588992656209}
+  - component: {fileID: 1791889413829949556}
   m_Layer: 0
   m_Name: MuzzleAnchor
   m_TagString: Untagged
@@ -84,26 +84,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &4065787588992656209
+--- !u!224 &1791889413829949556
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6835045661517147150}
+  m_GameObject: {fileID: 4197469889877156093}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8269617839390937107}
+  m_Father: {fileID: 3036204213147396371}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &8459094103239372180
+--- !u!1 &4225666593036869484
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -111,28 +111,28 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1277878430514951430}
-  - component: {fileID: 3180712594316452573}
+  - component: {fileID: 2769137239160524774}
+  - component: {fileID: 6659008954373087298}
   m_Layer: 0
-  m_Name: Batu_Biasa_Visual
+  m_Name: LPG_Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1277878430514951430
+--- !u!224 &2769137239160524774
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8459094103239372180}
+  m_GameObject: {fileID: 4225666593036869484}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8269617839390937107}
+  - {fileID: 3036204213147396371}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -140,20 +140,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 500, y: 340}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3180712594316452573
+--- !u!114 &6659008954373087298
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8459094103239372180}
+  m_GameObject: {fileID: 4225666593036869484}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ab8f54b022444f08a7ba4bd60dd63f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Runtime::WeaponVisual
   weaponImage: {fileID: 0}
-  muzzleAnchor: {fileID: 4065787588992656209}
+  muzzleAnchor: {fileID: 1791889413829949556}
   muzzleFlash: {fileID: 0}
   muzzleFrames: []
   flashDuration: 0.06

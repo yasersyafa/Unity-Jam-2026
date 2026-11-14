@@ -115,3 +115,7 @@ InitTestScene*.unity*
 
 # Local Unity Profiler recordings
 /ProfilerCaptures/
+
+# Local Web builds and generated Burst output
+/Data/
+/Shooter 0.0.1/

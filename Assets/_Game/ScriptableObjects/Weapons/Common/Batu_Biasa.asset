@@ -15,8 +15,8 @@ MonoBehaviour:
   tier: 0
   unlimitedAmmo: 1
   maxAmmo: 30
-  rewardSprite: {fileID: 0}
-  rewardTitleSprite: {fileID: 0}
+  rewardSprite: {fileID: 21300000, guid: 7d8c15980ee2f4c2fa447bf84ebdac55, type: 3}
+  rewardTitleSprite: {fileID: 21300000, guid: 4542fd2937b4e4fd393183c381c61bb1, type: 3}
   rewardDisplayName: 
   sprite: {fileID: 0}
   visualPrefab: {fileID: 3180712594316452573, guid: edbb325b9eef19f4c9357cb08dd8690b, type: 3}

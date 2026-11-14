@@ -21,14 +21,14 @@ public sealed class WaveBannerPresentation : MonoBehaviour
     {
         if (visual != null) position = visual.anchoredPosition;
         if (group != null) group.alpha = 0f;
-        if (flow == null) flow = FindFirstObjectByType<SlotGameplayFlow>();
-        if (player == null) player = FindFirstObjectByType<PlayerHealth>();
-        if (spawner == null) spawner = FindFirstObjectByType<EnemySpawner>();
+        if (flow == null) flow = FindAnyObjectByType<SlotGameplayFlow>();
+        if (player == null) player = FindAnyObjectByType<PlayerHealth>();
+        if (spawner == null) spawner = FindAnyObjectByType<EnemySpawner>();
     }
 
     private void OnEnable()
     {
-        if (spawner == null) spawner = FindFirstObjectByType<EnemySpawner>();
+        if (spawner == null) spawner = FindAnyObjectByType<EnemySpawner>();
         if (spawner != null)
         {
             spawner.WaveStarted += Wave;
@@ -56,8 +56,8 @@ public sealed class WaveBannerPresentation : MonoBehaviour
 
     private void Update()
     {
-        if (player == null) player = FindFirstObjectByType<PlayerHealth>();
-        if (flow == null) flow = FindFirstObjectByType<SlotGameplayFlow>();
+        if (player == null) player = FindAnyObjectByType<PlayerHealth>();
+        if (flow == null) flow = FindAnyObjectByType<SlotGameplayFlow>();
         if (player != null && player.IsDead) { animation.Stop(); if (group != null) group.alpha = 0f; pending = showing = null; return; }
         if (flow != null && flow.IsOpen)
         {
