@@ -652,7 +652,7 @@ GameObject:
   - component: {fileID: 1213035003}
   - component: {fileID: 1213035002}
   m_Layer: 5
-  m_Name: AmmoBackground
+  m_Name: WeaponAmmoBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -21,6 +21,13 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     [Header("Weapon Ammo UI")]
     [FormerlySerializedAs("weaponDurationSlider")]
     [SerializeField] private Slider ammoSlider;
+    [SerializeField] private UnityEngine.UI.Image ammoFill;
+    [Header("Ammo Fill Sprites by Rarity")]
+    [SerializeField] private Sprite commonAmmoSprite;
+    [SerializeField] private Sprite uncommonAmmoSprite;
+    [SerializeField] private Sprite rareAmmoSprite;
+    [SerializeField] private Sprite epicAmmoSprite;
+    [SerializeField] private Sprite jackpotAmmoSprite;
     [FormerlySerializedAs("weaponDurationText")]
     [SerializeField] private TextMeshProUGUI ammoText;
 
@@ -171,7 +178,22 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         var weapon = CurrentWeapon;
         bool limited = HasLimitedAmmo;
         int ammo = limited ? shooting.Ammo : -1;
-        if (ammoSlider != null)
+        if (ammoFill != null)
+        {
+            Sprite raritySprite = (weapon != null ? weapon.Tier : SlotTier.Common) switch
+            {
+                SlotTier.Uncommon => uncommonAmmoSprite,
+                SlotTier.Rare => rareAmmoSprite,
+                SlotTier.Epic => epicAmmoSprite,
+                SlotTier.Jackpot => jackpotAmmoSprite,
+                _ => commonAmmoSprite
+            };
+            if (raritySprite == null) raritySprite = commonAmmoSprite;
+            if (raritySprite != null && ammoFill.sprite != raritySprite)
+                ammoFill.sprite = raritySprite;
+            ammoFill.fillAmount = AmmoRatio;
+        }
+        else if (ammoSlider != null)
         {
             ammoSlider.minValue = 0f;
             ammoSlider.maxValue = limited ? weapon.MaxAmmo : 1f;
@@ -183,7 +205,9 @@ public sealed class SlotGameplayFlow : MonoBehaviour
             if (lastAmmoTarget == ammoText && lastAmmoWeapon == weapon && lastAmmo == ammo) return;
             lastAmmoTarget = ammoText; lastAmmoWeapon = weapon; lastAmmo = ammo;
             string weaponName = weapon != null ? weapon.name : "Weapon";
-            ammoText.text = limited ? $"{weaponName}: {ammo} / {weapon.MaxAmmo}" : $"{weaponName}: {UnlimitedLabel}";
+            ammoText.text = ammoFill != null
+                ? (limited ? $"{ammo}/{weapon.MaxAmmo}" : UnlimitedLabel)
+                : (limited ? $"{weaponName}: {ammo} / {weapon.MaxAmmo}" : $"{weaponName}: {UnlimitedLabel}");
         }
     }
 
