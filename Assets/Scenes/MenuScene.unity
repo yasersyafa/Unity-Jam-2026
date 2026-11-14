@@ -483,7 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b7cba43934344618f33e0d27f19ef94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
-  clip: {fileID: 0}
+  clip: {fileID: 8300000, guid: 188c38ddb860d46bfb1a47b36db58e65, type: 3}
   volume: 0.2
   fadeSeconds: 1
 --- !u!4 &772724616
