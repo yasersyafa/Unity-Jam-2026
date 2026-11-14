@@ -106,6 +106,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
             IsSpinningRoulette = true;
             SetVulnerable(false);
             PlaySpinnerAnimation("Spin");
+            if (config.BossLaughSound != null) AudioService.Ensure().Play(config.BossLaughSound);
             SetRouletteHud("ROULETTE SPIN... (KEBAL)", new Color(1f, 0.85f, 0.25f, 1f));
 
             float spinElapsed = 0f;
@@ -172,7 +173,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     roulette.ProjectileDamage,
                     cameraReference,
                     planeReference,
-                    player)
+                    player,
+                    config.ProjectileHitSound)
                 : new BossProjectileLaunchData(
                     BossProjectileKind.Blue,
                     config.BlueProjectileSprite,
@@ -190,7 +192,8 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
                     roulette.ProjectileDamage,
                     cameraReference,
                     planeReference,
-                    player);
+                    player,
+                    config.ProjectileHitSound);
 
             attack.Launch(launch);
             attack.gameObject.SetActive(true);
@@ -214,6 +217,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     {
         if (!running || !IsVulnerable || !(damage > 0f) || Time.timeScale <= 0f) return;
         health = Mathf.Max(0f, health - damage);
+        if (config.BossHitSound != null) AudioService.Ensure().Play(config.BossHitSound);
         if (fill != null) fill.rectTransform.anchorMax = new Vector2(health / config.Health, 1f);
         if (health > 0f) return;
 

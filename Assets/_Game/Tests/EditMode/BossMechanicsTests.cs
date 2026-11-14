@@ -7,14 +7,14 @@ using UnityEngine;
 public sealed class BossMechanicsTests
 {
     [Test]
-    public void BossConfigAsset_Has2500HealthAndProjectilesAndEnemySpeedRefsWired()
+    public void BossConfigAsset_Has12500HealthAndProjectilesAndAudioAndEnemySpeedRefsWired()
     {
         var config = AssetDatabase.LoadAssetAtPath<BossConfig>("Assets/_Game/ScriptableObjects/Enemies/BossConfig.asset");
         var charged = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/_Game/ScriptableObjects/Enemies/ChargedEnemyData.asset");
         var normal = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/_Game/ScriptableObjects/Enemies/NormalEnemyData.asset");
 
         Assert.That(config, Is.Not.Null);
-        Assert.That(config.Health, Is.EqualTo(2500f).Within(0.01f));
+        Assert.That(config.Health, Is.EqualTo(12500f).Within(0.01f));
         Assert.That(config.RedProjectileCount, Is.EqualTo(8));
         Assert.That(config.RedOrbitDuration, Is.EqualTo(10f).Within(0.01f));
         Assert.That(config.RedOrbitPeriod, Is.EqualTo(6f).Within(0.01f));
@@ -27,6 +27,23 @@ public sealed class BossMechanicsTests
         Assert.That(config.RedProjectileSprite.name, Is.EqualTo("EnemyBossProjectile_0"));
         Assert.That(config.BlueProjectileSprite, Is.Not.Null);
         Assert.That(config.BlueProjectileSprite.name, Is.EqualTo("EnemyBossProjectile_1"));
+
+        Assert.That(config.BossLaughSound, Is.Not.Null);
+        Assert.That(config.BossLaughSound.clips[0].name, Is.EqualTo("Boss Laugh"));
+        Assert.That(config.BossHitSound, Is.Not.Null);
+        Assert.That(config.BossHitSound.clips[0].name, Is.EqualTo("Boss Hitt"));
+        Assert.That(config.ProjectileHitSound, Is.Not.Null);
+        Assert.That(config.ProjectileHitSound.clips[0].name, Is.EqualTo("Projectile Hit"));
+
+        var bossTargetPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Boss/BossAttackTarget.prefab");
+        Assert.That(bossTargetPrefab, Is.Not.Null);
+        var serializedTarget = new SerializedObject(bossTargetPrefab.GetComponent<BossAttackTarget>());
+        Assert.That(serializedTarget.FindProperty("defaultHitSound").objectReferenceValue, Is.EqualTo(config.ProjectileHitSound));
+
+        var rangedProjPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Enemies/RangedProjectile.prefab");
+        Assert.That(rangedProjPrefab, Is.Not.Null);
+        var serializedRanged = new SerializedObject(rangedProjPrefab.GetComponent<EnemyProjectile>());
+        Assert.That(serializedRanged.FindProperty("hitSound").objectReferenceValue, Is.EqualTo(config.ProjectileHitSound));
 
         Assert.That(charged, Is.Not.Null);
         Assert.That(normal, Is.Not.Null);

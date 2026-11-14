@@ -27,6 +27,7 @@ public readonly struct BossProjectileLaunchData
     public readonly Camera Camera;
     public readonly Transform Plane;
     public readonly PlayerHealth Player;
+    public readonly AudioCue HitSound;
 
     public BossProjectileLaunchData(
         BossProjectileKind kind,
@@ -45,7 +46,8 @@ public readonly struct BossProjectileLaunchData
         float damage,
         Camera camera,
         Transform plane,
-        PlayerHealth player)
+        PlayerHealth player,
+        AudioCue hitSound = null)
     {
         Kind = kind;
         Sprite = sprite;
@@ -64,11 +66,13 @@ public readonly struct BossProjectileLaunchData
         Camera = camera;
         Plane = plane;
         Player = player;
+        HitSound = hitSound;
     }
 }
 
 public sealed class BossAttackTarget : MonoBehaviour, IDamageable
 {
+    [SerializeField] private AudioCue defaultHitSound;
     private SpriteRenderer visual;
     private Collider2D hitbox;
     private BossProjectileLaunchData launch;
@@ -143,6 +147,8 @@ public sealed class BossAttackTarget : MonoBehaviour, IDamageable
     public void TakeDamage(float damage)
     {
         if (!isActiveAndEnabled || !(damage > 0f) || !canBeDamaged) return;
+        AudioCue hitCue = configured && launch.HitSound != null ? launch.HitSound : defaultHitSound;
+        if (hitCue != null) AudioService.Ensure().Play(hitCue);
         Despawn();
     }
 

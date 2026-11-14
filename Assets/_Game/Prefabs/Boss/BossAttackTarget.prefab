@@ -132,7 +132,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 11.280633, y: 9.39}
+    oldSize: {x: 1.1280633, y: 0.939}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -152,3 +152,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e07d9ed76516422382276c33f8e4f7fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossAttackTarget
+  defaultHitSound: {fileID: 11400000, guid: 129aea1067ce931469210feb8f46f569, type: 2}

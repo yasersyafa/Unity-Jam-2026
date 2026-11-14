@@ -153,3 +153,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectile
   flightDuration: 6
+  hitSound: {fileID: 11400000, guid: 129aea1067ce931469210feb8f46f569, type: 2}
