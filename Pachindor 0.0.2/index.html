@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Good Team | Pachindor</title>
+<link rel="stylesheet" href="TemplateData/style.css">
+</head>
+<body>
+<main id="game-frame">
+  <canvas id="unity-canvas" width="960" height="540" tabindex="-1" aria-label="Game"></canvas>
+  <section id="loading" aria-label="A Good Team game loading">
+    <div class="brand">
+      <h1 aria-label="A Good Team"><span class="card card-a">A</span><span class="card card-good">GOOD</span><span class="card card-team">TEAM</span></h1>
+    </div>
+    <div class="load-panel">
+      <div class="load-label"><span id="status" class="sr-only" role="status">Loading</span><span id="percent" aria-hidden="true">0%</span></div>
+      <div id="progress" role="progressbar" aria-label="Game loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="fill"></div></div>
+      <p id="error" role="alert" hidden></p><button id="retry" type="button" hidden>Retry</button>
+    </div>
+  </section>
+</main>
+<noscript>This game requires JavaScript. Enable it and reload this page.</noscript>
+<script src="TemplateData/loading.js"></script>
+<script>
+const config = {
+  arguments: [],
+  dataUrl: "Build/Pachindor 0.0.2.data.br",
+  frameworkUrl: "Build/Pachindor 0.0.2.framework.js.br",
+  codeUrl: "Build/Pachindor 0.0.2.wasm.br",
+  streamingAssetsUrl: "StreamingAssets",
+  companyName: "A Good Team",
+  productName: "Pachindor",
+  productVersion: "0.0.2",
+  fullscreenElementID: "game-frame",
+  showBanner: (message, type) => {
+    if (type === "error") window.agtLoading.fail(message);
+    else console.warn(message);
+  }
+};
+const loader = document.createElement("script");
+loader.src = "Build/Pachindor 0.0.2.loader.js";
+loader.onerror = () => window.agtLoading.fail("The game could not download. Check your connection and retry.");
+loader.onload = () => {
+  try {
+    createUnityInstance(document.querySelector("#unity-canvas"), config, window.agtLoading.progress)
+      .then(window.agtLoading.ready).catch(window.agtLoading.fail);
+  } catch (error) { window.agtLoading.fail(error); }
+};
+document.body.appendChild(loader);
+</script>
+</body>
+</html>

@@ -17,6 +17,7 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     [SerializeField, Min(0f)] private float slotCooldown = 8f;
     [Tooltip("Disable when a GameStateManager decides when the first slot opens.")]
     [SerializeField] private bool openOnStart = true;
+    [Tooltip("Legacy status label; hidden at runtime. Ammo uses its dedicated UI.")]
     [SerializeField] private TextMeshProUGUI status;
     [Header("Weapon Ammo UI")]
     [FormerlySerializedAs("weaponDurationSlider")]
@@ -38,15 +39,9 @@ public sealed class SlotGameplayFlow : MonoBehaviour
     private bool awarded;
     private bool closing;
     private bool started;
-    private TextMeshProUGUI lastStatusTarget, lastAmmoTarget;
-    private WeaponData lastStatusWeapon, lastAmmoWeapon;
-    private string lastMissingTiers;
-    private SlotTier lastStatusTier;
-    private double lastStatusCooldown = double.NaN;
-    private int lastStatusAmmo = int.MinValue, lastAmmo = int.MinValue;
-    private bool lastOpen, lastDead, lastCooldownActive, lastOutOfAmmo;
-
-    private static double DisplayTime(float seconds) => System.Math.Round(seconds, 1, System.MidpointRounding.ToEven);
+    private TextMeshProUGUI lastAmmoTarget;
+    private WeaponData lastAmmoWeapon;
+    private int lastAmmo = int.MinValue;
 
     public float SlotCooldown => slotCooldown;
     public float RemainingCooldown => remaining;
@@ -73,7 +68,12 @@ public sealed class SlotGameplayFlow : MonoBehaviour
 
     private void OnEnable()
     {
-        lastStatusTarget = lastAmmoTarget = null;
+        lastAmmoTarget = null;
+        if (status != null)
+        {
+            status.text = string.Empty;
+            status.enabled = false;
+        }
         input = interact.action.Clone();
         input.Enable();
         rewards.SetShootingController(shooting);
@@ -145,32 +145,6 @@ public sealed class SlotGameplayFlow : MonoBehaviour
         }
 
         UpdateAmmoUI();
-        UpdateStatusUI();
-    }
-
-    private void UpdateStatusUI()
-    {
-        if (status == null) return;
-        var weapon = rewards.CurrentWeapon;
-        SlotTier tier = weapon != null ? weapon.Tier : default;
-        string missing = rewards.MissingTiers;
-        bool dead = player != null && player.IsDead;
-        bool cooldownActive = remaining > 0f;
-        bool outOfAmmo = IsOutOfAmmo;
-        int ammo = HasLimitedAmmo ? shooting.Ammo : -1;
-        double cooldown = !open && !dead && cooldownActive ? DisplayTime(remaining) : 0;
-        if (lastStatusTarget == status && lastStatusWeapon == weapon && lastStatusTier == tier
-            && lastMissingTiers == missing && lastOpen == open && lastDead == dead && lastCooldownActive == cooldownActive
-            && lastOutOfAmmo == outOfAmmo && lastStatusAmmo == ammo && lastStatusCooldown == cooldown) return;
-        lastStatusTarget = status; lastStatusWeapon = weapon; lastStatusTier = tier;
-        lastMissingTiers = missing; lastOpen = open; lastDead = dead; lastCooldownActive = cooldownActive;
-        lastOutOfAmmo = outOfAmmo; lastStatusAmmo = ammo; lastStatusCooldown = cooldown;
-        string weaponInfo = weapon != null
-            ? $"{weapon.name} | {tier} | Ammo: {(ammo < 0 ? UnlimitedLabel : $"{ammo}/{weapon.MaxAmmo}")}\n" : "";
-        string empty = !open && !dead && outOfAmmo ? "Ammo habis! " : "";
-        status.text = weaponInfo + empty
-            + (open ? (string.IsNullOrEmpty(missing) ? "Spin untuk lanjut" : "Isi weapon: " + missing)
-            : dead ? "Player kalah" : cooldownActive ? $"Slot: {remaining:0.0}s" : "Interact: buka slot");
     }
 
     private void UpdateAmmoUI()

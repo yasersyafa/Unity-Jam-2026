@@ -4,8 +4,11 @@ using UnityEngine;
 public sealed class MainMenu : MonoBehaviour
 {
     [SerializeField] private string gameScene = "GameScene";
+    [SerializeField] private string introScene = "IntroScene";
 
-    public void StartGame() => SceneTransition.Load(gameScene);
+    public string StartScene => IntroCutsceneController.Completed ? gameScene : introScene;
+
+    public void StartGame() => SceneTransition.Load(StartScene);
 
     public void Quit()
     {

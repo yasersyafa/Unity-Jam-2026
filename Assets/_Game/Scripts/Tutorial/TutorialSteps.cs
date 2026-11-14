@@ -159,7 +159,20 @@ public sealed class SurviveStep : TutorialStep
         Director.PlayerDamaged += OnPlayerDamaged;
     }
 
-    public override bool Tick() => defeated || enemy == null;
+    public override bool Tick()
+    {
+        if (defeated || enemy == null) return true;
+        // An enemy that reaches the player returns to its pool without dying.
+        // Retry the lesson instead of waiting for a death event from an inactive enemy.
+        if (!enemy.gameObject.activeInHierarchy)
+        {
+            enemy.Died -= OnDied;
+            enemy = Director.SpawnEnemy();
+            if (enemy != null) enemy.Died += OnDied;
+            Director.Coach("Try again! Shoot the enemy before it reaches you!");
+        }
+        return false;
+    }
 
     public override void Exit()
     {
@@ -177,7 +190,7 @@ public sealed class SurviveStep : TutorialStep
     {
         if (coachedDamage) return;
         coachedDamage = true;
-        Director.Coach("OUCH! You lost HP. Take it down before it strikes again!");
+        Director.Coach("OUCH! You lost HP. Keep shooting and watch your HP!");
     }
 }
 
