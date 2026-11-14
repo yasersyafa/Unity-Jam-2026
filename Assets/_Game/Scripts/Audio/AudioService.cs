@@ -82,7 +82,10 @@ public sealed class AudioService : MonoBehaviour
         last[cue] = index;
         return true;
     }
-    public void Play(AudioCue cue)
+    public void Play(AudioCue cue) => Play(cue, 1f);
+
+    /// <summary>Plays a cue with an additional multiplicative pitch factor.</summary>
+    public void Play(AudioCue cue, float pitchMultiplier)
     {
         if (!HasValidClips(cue)) return;
         if (times.TryGetValue(cue, out float time) && Time.unscaledTime - time < cue.cooldown) return;
@@ -98,7 +101,8 @@ public sealed class AudioService : MonoBehaviour
         source.outputAudioMixerGroup = cue.ui ? uiGroup : sfxGroup;
         source.clip = clip;
         source.volume = cue.volume;
-        source.pitch = Mathf.Clamp(Random.Range(cue.pitch.x, cue.pitch.y), 0.1f, 3);
+        float safeMultiplier = pitchMultiplier > 0f ? pitchMultiplier : 1f;
+        source.pitch = Mathf.Clamp(Random.Range(cue.pitch.x, cue.pitch.y) * safeMultiplier, 0.1f, 3f);
         source.Play();
     }
     public void StartLoop(AudioCue cue)

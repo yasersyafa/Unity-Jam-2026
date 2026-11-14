@@ -46,7 +46,11 @@ public sealed class SlotAudioPlayModeTests
         return cue;
     }
 
-    private (SlotReelView reel, SlotAudio audio) CreateReel(string name, AudioCue stopCue)
+    private (SlotReelView reel, SlotAudio audio) CreateReel(
+        string name,
+        AudioCue stopCue,
+        SlotChordSettings chord = null,
+        int chordNoteIndex = 0)
     {
         var reelObject = new GameObject(name, typeof(RectTransform));
         reelObject.transform.SetParent(root.transform, false);
@@ -76,6 +80,8 @@ public sealed class SlotAudioPlayModeTests
         var audio = reelObject.AddComponent<SlotAudio>();
         Set(audio, "reel", reel);
         Set(audio, "stopped", stopCue);
+        Set(audio, "stopChord", chord);
+        Set(audio, "chordNoteIndex", chordNoteIndex);
 
         reelObject.SetActive(true);
         return (reel, audio);
@@ -226,5 +232,73 @@ public sealed class SlotAudioPlayModeTests
         Assert.That(playing.Length, Is.EqualTo(1));
         Assert.That(playing[0].clip, Is.SameAs(leverClip));
         Assert.That(playing[0].outputAudioMixerGroup, Is.EqualTo(service.uiGroup));
+    }
+
+    [UnityTest]
+    public IEnumerator SequentialReelStops_WithCMajorChord_PitchesSingleClipIntoHarmony()
+    {
+        AudioClip slot1Clip = CreateClip("Slot1ChordClip");
+        var chord = ScriptableObject.CreateInstance<SlotChordSettings>();
+        chord.Configure(SlotNoteRoot.C, SlotChordQuality.Major);
+        createdAssets.Add(chord);
+
+        var (reel1, _) = CreateReel("Reel1", CreateUiCue("Stop1", slot1Clip), chord, 0);
+        var (reel2, _) = CreateReel("Reel2", CreateUiCue("Stop2", slot1Clip), chord, 1);
+        var (reel3, _) = CreateReel("Reel3", CreateUiCue("Stop3", slot1Clip), chord, 2);
+
+        reel1.Spin(0.08f, 3);
+        reel2.Spin(0.18f, 5);
+        reel3.Spin(0.28f, 7);
+
+        float timeout = Time.realtimeSinceStartup + 2f;
+        while ((reel1.IsSpinning || reel2.IsSpinning || reel3.IsSpinning) && Time.realtimeSinceStartup < timeout)
+            yield return null;
+
+        Assert.That(reel1.IsSpinning || reel2.IsSpinning || reel3.IsSpinning, Is.False);
+        AudioSource[] playing = ActiveUiVoices().OrderBy(v => v.pitch).ToArray();
+        Assert.That(playing.Length, Is.EqualTo(3));
+        Assert.That(playing.All(v => v.clip == slot1Clip), Is.True);
+        Assert.That(playing[0].pitch, Is.EqualTo(1f).Within(0.001f));
+        Assert.That(playing[1].pitch, Is.EqualTo(SlotChordSettings.SemitonesToPitch(4)).Within(0.001f));
+        Assert.That(playing[2].pitch, Is.EqualTo(SlotChordSettings.SemitonesToPitch(7)).Within(0.001f));
+    }
+
+    [UnityTest]
+    public IEnumerator SkipAfterFirstReelStopped_WithGMajorChord_ShiftsAllThreeReels()
+    {
+        AudioClip slot1Clip = CreateClip("Slot1GChordClip");
+        var chord = ScriptableObject.CreateInstance<SlotChordSettings>();
+        chord.Configure(SlotNoteRoot.G, SlotChordQuality.Major);
+        createdAssets.Add(chord);
+
+        var (reel1, _) = CreateReel("Reel1", CreateUiCue("Stop1", slot1Clip), chord, 0);
+        var (reel2, _) = CreateReel("Reel2", CreateUiCue("Stop2", slot1Clip), chord, 1);
+        var (reel3, _) = CreateReel("Reel3", CreateUiCue("Stop3", slot1Clip), chord, 2);
+
+        reel1.Spin(0.06f, 2);
+        reel2.Spin(0.60f, 4);
+        reel3.Spin(0.70f, 6);
+
+        float timeout = Time.realtimeSinceStartup + 2f;
+        while (reel1.IsSpinning && Time.realtimeSinceStartup < timeout)
+            yield return null;
+
+        AudioSource[] firstOnly = ActiveUiVoices();
+        Assert.That(firstOnly.Length, Is.EqualTo(1));
+        Assert.That(firstOnly[0].pitch, Is.EqualTo(SlotChordSettings.SemitonesToPitch(7)).Within(0.001f));
+
+        reel1.Skip();
+        reel2.Skip();
+        reel3.Skip();
+
+        timeout = Time.realtimeSinceStartup + 2f;
+        while ((reel2.IsSpinning || reel3.IsSpinning) && Time.realtimeSinceStartup < timeout)
+            yield return null;
+
+        AudioSource[] playing = ActiveUiVoices().OrderBy(v => v.pitch).ToArray();
+        Assert.That(playing.Length, Is.EqualTo(3));
+        Assert.That(playing[0].pitch, Is.EqualTo(SlotChordSettings.SemitonesToPitch(7)).Within(0.001f));
+        Assert.That(playing[1].pitch, Is.EqualTo(SlotChordSettings.SemitonesToPitch(11)).Within(0.001f));
+        Assert.That(playing[2].pitch, Is.EqualTo(SlotChordSettings.SemitonesToPitch(14)).Within(0.001f));
     }
 }

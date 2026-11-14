@@ -108,4 +108,66 @@ public static class AudioSetup
         }
         finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
     }
+
+    [MenuItem("Game/Audio/Wire Slot Stop Chord")]
+    public static void WireSlotStopChord()
+    {
+        const string chordPath = Root + "SlotChord.asset";
+        var chord = AssetDatabase.LoadAssetAtPath<SlotChordSettings>(chordPath);
+        if (chord == null)
+        {
+            chord = ScriptableObject.CreateInstance<SlotChordSettings>();
+            chord.Configure(SlotNoteRoot.C, SlotChordQuality.Major);
+            AssetDatabase.CreateAsset(chord, chordPath);
+            EditorUtility.SetDirty(chord);
+        }
+
+        var slot1Clip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Slot/Slot1.wav");
+        if (slot1Clip == null)
+            throw new System.InvalidOperationException("Slot1.wav not found at Assets/_Game/Audio/SFX/Slot/Slot1.wav.");
+
+        string[] cuePaths =
+        {
+            Root + "SlotStop1.asset",
+            Root + "SlotStop2.asset",
+            Root + "SlotStop3.asset"
+        };
+        foreach (string cuePath in cuePaths)
+        {
+            var cue = AssetDatabase.LoadAssetAtPath<AudioCue>(cuePath);
+            if (cue == null) throw new System.InvalidOperationException($"Missing cue asset: {cuePath}");
+            cue.clips = new[] { slot1Clip };
+            cue.pitch = Vector2.one;
+            cue.ui = true;
+            EditorUtility.SetDirty(cue);
+        }
+
+        const string rigPath = "Assets/_Game/Prefabs/Gameplay/GameplayRig.prefab";
+        var rigRoot = PrefabUtility.LoadPrefabContents(rigPath);
+        try
+        {
+            string[] reelNames = { "Reel1", "Reel2", "Reel3" };
+            var slotAudios = rigRoot.GetComponentsInChildren<SlotAudio>(true);
+            for (int i = 0; i < reelNames.Length; i++)
+            {
+                var slotAudio = slotAudios.FirstOrDefault(component => component.gameObject.name == reelNames[i]);
+                if (slotAudio == null)
+                    throw new System.InvalidOperationException($"SlotAudio not found on {reelNames[i]} in {rigPath}.");
+
+                var serialized = new SerializedObject(slotAudio);
+                serialized.FindProperty("stopChord").objectReferenceValue = chord;
+                serialized.FindProperty("chordNoteIndex").intValue = i;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(slotAudio);
+            }
+            PrefabUtility.SaveAsPrefabAsset(rigRoot, rigPath);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(rigRoot);
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
 }

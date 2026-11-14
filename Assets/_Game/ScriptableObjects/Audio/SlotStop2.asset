@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: SlotStop2
   m_EditorClassIdentifier: Assembly-CSharp::AudioCue
   clips:
-  - {fileID: 8300000, guid: 4c41232c01119b84b86b45ea48a95b9b, type: 3}
-  volume: 1
+  - {fileID: 8300000, guid: 97fdb39bb51c32242acadab82c311a1a, type: 3}
+  volume: 0.3
   pitch: {x: 1, y: 1}
   cooldown: 0
   maximumVoices: 4
   ui: 1
+  loop: 0
+  loopStartSeconds: 0

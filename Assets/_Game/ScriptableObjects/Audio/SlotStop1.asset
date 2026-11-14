@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioCue
   clips:
   - {fileID: 8300000, guid: 97fdb39bb51c32242acadab82c311a1a, type: 3}
-  volume: 1
+  volume: 0.3
   pitch: {x: 1, y: 1}
   cooldown: 0
   maximumVoices: 4
   ui: 1
+  loop: 0
+  loopStartSeconds: 0

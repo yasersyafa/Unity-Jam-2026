@@ -2860,6 +2860,8 @@ MonoBehaviour:
   rewards: {fileID: 0}
   stopped: {fileID: 11400000, guid: c6722634109840de849466dfd704ea3f, type: 2}
   awarded: {fileID: 0}
+  stopChord: {fileID: 11400000, guid: 58a31254da187a94495c0378acca412c, type: 2}
+  chordNoteIndex: 0
 --- !u!1 &1578288740842752003
 GameObject:
   m_ObjectHideFlags: 0
@@ -9135,6 +9137,8 @@ MonoBehaviour:
   rewards: {fileID: 0}
   stopped: {fileID: 11400000, guid: 347b894d7b0048588dcb5d875fc86484, type: 2}
   awarded: {fileID: 0}
+  stopChord: {fileID: 11400000, guid: 58a31254da187a94495c0378acca412c, type: 2}
+  chordNoteIndex: 1
 --- !u!1 &5864271476913354116
 GameObject:
   m_ObjectHideFlags: 0
@@ -12527,6 +12531,8 @@ MonoBehaviour:
   rewards: {fileID: 0}
   stopped: {fileID: 11400000, guid: 4bf44262bf734488a890dea1bc904676, type: 2}
   awarded: {fileID: 0}
+  stopChord: {fileID: 11400000, guid: 58a31254da187a94495c0378acca412c, type: 2}
+  chordNoteIndex: 2
 --- !u!1 &7933824511892854561
 GameObject:
   m_ObjectHideFlags: 0
