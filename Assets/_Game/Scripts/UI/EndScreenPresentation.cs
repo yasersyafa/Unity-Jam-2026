@@ -40,6 +40,10 @@ public sealed class EndScreenPresentation : MonoBehaviour
     [SerializeField] private string gameScene = "GameScene";
     [SerializeField] private string menuScene = "MenuScene";
 
+    [Header("Audio")]
+    [SerializeField] private AudioCue winSound;
+    [SerializeField] private AudioCue loseSound;
+
     private Tween entranceTween;
     private Vector2 panelOrigin;
     private Vector2 titleOrigin;
@@ -103,6 +107,10 @@ public sealed class EndScreenPresentation : MonoBehaviour
             root.interactable = true;
             root.blocksRaycasts = true;
         }
+
+        AudioCue sound = victory ? winSound : loseSound;
+        if (sound != null)
+            AudioService.Ensure().Play(sound);
 
         ApplyEntrance(0f);
         ApplyIdle(0f);

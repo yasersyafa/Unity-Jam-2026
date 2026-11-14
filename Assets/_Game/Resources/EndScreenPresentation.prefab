@@ -374,6 +374,8 @@ MonoBehaviour:
   idleFrequency: 3.2
   gameScene: GameScene
   menuScene: MenuScene
+  winSound: {fileID: 11400000, guid: ab66f7a16ba17af429831572b666f8dd, type: 2}
+  loseSound: {fileID: 11400000, guid: 54c3aa52fc6946644a634dcf880bc344, type: 2}
 --- !u!1 &7659263151524413184
 GameObject:
   m_ObjectHideFlags: 0

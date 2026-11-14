@@ -12,6 +12,14 @@ public static class EndScreenSetup
     private const string LosePath = "Assets/_Game/Arts/UI/Lose.png";
     private const string RetryButtonPath = "Assets/_Game/Arts/UI/RetryButton.png";
     private const string MainMenuButtonPath = "Assets/_Game/Arts/UI/MainMenuButton.png";
+    private const string Damaged1ClipPath = "Assets/_Game/Audio/SFX/Player/Damaged 1.wav";
+    private const string Damaged2ClipPath = "Assets/_Game/Audio/SFX/Player/Damaged 2.wav";
+    private const string GameWinClipPath = "Assets/_Game/Audio/SFX/Player/Game Win.mp3";
+    private const string GameLoseClipPath = "Assets/_Game/Audio/SFX/Player/Game Lose.mp3";
+    private const string PlayerHitCuePath = "Assets/_Game/ScriptableObjects/Audio/PlayerHit.asset";
+    private const string GameWinCuePath = "Assets/_Game/ScriptableObjects/Audio/GameWin.asset";
+    private const string GameLoseCuePath = "Assets/_Game/ScriptableObjects/Audio/GameLose.asset";
+    private const string GameplayRigPath = "Assets/_Game/Prefabs/Gameplay/GameplayRig.prefab";
 
     [MenuItem("Game/UI/Build End Screen Presentation Prefab")]
     public static void BuildEndScreenPrefab()
@@ -22,6 +30,16 @@ public static class EndScreenSetup
         var lose = LoadSprite(LosePath);
         var retrySprite = LoadSprite(RetryButtonPath);
         var mainMenuSprite = LoadSprite(MainMenuButtonPath);
+
+        var damaged1 = LoadClip(Damaged1ClipPath);
+        var damaged2 = LoadClip(Damaged2ClipPath);
+        var winClip = LoadClip(GameWinClipPath);
+        var loseClip = LoadClip(GameLoseClipPath);
+
+        var playerHitCue = EnsureCue(PlayerHitCuePath, new[] { damaged1, damaged2 }, 0.85f, new Vector2(0.96f, 1.04f), 0.04f, 4, ui: false);
+        var gameWinCue = EnsureCue(GameWinCuePath, new[] { winClip }, 0.9f, Vector2.one, 0.1f, 2, ui: true);
+        var gameLoseCue = EnsureCue(GameLoseCuePath, new[] { loseClip }, 0.9f, Vector2.one, 0.1f, 2, ui: true);
+        WirePlayerHitOnRig(playerHitCue);
 
         var rootObj = new GameObject(
             "EndScreenPresentation",
@@ -122,6 +140,8 @@ public static class EndScreenSetup
             serialized.FindProperty("loseTitleSprite").objectReferenceValue = lose;
             serialized.FindProperty("victoryTitleSize").vector2Value = new Vector2(1248f, 384f);
             serialized.FindProperty("loseTitleSize").vector2Value = new Vector2(743f, 310f);
+            serialized.FindProperty("winSound").objectReferenceValue = gameWinCue;
+            serialized.FindProperty("loseSound").objectReferenceValue = gameLoseCue;
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             PrefabUtility.SaveAsPrefabAsset(rootObj, PrefabPath);
@@ -190,5 +210,76 @@ public static class EndScreenSetup
     private static void SetValueIfNotNull(this SerializedProperty prop, Object value)
     {
         if (prop != null) prop.objectReferenceValue = value;
+    }
+
+    private static AudioClip LoadClip(string path)
+    {
+        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+        if (clip == null)
+            throw new System.InvalidOperationException($"Missing AudioClip at {path}.");
+        return clip;
+    }
+
+    private static AudioCue EnsureCue(
+        string assetPath,
+        AudioClip[] clips,
+        float volume,
+        Vector2 pitch,
+        float cooldown,
+        int maximumVoices,
+        bool ui)
+    {
+        var cue = AssetDatabase.LoadAssetAtPath<AudioCue>(assetPath);
+        if (cue == null)
+        {
+            cue = ScriptableObject.CreateInstance<AudioCue>();
+            AssetDatabase.CreateAsset(cue, assetPath);
+        }
+        cue.clips = clips;
+        cue.volume = volume;
+        cue.pitch = pitch;
+        cue.cooldown = cooldown;
+        cue.maximumVoices = maximumVoices;
+        cue.ui = ui;
+        cue.loop = false;
+        cue.loopStartSeconds = 0f;
+        EditorUtility.SetDirty(cue);
+        return cue;
+    }
+
+    private static void WirePlayerHitOnRig(AudioCue playerHitCue)
+    {
+        var rigRoot = PrefabUtility.LoadPrefabContents(GameplayRigPath);
+        try
+        {
+            bool changed = false;
+            foreach (var player in rigRoot.GetComponentsInChildren<PlayerHealth>(true))
+            {
+                var combatAudio = player.GetComponent<CombatAudio>();
+                if (combatAudio != null)
+                {
+                    var s = new SerializedObject(combatAudio);
+                    s.FindProperty("damaged").objectReferenceValue = playerHitCue;
+                    s.ApplyModifiedPropertiesWithoutUndo();
+                    EditorUtility.SetDirty(combatAudio);
+                    changed = true;
+                }
+                var feedback = player.GetComponent<PlayerDamageFeedback>();
+                if (feedback != null)
+                {
+                    var s = new SerializedObject(feedback);
+                    s.FindProperty("damageSound").objectReferenceValue = playerHitCue;
+                    s.ApplyModifiedPropertiesWithoutUndo();
+                    EditorUtility.SetDirty(feedback);
+                    changed = true;
+                }
+            }
+            if (changed)
+                PrefabUtility.SaveAsPrefabAsset(rigRoot, GameplayRigPath);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(rigRoot);
+        }
     }
 }
