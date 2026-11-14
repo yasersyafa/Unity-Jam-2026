@@ -21,7 +21,8 @@ public readonly struct SlotResult
 
 public sealed class SlotOutcomeGenerator
 {
-    private static readonly int[] Weights = { 50, 25, 15, 9, 1 };
+    private static readonly int[] Weights = { 45, 26, 15, 11, 3 };
+    public static IReadOnlyList<int> TierWeights => Weights;
     private static readonly List<int[]>[] Combinations = BuildCombinations();
     private readonly Random random;
     public int SpinNumber { get; private set; }

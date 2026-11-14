@@ -1,15 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using GabrielBigardi.SpriteAnimator;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public sealed class BossEncounter : MonoBehaviour, IDamageable
 {
+    private static readonly Vector2 OrbitCenterViewport = new Vector2(0.5f, 0.55f);
+    private static readonly Vector2 PlayerHitViewport = new Vector2(0.5f, 0.5f);
+
     [SerializeField] private SpriteRenderer visual;
     [SerializeField] private BoxCollider2D hitbox;
     [SerializeField] private BossAttackTarget attackPrefab;
-    [SerializeField] private Vector2 attackScaleMultipliers = new Vector2(0.4f, 1.2f);
+    [SerializeField] private SpriteAnimator spinnerAnimator;
+
     private BossConfig config;
     private Camera cameraReference;
     private Transform planeReference;
@@ -17,122 +23,320 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
     private ShootingController shooting;
     private SlotGameplayFlow slots;
     private readonly List<BossAttackTarget> targets = new List<BossAttackTarget>();
-    private readonly List<Vector2> offsets = new List<Vector2>();
     private float health;
     private bool running;
     private GameplayPrefabPool attackPool;
     private GameObject hud;
     private UnityEngine.UI.Image fill;
-    public event System.Action Defeated;
+    private TextMeshProUGUI rouletteLabel;
+    private Func<float> randomSource = () => UnityEngine.Random.value;
 
-    public void BeginEncounter(BossConfig data, Camera camera, Transform plane, PlayerHealth target, ShootingController gun, SlotGameplayFlow slotFlow)
+    public bool IsVulnerable { get; private set; }
+    public bool IsSpinningRoulette { get; private set; }
+    public float CurrentHealth => health;
+    public float MaxHealth => config != null ? config.Health : 0f;
+    public BossRouletteResult LastRouletteResult { get; private set; }
+    public IReadOnlyList<BossAttackTarget> ActiveTargets => targets;
+
+    public event Action Defeated;
+    public event Action<BossRouletteResult> RouletteCompleted;
+
+    /// <summary>Overrides the RNG source [0, 1) used by the roulette spin (for deterministic tests).</summary>
+    public void SetRandomSource(Func<float> source)
     {
-        if (running || config != null || data == null || target.IsDead) return;
-        config = data; cameraReference = camera; planeReference = plane; player = target;
-        shooting = gun; slots = slotFlow; health = config.Health; running = true;
+        randomSource = source ?? (() => UnityEngine.Random.value);
+    }
+
+    public void BeginEncounter(
+        BossConfig data,
+        Camera camera,
+        Transform plane,
+        PlayerHealth target,
+        ShootingController gun,
+        SlotGameplayFlow slotFlow)
+    {
+        if (running || config != null || data == null || target == null || target.IsDead) return;
+        config = data;
+        cameraReference = camera;
+        planeReference = plane;
+        player = target;
+        shooting = gun;
+        slots = slotFlow;
+        health = config.Health;
+        running = true;
+
         if (visual == null || hitbox == null || attackPrefab == null)
         {
             Debug.LogError("Boss prefab requires visual, hitbox and attack prefab references.", this);
             running = false;
             return;
         }
+
+        ResolveSpinnerAnimator();
+        SetVulnerable(false);
+
         attackPool = new GameplayPrefabPool(transform);
-        attackPool.Prewarm(attackPrefab, 9);
+        int poolCount = Mathf.Max(config.RedProjectileCount, config.BlueProjectileCount);
+        attackPool.Prewarm(attackPrefab, poolCount);
         CreateHud();
         player.Died += PlayerDied;
         StartCoroutine(AttackLoop());
     }
-    private Vector3 Point(Vector2 viewport)
+
+    private void ResolveSpinnerAnimator()
     {
-        var plane = new Plane(planeReference.forward, planeReference.position);
-        var ray = cameraReference.ViewportPointToRay(viewport);
-        return plane.Raycast(ray, out float distance) ? ray.GetPoint(distance) : planeReference.position;
-    }
-    private IEnumerator AttackLoop()
-    {
-        yield return new WaitForSeconds(config.InitialDelay);
-        int pattern = 0;
-        while (running)
+        if (spinnerAnimator != null) return;
+        var rootAnimator = GetComponent<SpriteAnimator>();
+        foreach (var candidate in GetComponentsInChildren<SpriteAnimator>(true))
         {
-            bool second = health <= config.Health * 0.5f;
-            int count = pattern == 1 ? (second ? 9 : 6) : pattern == 2 ? (second ? 8 : 4) : (second ? 8 : 6);
-            for (int i = 0; i < count; i++)
+            if (candidate != rootAnimator)
             {
-                Vector2 offset;
-                if (pattern == 1)
-                {
-                    int columns = second ? 3 : 2;
-                    offset = new Vector2(Mathf.Lerp(-0.3f, 0.3f, (i % columns) / (float)(columns - 1)), (i / columns - 1) * 0.2f);
-                }
-                else
-                {
-                    float angle = i * Mathf.PI * 2f / count;
-                    offset = new Vector2(Mathf.Cos(angle) * 0.3f, Mathf.Sin(angle) * 0.2f);
-                    if (pattern == 2) offset /= Mathf.Abs(Mathf.Cos(angle)) + Mathf.Abs(Mathf.Sin(angle));
-                }
-                offsets.Add(offset);
-                var attack = attackPool.Acquire(attackPrefab, planeReference, planeReference.position, planeReference.rotation);
-                attack.gameObject.SetActive(true);
-                targets.Add(attack);
+                spinnerAnimator = candidate;
+                return;
             }
-            float elapsed = 0f;
-            while (running && elapsed < config.Duration(second) && targets.Exists(t => t != null && t.isActiveAndEnabled))
-            {
-                float progress = Mathf.Clamp01(elapsed / config.Duration(second));
-                for (int i = 0; i < targets.Count; i++)
-                    if (targets[i] != null && targets[i].isActiveAndEnabled)
-                    {
-                        targets[i].transform.position = Point(new Vector2(0.5f, 0.55f) + offsets[i] * Mathf.Lerp(0.3f, 1f, progress)) - cameraReference.transform.forward * 0.1f;
-                        targets[i].transform.localScale = Vector3.Scale(attackPrefab.transform.localScale, Vector3.one * Mathf.Lerp(attackScaleMultipliers.x, attackScaleMultipliers.y, progress));
-                    }
-                yield return null;
-                elapsed += Time.deltaTime;
-            }
-            bool failed = targets.Exists(t => t != null && t.isActiveAndEnabled);
-            CleanupTargets();
-            if (running && failed) player.TakeDamage(config.Damage(second));
-            if (!running) yield break;
-            yield return new WaitForSeconds(config.Delay(second));
-            pattern = (pattern + 1) % 3;
         }
     }
+
+    private IEnumerator AttackLoop()
+    {
+        bool nextIsRed = true;
+        while (running)
+        {
+            // Boss always spins roulette first upon appearing and before every attack; invulnerable while spinning.
+            IsSpinningRoulette = true;
+            SetVulnerable(false);
+            PlaySpinnerAnimation("Spin");
+            SetRouletteHud("ROULETTE SPIN... (KEBAL)", new Color(1f, 0.85f, 0.25f, 1f));
+
+            float spinElapsed = 0f;
+            while (running && spinElapsed < config.RouletteSpinDuration)
+            {
+                yield return null;
+                spinElapsed += Time.deltaTime;
+            }
+            if (!running) yield break;
+
+            var roulette = config.RollRoulette(randomSource(), randomSource());
+            LastRouletteResult = roulette;
+            IsSpinningRoulette = false;
+            PlaySpinnerAnimation("Idle");
+            SetRouletteHud(FormatRouletteStatus(roulette), roulette.IsBuff ? new Color(0.35f, 1f, 0.45f, 1f) : new Color(1f, 0.42f, 0.42f, 1f));
+            RouletteCompleted?.Invoke(roulette);
+
+            SpawnAttack(nextIsRed, roulette);
+            // Boss opens its hitbox once the attack is released.
+            SetVulnerable(true);
+
+            while (running && targets.Exists(t => t != null && t.isActiveAndEnabled))
+                yield return null;
+
+            CleanupTargets();
+            if (!running) yield break;
+
+            nextIsRed = !nextIsRed;
+            if (config.DelayBetweenAttacks > 0f)
+                yield return new WaitForSeconds(config.DelayBetweenAttacks);
+        }
+    }
+
+    private void SpawnAttack(bool isRed, in BossRouletteResult roulette)
+    {
+        CleanupTargets();
+        int count = isRed ? config.RedProjectileCount : config.BlueProjectileCount;
+        float period = isRed ? config.RedOrbitPeriod : config.BlueOrbitPeriod;
+        float speedFactor = isRed ? roulette.RedSpinSpeedMultiplier : roulette.BlueSpeedMultiplier;
+        float angularSpeed = (Mathf.PI * 2f / period) * speedFactor;
+
+        Vector3 spawnPosition = planeReference != null ? planeReference.position : Vector3.zero;
+        Quaternion spawnRotation = planeReference != null ? planeReference.rotation : Quaternion.identity;
+
+        for (int i = 0; i < count; i++)
+        {
+            float initialAngle = i * Mathf.PI * 2f / count;
+            var attack = attackPool.Acquire(attackPrefab, planeReference, spawnPosition, spawnRotation);
+            var launch = isRed
+                ? new BossProjectileLaunchData(
+                    BossProjectileKind.Red,
+                    config.RedProjectileSprite,
+                    OrbitCenterViewport,
+                    PlayerHitViewport,
+                    config.RedOrbitRadius,
+                    config.RedOrbitRadius,
+                    initialAngle,
+                    angularSpeed,
+                    roulette.RedWaitDuration,
+                    config.RedChargeDuration,
+                    config.ProjectileScaleRange,
+                    1f,
+                    0f,
+                    roulette.ProjectileDamage,
+                    cameraReference,
+                    planeReference,
+                    player)
+                : new BossProjectileLaunchData(
+                    BossProjectileKind.Blue,
+                    config.BlueProjectileSprite,
+                    OrbitCenterViewport,
+                    PlayerHitViewport,
+                    config.BlueOrbitStartRadius,
+                    config.BlueOrbitEndRadius,
+                    initialAngle,
+                    angularSpeed,
+                    0f,
+                    roulette.BlueFlightDuration,
+                    config.ProjectileScaleRange,
+                    config.BlueVisibleDuration,
+                    config.BlueInvisibleDuration,
+                    roulette.ProjectileDamage,
+                    cameraReference,
+                    planeReference,
+                    player);
+
+            attack.Launch(launch);
+            attack.gameObject.SetActive(true);
+            targets.Add(attack);
+        }
+    }
+
+    private void PlaySpinnerAnimation(string animationName)
+    {
+        if (spinnerAnimator != null && spinnerAnimator.HasAnimation(animationName))
+            spinnerAnimator.Play(animationName);
+    }
+
+    private void SetVulnerable(bool vulnerable)
+    {
+        IsVulnerable = vulnerable && running;
+        if (hitbox != null) hitbox.enabled = IsVulnerable;
+    }
+
     public void TakeDamage(float damage)
     {
-        if (!running || !(damage > 0f) || Time.timeScale <= 0f) return;
+        if (!running || !IsVulnerable || !(damage > 0f) || Time.timeScale <= 0f) return;
         health = Mathf.Max(0f, health - damage);
-        fill.rectTransform.anchorMax = new Vector2(health / config.Health, 1f);
+        if (fill != null) fill.rectTransform.anchorMax = new Vector2(health / config.Health, 1f);
         if (health > 0f) return;
-        running = false; StopAllCoroutines(); CleanupTargets(); hitbox.enabled = false; visual.enabled = false;
+
+        running = false;
+        IsSpinningRoulette = false;
+        SetVulnerable(false);
+        StopAllCoroutines();
+        CleanupTargets();
+        if (visual != null) visual.enabled = false;
+        if (spinnerAnimator != null && spinnerAnimator.TryGetComponent<SpriteRenderer>(out var spinnerRenderer))
+            spinnerRenderer.enabled = false;
         if (slots != null) slots.enabled = false;
         if (shooting != null) shooting.SetShootingAllowed(false);
-        var panel = Panel("Victory", hud.transform, new Vector2(0.25f, 0.3f), new Vector2(0.75f, 0.7f), new Color(0.05f, 0.05f, 0.1f, 0.98f));
-        Label("Menang!", panel.transform, new Vector2(0f, 0.5f), Vector2.one);
-        var button = Panel("Restart", panel.transform, new Vector2(0.2f, 0.1f), new Vector2(0.8f, 0.4f), new Color(0.2f, 0.4f, 0.6f));
-        button.AddComponent<UnityEngine.UI.Button>().onClick.AddListener(() => { Time.timeScale = 1f; SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); });
-        Label("Restart", button.transform, Vector2.zero, Vector2.one);
+
+        if (hud != null)
+        {
+            var panel = Panel("Victory", hud.transform, new Vector2(0.25f, 0.3f), new Vector2(0.75f, 0.7f), new Color(0.05f, 0.05f, 0.1f, 0.98f));
+            Label("Menang!", panel.transform, new Vector2(0f, 0.5f), Vector2.one);
+            var button = Panel("Restart", panel.transform, new Vector2(0.2f, 0.1f), new Vector2(0.8f, 0.4f), new Color(0.2f, 0.4f, 0.6f));
+            button.AddComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
+            {
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            });
+            Label("Restart", button.transform, Vector2.zero, Vector2.one);
+        }
         Defeated?.Invoke();
     }
+
+    private static string FormatRouletteStatus(in BossRouletteResult result)
+    {
+        switch (result.Effect)
+        {
+            case BossRouletteEffect.BuffDamage:
+                return $"ROULETTE BUFF: DAMAGE +50% ({result.ProjectileDamage:0})";
+            case BossRouletteEffect.BuffSpeed:
+                return "ROULETTE BUFF: SPEED +20%";
+            case BossRouletteEffect.DebuffDamage:
+                return $"ROULETTE DEBUFF: DAMAGE -50% ({result.ProjectileDamage:0})";
+            case BossRouletteEffect.DebuffSpeed:
+                return "ROULETTE DEBUFF: SPEED -20%";
+            default:
+                return "ROULETTE";
+        }
+    }
+
+    private void SetRouletteHud(string message, Color color)
+    {
+        if (rouletteLabel == null) return;
+        rouletteLabel.text = message;
+        rouletteLabel.color = color;
+    }
+
     private void CreateHud()
     {
         hud = new GameObject("Boss HUD", typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
-        var canvas = hud.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 100;
+        var canvas = hud.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100;
         var back = Panel("Boss HP", hud.transform, new Vector2(0.25f, 0.92f), new Vector2(0.75f, 0.97f), Color.black);
         fill = Panel("Health", back.transform, Vector2.zero, Vector2.one, Color.red).GetComponent<UnityEngine.UI.Image>();
         Label("BOSS", back.transform, Vector2.zero, Vector2.one);
+        rouletteLabel = Label("ROULETTE", hud.transform, new Vector2(0.25f, 0.875f), new Vector2(0.75f, 0.915f), 20f);
     }
+
     private static GameObject Panel(string name, Transform parent, Vector2 min, Vector2 max, Color color)
     {
-        var obj = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.Image)); obj.transform.SetParent(parent, false);
-        var rect = (RectTransform)obj.transform; rect.anchorMin = min; rect.anchorMax = max; rect.offsetMin = rect.offsetMax = Vector2.zero;
-        obj.GetComponent<UnityEngine.UI.Image>().color = color; obj.GetComponent<UnityEngine.UI.Image>().raycastTarget = name == "Restart"; return obj;
+        var obj = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.Image));
+        obj.transform.SetParent(parent, false);
+        var rect = (RectTransform)obj.transform;
+        rect.anchorMin = min;
+        rect.anchorMax = max;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        var image = obj.GetComponent<UnityEngine.UI.Image>();
+        image.color = color;
+        image.raycastTarget = name == "Restart";
+        return obj;
     }
-    private static void Label(string value, Transform parent, Vector2 min, Vector2 max)
+
+    private static TextMeshProUGUI Label(string value, Transform parent, Vector2 min, Vector2 max, float fontSize = 28f)
     {
-        var obj = new GameObject(value, typeof(RectTransform), typeof(TextMeshProUGUI)); obj.transform.SetParent(parent, false);
-        var rect = (RectTransform)obj.transform; rect.anchorMin = min; rect.anchorMax = max; rect.offsetMin = rect.offsetMax = Vector2.zero;
-        var text = obj.GetComponent<TextMeshProUGUI>(); text.text = value; text.fontSize = 28f; text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
+        var obj = new GameObject(value, typeof(RectTransform), typeof(TextMeshProUGUI));
+        obj.transform.SetParent(parent, false);
+        var rect = (RectTransform)obj.transform;
+        rect.anchorMin = min;
+        rect.anchorMax = max;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        var text = obj.GetComponent<TextMeshProUGUI>();
+        text.text = value;
+        text.fontSize = fontSize;
+        text.alignment = TextAlignmentOptions.Center;
+        text.raycastTarget = false;
+        return text;
     }
-    private void CleanupTargets() { foreach (var target in targets) if (target != null) { target.gameObject.SetActive(false); GameplayLease.Despawn(target.gameObject); } targets.Clear(); offsets.Clear(); }
-    private void PlayerDied() { running = false; StopAllCoroutines(); CleanupTargets(); if (hitbox != null) hitbox.enabled = false; }
-    private void OnDisable() { PlayerDied(); attackPool?.Dispose(); attackPool = null; if (player != null) player.Died -= PlayerDied; if (hud != null) Destroy(hud); }
+
+    private void CleanupTargets()
+    {
+        foreach (var target in targets)
+        {
+            if (target != null)
+            {
+                target.gameObject.SetActive(false);
+                GameplayLease.Despawn(target.gameObject);
+            }
+        }
+        targets.Clear();
+    }
+
+    private void PlayerDied()
+    {
+        running = false;
+        IsSpinningRoulette = false;
+        StopAllCoroutines();
+        CleanupTargets();
+        SetVulnerable(false);
+    }
+
+    private void OnDisable()
+    {
+        PlayerDied();
+        attackPool?.Dispose();
+        attackPool = null;
+        if (player != null) player.Died -= PlayerDied;
+        if (hud != null) Destroy(hud);
+    }
 }

@@ -39,4 +39,16 @@ public sealed class WeaponDataTests
         serialized.ApplyModifiedPropertiesWithoutUndo();
         Assert.That(weapon.UnlimitedAmmo, Is.True);
     }
+
+    [TestCase("Assets/_Game/ScriptableObjects/Weapons/Uncommon/Ketapel.asset", 30)]
+    [TestCase("Assets/_Game/ScriptableObjects/Weapons/Rare/LPG.asset", 20)]
+    [TestCase("Assets/_Game/ScriptableObjects/Weapons/Epic/M4A1.asset", 75)]
+    [TestCase("Assets/_Game/ScriptableObjects/Weapons/Jackpot/Machine_Gun_M134-A2.asset", 200)]
+    public void WeaponAssets_HaveExpectedMaxAmmo(string assetPath, int expectedMaxAmmo)
+    {
+        var asset = AssetDatabase.LoadAssetAtPath<WeaponData>(assetPath);
+        Assert.That(asset, Is.Not.Null, assetPath);
+        Assert.That(asset.UnlimitedAmmo, Is.False, assetPath);
+        Assert.That(asset.MaxAmmo, Is.EqualTo(expectedMaxAmmo), assetPath);
+    }
 }

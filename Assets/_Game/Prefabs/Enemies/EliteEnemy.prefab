@@ -126,6 +126,9 @@ MonoBehaviour:
   hitVfxLifetime: 0.29166666
   deathVfxLifetime: 0.33333334
   boomLifetime: 0.87
+  hitVfxScale: 1
+  deathVfxScale: 1
+  boomScale: 1
   hitStop: 0.025
   hitStopCooldown: 0.12
   hitShakeStrength: 0.035

@@ -51,4 +51,10 @@ public sealed class SlotOutcomeGeneratorTests
         Assert.That(result.MinimumTier, Is.EqualTo(expected));
         Assert.That(result.Tier, Is.EqualTo(expected));
     }
+
+    [Test]
+    public void TierWeights_MatchConfiguredDropPercentages()
+    {
+        Assert.That(SlotOutcomeGenerator.TierWeights, Is.EqualTo(new[] { 45, 26, 15, 11, 3 }));
+    }
 }

@@ -1,0 +1,10 @@
+{
+    "name": "Game.Boss.Editor",
+    "references": [
+        "Game.Runtime",
+        "GabrielBigardi.SpriteAnimator"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

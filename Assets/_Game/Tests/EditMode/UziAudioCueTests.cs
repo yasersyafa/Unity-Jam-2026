@@ -118,4 +118,60 @@ public sealed class UziAudioCueTests
         Assert.That(durianDamage, Is.InstanceOf<ExplosionDamage>());
         Assert.That(new SerializedObject(awpDamage).FindProperty("suppressEnemyHitSound").boolValue, Is.False);
     }
+
+    [Test]
+    public void EnemyDeathCues_AreWiredToEnemyPrefabs()
+    {
+        var defaultCue = AssetDatabase.LoadAssetAtPath<AudioCue>("Assets/_Game/ScriptableObjects/Audio/EnemyDeath.asset");
+        var tankCue = AssetDatabase.LoadAssetAtPath<AudioCue>("Assets/_Game/ScriptableObjects/Audio/EnemyDeathTank.asset");
+        var rangedCue = AssetDatabase.LoadAssetAtPath<AudioCue>("Assets/_Game/ScriptableObjects/Audio/EnemyDeathRanged.asset");
+        var defaultClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Enemy/Normal and Charged enemy.wav");
+        var tankClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Enemy/Tank Enemy.wav");
+        var rangedClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Game/Audio/SFX/Enemy/Ranged Enemy.wav");
+
+        Assert.That(defaultCue, Is.Not.Null);
+        Assert.That(tankCue, Is.Not.Null);
+        Assert.That(rangedCue, Is.Not.Null);
+        Assert.That(defaultClip, Is.Not.Null);
+        Assert.That(tankClip, Is.Not.Null);
+        Assert.That(rangedClip, Is.Not.Null);
+
+        Assert.That(defaultCue.ui, Is.False);
+        Assert.That(defaultCue.loop, Is.False);
+        Assert.That(defaultCue.clips, Contains.Item(defaultClip));
+        Assert.That(tankCue.ui, Is.False);
+        Assert.That(tankCue.loop, Is.False);
+        Assert.That(tankCue.clips, Contains.Item(tankClip));
+        Assert.That(rangedCue.ui, Is.False);
+        Assert.That(rangedCue.loop, Is.False);
+        Assert.That(rangedCue.clips, Contains.Item(rangedClip));
+
+        string[] defaultDeathPrefabs =
+        {
+            "Assets/_Game/Prefabs/Enemies/NormalEnemy.prefab",
+            "Assets/_Game/Prefabs/Enemies/ChargedEnemy.prefab",
+            "Assets/_Game/Prefabs/Enemies/ScoutEnemy.prefab",
+            "Assets/_Game/Prefabs/Enemies/EliteEnemy.prefab"
+        };
+        foreach (string path in defaultDeathPrefabs)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            Assert.That(prefab, Is.Not.Null, path);
+            var combatAudio = prefab.GetComponentInChildren<CombatAudio>(true);
+            Assert.That(combatAudio, Is.Not.Null, path);
+            Assert.That(new SerializedObject(combatAudio).FindProperty("died").objectReferenceValue, Is.SameAs(defaultCue), path);
+        }
+
+        var tankPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Enemies/TankEnemy.prefab");
+        Assert.That(tankPrefab, Is.Not.Null);
+        var tankAudio = tankPrefab.GetComponentInChildren<CombatAudio>(true);
+        Assert.That(tankAudio, Is.Not.Null);
+        Assert.That(new SerializedObject(tankAudio).FindProperty("died").objectReferenceValue, Is.SameAs(tankCue));
+
+        var rangedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Enemies/RangedEnemy.prefab");
+        Assert.That(rangedPrefab, Is.Not.Null);
+        var rangedAudio = rangedPrefab.GetComponentInChildren<CombatAudio>(true);
+        Assert.That(rangedAudio, Is.Not.Null);
+        Assert.That(new SerializedObject(rangedAudio).FindProperty("died").objectReferenceValue, Is.SameAs(rangedCue));
+    }
 }

@@ -5,6 +5,7 @@ public sealed class EnemyApproach : MonoBehaviour, ISlowable
 {
     public const float SafeSpiralViewportHalfWidth = 0.43f;
     public const float SafeSpiralViewportHalfHeight = 0.35f;
+    public const float ChargedLungeDuration = 0.5f;
 
     private Enemy enemy;
     private PlayerHealth target;
@@ -164,9 +165,9 @@ public sealed class EnemyApproach : MonoBehaviour, ISlowable
             }
             return;
         }
-        float pause = Mathf.Max(0f, enemy.Data.ApproachDuration - 0.5f);
+        float pause = Mathf.Max(0f, enemy.Data.ApproachDuration - ChargedLungeDuration);
         float t = enemy.Data.Movement == EnemyData.Behavior.Charged
-            ? Mathf.Clamp01((elapsed - pause) / 0.5f)
+            ? Mathf.Clamp01((elapsed - pause) / ChargedLungeDuration)
             : Mathf.Clamp01(elapsed / enemy.Data.ApproachDuration);
         if (viewportRight != Vector3.zero)
         {
