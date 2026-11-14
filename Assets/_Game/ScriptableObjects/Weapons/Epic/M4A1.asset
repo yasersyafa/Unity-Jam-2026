@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   tier: 3
   unlimitedAmmo: 0
-  maxAmmo: 150
+  maxAmmo: 75
   rewardSprite: {fileID: 0}
   rewardTitleSprite: {fileID: 21300000, guid: 19a697b0566f942b5bb8bf285059ddd4, type: 3}
   rewardDisplayName: 

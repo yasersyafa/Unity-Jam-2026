@@ -72,13 +72,13 @@ public sealed class BossConfig : ScriptableObject
     [SerializeField, Min(1)] private int redProjectileCount = 8;
     [SerializeField, Min(0.1f)] private float redOrbitDuration = 10f;
     [SerializeField] private Vector2 redOrbitRadius = new Vector2(0.24f, 0.20f);
-    [SerializeField, Min(0.1f)] private float redOrbitPeriod = 3f;
+    [SerializeField, Min(0.1f)] private float redOrbitPeriod = 6f;
 
     [Header("Blue Attack (4 Advancing Blinking Projectiles)")]
     [SerializeField, Min(1)] private int blueProjectileCount = 4;
     [SerializeField] private Vector2 blueOrbitStartRadius = new Vector2(0.14f, 0.12f);
     [SerializeField] private Vector2 blueOrbitEndRadius = new Vector2(0.28f, 0.23f);
-    [SerializeField, Min(0.1f)] private float blueOrbitPeriod = 3.5f;
+    [SerializeField, Min(0.1f)] private float blueOrbitPeriod = 7f;
     [SerializeField, Min(0.05f)] private float blueVisibleDuration = 1.5f;
     [SerializeField, Min(0.05f)] private float blueInvisibleDuration = 1f;
 

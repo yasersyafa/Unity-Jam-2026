@@ -29,10 +29,10 @@ MonoBehaviour:
   redProjectileCount: 8
   redOrbitDuration: 10
   redOrbitRadius: {x: 0.24, y: 0.2}
-  redOrbitPeriod: 3
+  redOrbitPeriod: 6
   blueProjectileCount: 4
   blueOrbitStartRadius: {x: 0.14, y: 0.12}
   blueOrbitEndRadius: {x: 0.28, y: 0.23}
-  blueOrbitPeriod: 3.5
+  blueOrbitPeriod: 7
   blueVisibleDuration: 1.5
   blueInvisibleDuration: 1

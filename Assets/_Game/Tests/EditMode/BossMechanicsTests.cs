@@ -17,7 +17,9 @@ public sealed class BossMechanicsTests
         Assert.That(config.Health, Is.EqualTo(2500f).Within(0.01f));
         Assert.That(config.RedProjectileCount, Is.EqualTo(8));
         Assert.That(config.RedOrbitDuration, Is.EqualTo(10f).Within(0.01f));
+        Assert.That(config.RedOrbitPeriod, Is.EqualTo(6f).Within(0.01f));
         Assert.That(config.BlueProjectileCount, Is.EqualTo(4));
+        Assert.That(config.BlueOrbitPeriod, Is.EqualTo(7f).Within(0.01f));
         Assert.That(config.BaseProjectileDamage, Is.EqualTo(10f).Within(0.01f));
         Assert.That(config.BuffChance, Is.EqualTo(0.5f).Within(0.001f));
 
