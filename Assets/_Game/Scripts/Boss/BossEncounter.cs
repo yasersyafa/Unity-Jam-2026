@@ -233,17 +233,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
         if (shooting != null) shooting.SetShootingAllowed(false);
 
         if (hud != null)
-        {
-            var panel = Panel("Victory", hud.transform, new Vector2(0.25f, 0.3f), new Vector2(0.75f, 0.7f), new Color(0.05f, 0.05f, 0.1f, 0.98f));
-            Label("Menang!", panel.transform, new Vector2(0f, 0.5f), Vector2.one);
-            var button = Panel("Restart", panel.transform, new Vector2(0.2f, 0.1f), new Vector2(0.8f, 0.4f), new Color(0.2f, 0.4f, 0.6f));
-            button.AddComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
-            {
-                Time.timeScale = 1f;
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            });
-            Label("Restart", button.transform, Vector2.zero, Vector2.one);
-        }
+            hud.SetActive(false);
         Defeated?.Invoke();
     }
 
@@ -333,6 +323,7 @@ public sealed class BossEncounter : MonoBehaviour, IDamageable
         StopAllCoroutines();
         CleanupTargets();
         SetVulnerable(false);
+        if (hud != null) hud.SetActive(false);
     }
 
     private void OnDisable()
