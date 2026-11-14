@@ -119,3 +119,8 @@ InitTestScene*.unity*
 # Local Web builds and generated Burst output
 /Data/
 /Shooter 0.0.1/
+/Shooter 0.0.2/
+/Shooter 0.0.2.zip
+/Pachindor 0.0.1/
+/Pachindor 0.0.1.zip
+.DS_Store
